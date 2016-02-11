@@ -1,0 +1,49 @@
+<!-- Table 'node' edit -->
+<br/>
+<form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
+[#if OK#]
+<div class="alert alert-success"><#LANG_DATA_SAVED#></div>
+[#endif OK#]
+[#if ERR#]
+<div class="alert alert-error"><#LANG_FILLOUT_REQURED#></div>
+[#endif ERR#]
+<fieldset>
+<!-- USER_ID -->
+<div class="form-group">
+ <label class="control-label">User ID:</label>
+ <div class="controls">[#USER_ID#]</div>
+</div>
+<!-- Name -->
+<div class="form-group">
+ <label class="control-label">Name: </label>
+ <div class="controls"><input  type="text" name="name" value="[#NAME#]" class="form-control input"></div>
+</div>
+<!-- Admin -->
+<div class="form-group">
+ <label class="control-label">Admin: </label>
+ <div class="controls"><input type="checkbox" name="admin" value="1"[#if ADMIN="1"#] checked[#endif#]></div>
+</div>
+<!-- History -->
+<div class="form-group">
+ <label class="control-label">History: </label>
+ <div class="controls"><input type="checkbox" name="history" value="1"[#if HISTORY="1"#] checked[#endif#]></div>
+</div>
+<!-- CMD -->
+<div class="form-group">
+ <label class="control-label">CMD: </label>
+ <div class="controls"><input type="checkbox" name="cmd" value="1"[#if CMD="1"#] checked[#endif#]></div>
+</div>
+
+<div class="form-actions">
+ <button type="submit" name="subm" value="<#LANG_SUBMIT#>" class="btn btn-defaul btn-primary"><#LANG_SUBMIT#></button>
+ <a href="?" class="btn btn-default"><#LANG_CANCEL#></a>
+<input type="hidden" name="id" value="<#ID#>">
+<input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
+<input type="hidden" name="edit_mode" value="<#EDIT_MODE#>">
+<input type="hidden" name="mode" value="update">
+<input type="hidden" name="data_source" value="<#DATA_SOURCE#>">
+<input type="hidden" name="tab" value="<#TAB#>">
+</div>
+</fieldset>
+</form>
+<hr/>

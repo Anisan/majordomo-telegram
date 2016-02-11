@@ -1,0 +1,18 @@
+ <!-- action usual -->
+ [#if DATA_SOURCE="telegram" || DATA_SOURCE=""#]
+ <!-- table mysensor search -->
+ [#if VIEW_MODE="search_mysensors" || VIEW_MODE=""#]
+  [#inc search_admin.html#]
+ [#endif VIEW_MODE#]
+
+ <!-- table node edit -->
+ [#if VIEW_MODE="user_edit"#]
+    <p align=center>
+        <a href="?">&lt;&lt;&lt; <#LANG_BACK#></a>
+    </p>  
+    [#if ID!=""#]
+    [#if NAME!=""#]<h4>[#NAME#]</h4>[#endif NAME#]
+    [#inc user_edit.html#]
+    [#endif ID#]   
+ [#endif VIEW_MODE#]
+[#endif DATA_SOURCE#]

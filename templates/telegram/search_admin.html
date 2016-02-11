@@ -1,0 +1,40 @@
+<!-- table telegram search -->
+<div>
+ Telegram  <a class="btn btn-default" href="#" onClick="$('#api_settings').toggle();return false;"><#LANG_SETUP#></a>   
+ &nbsp;
+</div>
+
+<div style="display:none" id='api_settings'>
+&nbsp;
+<form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
+<fieldset>
+<div class="form-group">
+ <label class="control-label">Telegram token:</label>
+ <div class="controls"><input type="text" name="tlg_token" value="<#TLG_TOKEN#>" class="input"></div>
+</div>
+<label class="control-label">"<#TLG_test#>"</label>
+<div class="form-actions">
+<button type="submit" name="subm" value="Submit" class="btn btn-primary"><#LANG_UPDATE#></button>
+<input type="hidden" name="view_mode" value="update_settings">
+<input type="hidden" name="mode" value="update">
+</div>
+</fieldset>
+</form>
+</div>
+<br/>
+
+<ul class="nav nav-tabs">
+ <li [#if TAB=="" || TAB=="users"#] class="active"[#endif#]><a href="?tab=users">Users</a> </li>
+ <li [#if TAB=="cmd"#] class="active"[#endif#]><a href="?tab=cmd">CMD</a> </li> 
+ <li [#if TAB=="log"#] class="active"[#endif#]><a href="?tab=log"><#LANG_GENERAL_EVENTS_LOG#></a> </li> 
+</ul> 
+
+[#if TAB="users" || TAB==""#]
+  [#inc search_users.html#] 
+[#endif#] 
+[#if TAB="cmd"#]
+  [#inc search_cmd.html#] 
+[#endif#] 
+[#if TAB="log"#]
+  [#inc search_log.html#] 
+[#endif#] 

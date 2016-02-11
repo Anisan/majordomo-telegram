@@ -1,0 +1,72 @@
+[#if ACTION!="context"#]
+
+<table border="1" align="center" cellspacing="3" cellpadding="5" width="100%">
+ <tr>
+  <td valign="top" colspan=7>
+   <table width="100%" border="0">
+    <tr>
+     <td valign="top" width="50%">
+     <div>Filter: <input type="text" name="filter" id="filter" onChange="checkAllStates();"></div>
+     </td>
+     <td valign="top" align="right" width="50%">
+      <a href="#" class="btn btn-default" onClick="return playPauseXRay();" id="playpausebtn"><i class="glyphicon glyphicon-pause"></i> Pause</a>
+     </td>
+    </tr>
+   </table>
+  
+  <div id="xrayContent">Loading...</div>
+  </td>
+ </tr>
+</table>
+<script language="javascript">
+        var checkTimer;
+        var playingXray;
+
+        function playPauseXRay() {
+         if (playingXray==1) {
+          $('#playpausebtn').html('<i class="glyphicon glyphicon-play"></i> Continue');
+          clearTimeout(checkTimer);
+          playingXray=0;
+         } else {
+          $('#playpausebtn').html('<i class="glyphicon glyphicon-pause"></i> Pause');
+          checkAllStates();
+         }
+         return false;
+        }
+
+        function checkAllStates() {
+         playingXray=1;
+         clearTimeout(checkTimer);
+         var url="?ajax=1&op=getcontent&view_mode=<#VIEW_MODE#>&filter="+encodeURIComponent($('#filter').val());
+         $.ajax({
+          url: url,
+          }).done(function(data) { 
+          $('#xrayContent').html(data);
+          checkTimer=setTimeout('checkAllStates()', 5000);
+         });
+  return false;
+ }
+
+ checkAllStates();
+</script>
+[#endif ACTION#]
+
+[#if ACTION="context"#]
+<b>Related: <#LANG_HCB#>related<#LANG_HCE#></b>
+<div id='contextBody'>...</div>
+<script language="javascript">
+ function findContext() {
+  var url="?tab=log&action=context&ajax=1";
+  var bodyText='';
+  [#if CODE_ID!=""#]bodyText=$('#[#CODE_ID#]').val();[#endif CODE_ID#]
+  $.post(url, 
+  { action:"context", ajax: "1", op: "process", keyword: "<#KEYWORD#>", type: "<#TYPE#>", body: bodyText},
+   function(data) {
+    $('#contextBody').html(data);
+   }
+  );
+  return false;
+ }
+ findContext();
+</script>
+[#endif ACTION#]
