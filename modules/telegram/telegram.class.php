@@ -257,6 +257,7 @@ usbdevices - usbdevices
  tlg_user: ID int(10) unsigned NOT NULL auto_increment
  tlg_user: NAME varchar(255) NOT NULL DEFAULT ''
  tlg_user: USER_ID int(10) NOT NULL DEFAULT '0'
+ tlg_user: MEMBER_ID int(10) NOT NULL DEFAULT '1'
  tlg_user: CREATED datetime
  tlg_user: ADMIN int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: HISTORY int(3) unsigned NOT NULL DEFAULT '0' 

@@ -32,14 +32,17 @@ echo date("H:i:s") . " running " . basename(__FILE__) . PHP_EOL;
 // create bot
 //include("Telegram.php");
 require("./modules/telegram/Telegram.php");
-$telegramBot = new TelegramBot($bot_id);
+//$telegramBot = new TelegramBot($bot_id);
+
+include_once(DIR_MODULES.'patterns/patterns.class.php');
+$pt=new patterns();
 
 //== Cycle ===
 $previousMillis = 0;
 while (true){
 //echo "Process\n";
 //echo  date("Y-m-d H:i:s u")." Proc start\n";
-
+$telegramBot = new TelegramBot($bot_id);
 // отправка истории
 $rec=SQLSelect("SELECT * FROM `shouts` where ID > ".$lastID." order by ID;");  
 $total=count($rec);
@@ -53,9 +56,12 @@ if ($total) {
             //отправлять всем у кого есть разрешения на получение истории
             for($j=0;$j<$c_users;$j++) {
                 $user_id = $users[$j]['USER_ID'];
-                echo  date("Y-m-d H:i:s ")." Send to ".$user_id." - ".$reply."\n";
-                $content = array('chat_id' => $user_id, 'text' => $reply);
-                $telegramBot->sendMessage($content);
+                if ($users[$j]['MEMBER_ID'] != $rec[$i]['MEMBER_ID'])
+                {
+                    echo  date("Y-m-d H:i:s ")." Send to ".$user_id." - ".$reply."\n";
+                    $content = array('chat_id' => $user_id, 'text' => $reply);
+                    $telegramBot->sendMessage($content);
+                }
             }
             echo  date("Y-m-d H:i:s ")." Sended - ".$reply."\n";
             $lastID = $rec[$i]['ID'];
@@ -90,6 +96,7 @@ for ($i = 0; $i < $telegramBot-> UpdateCount(); $i++) {
         $reply = "Вы зарегистрированы! Обратитесь к администратору для получения доступа к функциям.";
         $content = array('chat_id' => $chat_id, 'text' => $reply);
         $telegramBot->sendMessage($content);
+        continue;
     }
     
     // найти в базе пользователя
@@ -111,13 +118,28 @@ for ($i = 0; $i < $telegramBot-> UpdateCount(); $i++) {
                 $keyb = $telegramBot->buildKeyBoard($option);
                 $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $reply);
                 $telegramBot->sendMessage($content);
-            }
-            if ($text == "/git") {
+            } 
+            else if ($text == "/git") {
                 $reply = "Check me on GitHub: https://github.com/Eleirbag89/TelegramBotPHP";
                 // Build the reply array
                 $content = array('chat_id' => $chat_id, 'text' => $reply);
                 $telegramBot->sendMessage($content);
             }
+            else
+            {
+                $rec=array();
+                $rec['ROOM_ID']=0;
+                $rec['MEMBER_ID']=$user['MEMBER_ID'];
+                $rec['MESSAGE']=htmlspecialchars($text);
+                $rec['ADDED']=date('Y-m-d H:i:s');
+                SQLInsert('shouts', $rec);
+
+                $res=$pt->checkAllPatterns($rec['MEMBER_ID']);
+                if (!$res) {
+                    processCommand($text);
+                } 
+            }
+
         }
     }
 }

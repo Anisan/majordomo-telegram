@@ -18,6 +18,18 @@
  <label class="control-label">Name: </label>
  <div class="controls"><input  type="text" name="name" value="[#NAME#]" class="form-control input"></div>
 </div>
+<!-- MEMBER_ID -->
+<div class="form-group">
+	<label class="control-label">Member:</label>
+	<div class="col-sm-5">
+		<select name="select_member" id="member" class="form-control" onchange="document.member_change.submit();">
+            <option value=0>Выберите</option>
+			[#begin LIST_MEMBER#]
+            <option value="[#ID#]"[#if ID="<#MEMBER_ID#>"#] selected[#endif#]>[#NAME#]</option>
+            [#end LIST_MEMBER#]
+        </select>
+	</div>
+</div>		
 <!-- Admin -->
 <div class="form-group">
  <label class="control-label">Admin: </label>

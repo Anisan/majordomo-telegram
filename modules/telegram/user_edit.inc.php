@@ -9,9 +9,11 @@ if ($this->mode=='setvalue') {
 } 
 
 if ($this->mode=='cmd') {
-  global $data;
-  $this->cmd($data);
+    global $data;
+    $this->cmd($data);
 }
+
+
   
 if ($this->owner->name=='panel') {
   $out['CONTROLPANEL']=1;
@@ -19,6 +21,11 @@ if ($this->owner->name=='panel') {
 
 $table_name='tlg_user';
 $rec=SQLSelectOne("SELECT * FROM $table_name WHERE ID='$id'");
+    
+    $res = SQLSelect("SELECT * FROM users");
+    if ($res[0]) {
+        $out['LIST_MEMBER'] = $res;
+    }
 
 if ($this->mode=='update') { 
   $ok=1;
@@ -33,6 +40,8 @@ if ($this->mode=='update') {
     $rec['HISTORY']=$history;
     global $cmd;
     $rec['CMD']=$cmd;
+    global $select_member;
+    $rec['MEMBER_ID']=$select_member;
     
     //UPDATING RECORD
     if ($ok) {
