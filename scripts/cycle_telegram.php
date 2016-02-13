@@ -22,18 +22,21 @@ $tlg->getConfig();
 $bot_id = $tlg->config['TLG_TOKEN'];
 echo "Token bot - ".$bot_id."\n";
 
-
 $rec = SQLSelectOne("SELECT * FROM `shouts` ORDER BY `ID` DESC LIMIT 1"); 
 $lastID = $rec['ID'];  
-echo "LastID=".$lastID."\n";
-
-echo date("H:i:s") . " running " . basename(__FILE__) . PHP_EOL;
+echo "Shouts LastID=".$lastID."\n";
 
 // create bot
 //include("Telegram.php");
 require("./modules/telegram/Telegram.php");
-//$telegramBot = new TelegramBot($bot_id);
+$telegramBot = new TelegramBot($bot_id);
+$me=$telegramBot->getMe();
+if ($me)
+    echo "Me: @".$me["result"]["username"]." (".$me["result"]["id"].")\n"; 
+else
+    echo "Error connect, invalid token\n";
 
+echo date("H:i:s") . " running " . basename(__FILE__) . PHP_EOL;
 include_once(DIR_MODULES.'patterns/patterns.class.php');
 $pt=new patterns();
 
@@ -42,7 +45,7 @@ $previousMillis = 0;
 while (true){
 //echo "Process\n";
 //echo  date("Y-m-d H:i:s u")." Proc start\n";
-$telegramBot = new TelegramBot($bot_id);
+
 // отправка истории
 $rec=SQLSelect("SELECT * FROM `shouts` where ID > ".$lastID." order by ID;");  
 $total=count($rec);
@@ -56,6 +59,7 @@ if ($total) {
             //отправлять всем у кого есть разрешения на получение истории
             for($j=0;$j<$c_users;$j++) {
                 $user_id = $users[$j]['USER_ID'];
+                //самому себе не отправлять
                 if ($users[$j]['MEMBER_ID'] != $rec[$i]['MEMBER_ID'])
                 {
                     echo  date("Y-m-d H:i:s ")." Send to ".$user_id." - ".$reply."\n";
