@@ -14,5 +14,14 @@
     [#if NAME!=""#]<h4>[#NAME#]</h4>[#endif NAME#]
     [#inc user_edit.html#]
     [#endif ID#]   
- [#endif VIEW_MODE#]
+[#endif VIEW_MODE#]
+[#if VIEW_MODE="cmd_edit"#]
+    <p align=center>
+        <a href="?">&lt;&lt;&lt; <#LANG_BACK#></a>
+    </p>  
+    [#if ID!=""#]
+        [#if TITLE!=""#]<h4>[#TITLE#]</h4>[#endif TITLE#]
+    [#endif ID#]   
+    [#inc cmd_edit.html#]
+[#endif VIEW_MODE#]
 [#endif DATA_SOURCE#]

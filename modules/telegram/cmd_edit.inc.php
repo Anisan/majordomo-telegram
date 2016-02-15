@@ -13,40 +13,34 @@ if ($this->mode=='cmd') {
     $this->cmd($data);
 }
 
-
-  
 if ($this->owner->name=='panel') {
   $out['CONTROLPANEL']=1;
 }
 
-$table_name='tlg_user';
+$table_name='tlg_cmd';
 $rec=SQLSelectOne("SELECT * FROM $table_name WHERE ID='$id'");
     
-    $res = SQLSelect("SELECT * FROM users");
-    if ($res[0]) {
-        $out['LIST_MEMBER'] = $res;
-    }
-
 if ($this->mode=='update') { 
   $ok=1;
   if ($this->tab=='') {
 
     // NAME
-    global $name;
-    $rec['NAME']=$name;
-    global $admin;
-    $rec['ADMIN']=$admin;
-    global $history;
-    $rec['HISTORY']=$history;
-    global $cmd;
-    $rec['CMD']=$cmd;
-    global $select_member;
-    $rec['MEMBER_ID']=$select_member;
+    global $title;
+    $rec['TITLE']=$title;
+    global $description;
+    $rec['DESCRIPTION']=$description;
+    global $code;
+    $rec['CODE']=$code;
+    global $select_access;
+    $rec['ACCESS']=$select_access;
     
     //UPDATING RECORD
     if ($ok) {
       if ($rec['ID']) {
         SQLUpdate($table_name, $rec); // update
+      } else {
+        $new_rec=1; 
+        $rec['ID']=SQLInsert($table_name, $rec); // adding new record
       } 
       $out['OK']=1;
     } else {
@@ -55,8 +49,6 @@ if ($this->mode=='update') {
   }
     $ok=1;
 }
- 
-
 
 outHash($rec, $out);
   

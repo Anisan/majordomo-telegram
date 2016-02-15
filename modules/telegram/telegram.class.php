@@ -178,14 +178,21 @@ function admin(&$out) {
         if ($this->view_mode=='user_edit') {
             $this->edit_user($out, $this->id);
         }
+        if ($this->view_mode=='cmd_edit') {
+            $this->edit_cmd($out, $this->id);
+        }
         if ($this->view_mode=='user_delete') {
           $this->delete_user($this->id);
           $this->redirect("?");
         } 
+        if ($this->view_mode=='cmd_delete') {
+          $this->delete_cmd($this->id);
+          $this->redirect("?");
+        } 
         
         if ($this->view_mode=='' || $this->view_mode=='search_ms') {
-          if ($this->tab=='mesh'){
-            //$this->search_mesh($out);
+          if ($this->tab=='cmd'){
+            $this->tlg_cmd($out);
           } else if ($this->tab=='log'){
             $this->tlg_log($out);
           } else {
@@ -203,6 +210,10 @@ function admin(&$out) {
 function edit_user(&$out, $id) {
   require(DIR_MODULES.$this->name.'/user_edit.inc.php');
 }
+
+function edit_cmd(&$out, $id) {
+  require(DIR_MODULES.$this->name.'/cmd_edit.inc.php');
+}
 /**
 * Delete user
 *
@@ -213,6 +224,11 @@ function delete_user($id) {
   // some action for related tables
   SQLExec("DELETE FROM tlg_user WHERE ID='".$rec['ID']."'"); 
 }
+function delete_CMD($id) {
+  $rec=SQLSelectOne("SELECT * FROM tlg_cmd WHERE ID='$id'");
+  // some action for related tables
+  SQLExec("DELETE FROM tlg_cmd WHERE ID='".$rec['ID']."'"); 
+}
 
 function tlg_users(&$out) {
   require(DIR_MODULES.$this->name.'/tlg_users.inc.php');
@@ -221,6 +237,43 @@ function tlg_users(&$out) {
 function tlg_log(&$out) {
   require(DIR_MODULES.$this->name.'/tlg_log.inc.php');
 }
+
+function tlg_cmd(&$out) {
+  require(DIR_MODULES.$this->name.'/tlg_cmd.inc.php');
+}
+
+function getKeyb($admin,$cmd) {
+    $visible = true;
+    // Create option for the custom keyboard. Array of array string
+    if ($admin == 0 && $cmd==0)
+    {
+        $option = array( );
+        $visible = false;
+    }
+    else
+    {
+        if ($cmd==1) $level=2;
+        if ($admin==1) $level=1;
+        //$option = array( array("A", "B"), array("C", "D") );
+        $option = array();
+        $rec=SQLSelect("SELECT TITLE FROM `tlg_cmd` where ACCESS >= ".$level." order by ID;");  
+        $total=count($rec);
+        if ($total) {
+            for($i=0;$i<$total;$i++) {
+                $option[] = $rec[$i]["TITLE"];
+            }
+            $option = array_chunk($option, 3);
+        }
+    }
+    
+    // Get the keyboard
+    $telegramBot = new TelegramBot("");
+    $keyb = $telegramBot->buildKeyBoard($option , $resize= true,$selective = $visible);
+    //print_r($keyb);
+    return $keyb;
+}
+
+
 /**
 * FrontEnd
 *
@@ -250,9 +303,6 @@ function usual(&$out) {
 * @access private
 */
  function dbInstall($data) {
-/*
-usbdevices - usbdevices
-*/
   $data = <<<EOD
  tlg_user: ID int(10) unsigned NOT NULL auto_increment
  tlg_user: NAME varchar(255) NOT NULL DEFAULT ''
@@ -262,8 +312,24 @@ usbdevices - usbdevices
  tlg_user: ADMIN int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: HISTORY int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: CMD int(3) unsigned NOT NULL DEFAULT '0' 
+ 
+ tlg_cmd: ID int(10) unsigned NOT NULL auto_increment
+ tlg_cmd: TITLE varchar(255) NOT NULL DEFAULT ''
+ tlg_cmd: DESCRIPTION text
+ tlg_cmd: CODE text
+ tlg_cmd: ACCESS int(10) NOT NULL DEFAULT '0'
+ 
 EOD;
   parent::dbInstall($data);
+  
+  $cmds=SQLSelectOne("SELECT * FROM tlg_cmd;"); 
+  if (count($cmds)==0) {
+      $rec['TITLE']='Ping';
+      $rec['DESCRIPTION']='Example command Ping-Pong';
+      $rec['CODE']='return "Pong!";';
+      $rec['ACCESS']=2;
+      SQLInsert('tlg_cmd', $rec);
+  }
  }
 // --------------------------------------------------------------------
 }

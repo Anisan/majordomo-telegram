@@ -63,7 +63,8 @@ if ($total) {
                 if ($users[$j]['MEMBER_ID'] != $rec[$i]['MEMBER_ID'])
                 {
                     echo  date("Y-m-d H:i:s ")." Send to ".$user_id." - ".$reply."\n";
-                    $content = array('chat_id' => $user_id, 'text' => $reply);
+                    $keyb = $tlg->getKeyb($users[$j]['ADMIN'],$users[$j]['CMD']);
+                    $content = array('chat_id' => $user_id, 'text' => $reply, 'reply_markup' => $keyb);
                     $telegramBot->sendMessage($content);
                 }
             }
@@ -109,17 +110,41 @@ for ($i = 0; $i < $telegramBot-> UpdateCount(); $i++) {
         //смотрим разрешения на обработку команд
         if ($user['ADMIN']==1 || $user['CMD']==1)
         {
-            
+            $keyb = $tlg->getKeyb($user['ADMIN'],$user['CMD']);
+            $cmd=SQLSelectOne("SELECT * FROM tlg_cmd WHERE TITLE LIKE '".DBSafe($text)."';"); 
+            if ($cmd['ID']) {
+                //нашли команду
+                if ($cmd['CODE'])
+                {
+                    try {
+                        $success = eval($cmd['CODE']);
+                        echo  date("Y-m-d H:i:s ")." Result ".$text."-".$success."\n";
+                        if ($success == false) {
+                            $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Ошибка выполнения кода команды ".$text);
+                            $telegramBot->sendMessage($content);
+                        }
+                        else
+                        {
+                            $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $success);
+                            $telegramBot->sendMessage($content);
+                        }
+                        
+                    } catch (Exception $e) {
+                        registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
+                        $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Ошибка выполнения кода команды ".$text);
+                        $telegramBot->sendMessage($content);
+                    }
+                    continue;
+                }
+                // если нет кода, который надо выполнить, то передаем дальше на обработку
+            }
             if ($text == "/test") {
                 if ($telegramBot->messageFromGroup()) {
                     $reply = "Chat Group";
                 } else {
                     $reply = "Private Chat";
                 }
-                // Create option for the custom keyboard. Array of array string
-                $option = array( array("A", "B"), array("C", "D") );
-                // Get the keyboard
-                $keyb = $telegramBot->buildKeyBoard($option);
+                    
                 $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $reply);
                 $telegramBot->sendMessage($content);
             } 
