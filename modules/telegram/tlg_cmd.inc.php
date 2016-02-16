@@ -2,8 +2,6 @@
 
   global $session;
     
-  $qry="1";
-  
   global $name;
   if ($name!='') {
    $qry.=" AND TITLE LIKE '%".DBSafe($name)."%'";
@@ -11,34 +9,25 @@
   }
   
   
-  // QUERY READY
-  global $save_qry;
-  if ($save_qry) {
-   $qry=$session->data['telegram_qry'];
-  } else {
-   $session->data['telegram_qry']=$qry;
-  }
-  if (!$qry) $qry="1";
-  
   // FIELDS ORDER
-  global $sortby_tlg;
-  if (!$sortby_tlg) {
-   $sortby_tlg=$session->data['telegram_sort'];
+  global $sortby_cmd;
+  if (!$sortby_cmd) {
+   $sortby_cmd=$session->data['telegram_sort'];
   } else {
-   if ($session->data['telegram_sort']==$sortby_tlg) {
-    if (Is_Integer(strpos($sortby_tlg, ' DESC'))) {
-     $sortby_tlg=str_replace(' DESC', '', $sortby_tlg);
+   if ($session->data['telegram_sort']==$sortby_cmd) {
+    if (Is_Integer(strpos($sortby_cmd, ' DESC'))) {
+     $sortby_cmd=str_replace(' DESC', '', $sortby_cmd);
     } else {
-     $sortby_tlg=$sortby_tlg." DESC";
+     $sortby_cmd=$sortby_cmd." DESC";
     }
    }
-   $session->data['telegram_sort']=$sortby_tlg;
+   $session->data['telegram_sort']=$sortby_cmd;
   }
-  if (!$sortby_tlg) $sortby_tlg="TITLE";
-  $out['SORTBY']=$sortby_tlg;
+  if (!$sortby_cmd) $sortby_cmd="TITLE";
+  $out['SORTBY']=$sortby_cmd;
   
   // SEARCH RESULTS  
-  $res=SQLSelect("SELECT * FROM tlg_cmd WHERE $qry ORDER BY ".$sortby_tlg);
+  $res=SQLSelect("SELECT * FROM tlg_cmd ORDER BY ".$sortby_cmd);
   if ($res[0]['ID']) {   
     colorizeArray($res);
     $total=count($res);

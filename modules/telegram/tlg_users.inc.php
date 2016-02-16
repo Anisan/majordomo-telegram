@@ -2,8 +2,6 @@
 
   global $session;
     
-  $qry="1";
-  
   global $uid;
   if ($nid!='') {
    $qry.=" AND USER_ID LIKE '%".DBSafe($nid)."%'";
@@ -16,35 +14,25 @@
    $out['NAME']=$name;
   }
   
-  
-  // QUERY READY
-  global $save_qry;
-  if ($save_qry) {
-   $qry=$session->data['telegram_qry'];
-  } else {
-   $session->data['telegram_qry']=$qry;
-  }
-  if (!$qry) $qry="1";
-  
   // FIELDS ORDER
-  global $sortby_tlg;
-  if (!$sortby_tlg) {
-   $sortby_tlg=$session->data['telegram_sort'];
+  global $sortby_user;
+  if (!$sortby_user) {
+   $sortby_user=$session->data['tlg_user_sort'];
   } else {
-   if ($session->data['telegram_sort']==$sortby_tlg) {
-    if (Is_Integer(strpos($sortby_tlg, ' DESC'))) {
-     $sortby_tlg=str_replace(' DESC', '', $sortby_tlg);
+   if ($session->data['tlg_user_sort']==$sortby_user) {
+    if (Is_Integer(strpos($sortby_user, ' DESC'))) {
+     $sortby_user=str_replace(' DESC', '', $sortby_user);
     } else {
-     $sortby_tlg=$sortby_tlg." DESC";
+     $sortby_user=$sortby_user." DESC";
     }
    }
-   $session->data['telegram_sort']=$sortby_tlg;
+   $session->data['tlg_user_sort']=$sortby_user;
   }
-  if (!$sortby_tlg) $sortby_tlg="USER_ID";
-  $out['SORTBY']=$sortby_tlg;
+  if (!$sortby_user) $sortby_user="USER_ID";
+  $out['SORTBY']=$sortby_user;
   
   // SEARCH RESULTS  
-  $res=SQLSelect("SELECT * FROM tlg_user WHERE $qry ORDER BY ".$sortby_tlg);
+  $res=SQLSelect("SELECT * FROM tlg_user ORDER BY ".$sortby_user);
   if ($res[0]['ID']) {   
     colorizeArray($res);
     $total=count($res);
