@@ -661,6 +661,43 @@ class TelegramBot {
         return $this->data["message"]["location"];
     }
 
+/// Get the photo in the message
+    public function Photo() {
+        return $this->data["message"]["photo"];
+    }
+    
+/// Get the document in the message
+    public function Document() {
+        return $this->data["message"]["document"];
+    }
+    
+/// Get the document in the message
+    public function Audio() {
+        return $this->data["message"]["audio"];
+    }
+    
+/// Get the document in the message
+    public function Voice() {
+        return $this->data["message"]["voice"];
+    }
+    
+/// Get the fileid big photo in the message
+    public function PhotoIdBigSize() {
+        $photo_id="";
+        $photos = $this->data["message"]["photo"];
+        if ($photos){
+            $size = 0;
+            foreach ($photos as $photo) {
+                if ($size < $photo["file_size"])
+                {
+                    $size = $photo["file_size"];
+                    $photo_id=$photo["file_id"];
+                }
+            }
+        }
+        return $photo_id;
+    }
+    
 /// Get the update_id of the message
     public function UpdateID() {
         return $this->data["update_id"];

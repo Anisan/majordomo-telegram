@@ -40,6 +40,10 @@ if ($this->mode=='update') {
     $rec['HISTORY']=$history;
     global $cmd;
     $rec['CMD']=$cmd;
+    global $download;
+    $rec['DOWNLOAD']=$download;
+    global $play;
+    $rec['PLAY']=$play;
     global $select_member;
     $rec['MEMBER_ID']=$select_member;
     

@@ -81,8 +81,79 @@ $req = $telegramBot->getUpdates($timeout=5);
 for ($i = 0; $i < $telegramBot-> UpdateCount(); $i++) {
     // You NEED to call serveUpdate before accessing the values of message in Telegram Class
     $telegramBot->serveUpdate($i);
+    //$data = $telegramBot->getData();
+    //print_r($data);
     $text = $telegramBot->Text();
     $chat_id = $telegramBot->ChatID();
+    $document = $telegramBot->Document();
+    $audio = $telegramBot->Audio();
+    $voice = $telegramBot->Voice();
+    $photo_id = $telegramBot->PhotoIdBigSize();
+    // найти в базе пользователя
+    $user=SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '".DBSafe($chat_id)."';"); 
+    //permission download file
+    if ($user['DOWNLOAD']==1)
+    {
+        //папку с файлами в настройках
+        $storage = $tlg->config['TLG_STORAGE']."/";
+        if ($photo_id) 
+        {
+            $file = $telegramBot->getFile($photo_id);
+            echo  date("Y-m-d H:i:s ")." Get photo from ".$chat_id." - ".$file["result"]["file_path"]."\n";
+            $file_path = $storage.$chat_id."/".$file["result"]["file_path"];
+        }
+        if ($document) 
+        {
+            $file = $telegramBot->getFile($document["file_id"]);
+            echo  date("Y-m-d H:i:s ")." Get document from ".$chat_id." - ".$document["file_name"]."\n";
+            //print_r($file);
+            if(!isset($file['error_code'])) 
+            {
+                $file_path = $storage.$chat_id."/document/".$document["file_name"];
+            }
+            else
+            {
+                $file_path = "";
+                echo  date("Y-m-d H:i:s ").$file['description']."\n";
+            }
+        }
+        if ($audio) 
+        {
+            $file = $telegramBot->getFile($audio["file_id"]);
+            //print_r($file);
+            echo  date("Y-m-d H:i:s ")." Get audio from ".$chat_id." - ".$file["result"]["file_path"]."\n";
+            $path_parts = pathinfo($file["result"]["file_path"]);
+            $filename = $path_parts["basename"];
+            //use title and performer
+            if(isset($audio['title'])) $filename = $audio['title'].".".$path_parts['extension'];
+            if(isset($audio['performer'])) $filename = $audio['performer']."-".$filename;
+            $file_path = $storage.$chat_id."/audio/".$filename;
+        }
+        if ($voice) 
+        {
+            $file = $telegramBot->getFile($voice["file_id"]);
+            //print_r($file);
+            echo  date("Y-m-d H:i:s ")." Get voice from ".$chat_id." - ".$file["result"]["file_path"]."\n";
+            $file_path = $storage.$chat_id."/".$file["result"]["file_path"];
+        }
+        if ($file_path){ 
+            // качаем файл
+            $path_parts = pathinfo($file_path);
+            if (!is_dir($path_parts['dirname'])) mkdir($path_parts['dirname'], 0777, true);
+            $telegramBot->downloadFile($file["result"]["file_path"], $file_path);
+        }
+        if ($voice && $user['PLAY']==1) 
+        {
+            //проиграть голосовое сообщение
+            echo  date("Y-m-d H:i:s ")." Play voice from ".$chat_id." - ".$file_path."\n";
+            @touch($file_path);
+            playSound($file_path, 1, $level);
+        }
+        $file_path = "";
+    }    
+    if ($text=="") {
+        continue;
+    }
     echo  date("Y-m-d H:i:s ").$chat_id."=".$text."\n";
 
     if ($text == "/start") {
@@ -104,8 +175,6 @@ for ($i = 0; $i < $telegramBot-> UpdateCount(); $i++) {
         continue;
     }
     
-    // найти в базе пользователя
-    $user=SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '".DBSafe($chat_id)."';"); 
     if ($user['ID']) {
         //смотрим разрешения на обработку команд
         if ($user['ADMIN']==1 || $user['CMD']==1)

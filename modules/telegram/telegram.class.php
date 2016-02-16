@@ -167,11 +167,14 @@ function admin(&$out) {
     
     $this->getConfig();
     $out['TLG_TOKEN']=$this->config['TLG_TOKEN'];
+    $out['TLG_STORAGE']=$this->config['TLG_STORAGE'];
     $out['TLG_test']=$this->data_source."_".$this->view_mode."_".$this->tab;
     if ($this->data_source=='telegram' || $this->data_source=='') {
         if ($this->view_mode=='update_settings') {
             global $tlg_token;
             $this->config['TLG_TOKEN']=$tlg_token;
+            global $tlg_storage;
+            $this->config['TLG_STORAGE']=$tlg_storage;
             $this->saveConfig();
             $this->redirect("?");      
             }
@@ -312,6 +315,8 @@ function usual(&$out) {
  tlg_user: ADMIN int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: HISTORY int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: CMD int(3) unsigned NOT NULL DEFAULT '0' 
+ tlg_user: DOWNLOAD int(3) unsigned NOT NULL DEFAULT '0' 
+ tlg_user: PLAY int(3) unsigned NOT NULL DEFAULT '0' 
  
  tlg_cmd: ID int(10) unsigned NOT NULL auto_increment
  tlg_cmd: TITLE varchar(255) NOT NULL DEFAULT ''

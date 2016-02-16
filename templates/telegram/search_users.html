@@ -33,6 +33,8 @@
  <th>Admin</th>
  <th>History</th> 
  <th>Command</th>
+ <th>Download</th> 
+ <th>Play</th>
  <th>&nbsp;</th>
 </tr>
 </thead>
@@ -48,24 +50,38 @@
   [#endif#]
  </td>
  <td>
-  [#if ADMIN!=""#]
-   [#ADMIN#]
+  [#if ADMIN==1#]
+   <img src="./img/icons/status/green_32.png">
   [#else#]
-   &nbsp;
+   <img src="./img/icons/status/red_32.png">
   [#endif#]
  </td>  
  <td>
-  [#if HISTORY!=""#]
-   &nbsp;[#HISTORY#]
+  [#if HISTORY==1#]
+   <img src="./img/icons/status/green_32.png">
   [#else#]
-   &nbsp;
+   <img src="./img/icons/status/red_32.png">
   [#endif#]
  </td> 
  <td>
-  [#if CMD!=""#]
-   [#CMD#]
+  [#if CMD==1#]
+   <img src="./img/icons/status/green_32.png">
   [#else#]
-   &nbsp;
+   <img src="./img/icons/status/red_32.png">
+  [#endif#]
+ </td>  
+ <td>
+  [#if DOWNLOAD==1#]
+   <img src="./img/icons/status/green_32.png">
+  [#else#]
+   <img src="./img/icons/status/red_32.png">
+  [#endif#]
+ </td>  
+ <td>
+  [#if PLAY==1#]
+   <img src="./img/icons/status/green_32.png">
+  [#else#]
+   <img src="./img/icons/status/red_32.png">
   [#endif#]
  </td>  
  <td width="1%" nowrap>
