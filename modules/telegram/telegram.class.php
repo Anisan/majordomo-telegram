@@ -1,4 +1,4 @@
-<?
+<?php
 /**
 * Telegram Bot 
 *

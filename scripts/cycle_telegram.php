@@ -95,12 +95,12 @@ for ($i = 0; $i < $telegramBot-> UpdateCount(); $i++) {
     if ($user['DOWNLOAD']==1)
     {
         //папку с файлами в настройках
-        $storage = $tlg->config['TLG_STORAGE']."/";
+        $storage = $tlg->config['TLG_STORAGE'].DIRECTORY_SEPARATOR;
         if ($photo_id) 
         {
             $file = $telegramBot->getFile($photo_id);
             echo  date("Y-m-d H:i:s ")." Get photo from ".$chat_id." - ".$file["result"]["file_path"]."\n";
-            $file_path = $storage.$chat_id."/".$file["result"]["file_path"];
+            $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
         }
         if ($document) 
         {
@@ -109,7 +109,7 @@ for ($i = 0; $i < $telegramBot-> UpdateCount(); $i++) {
             //print_r($file);
             if(!isset($file['error_code'])) 
             {
-                $file_path = $storage.$chat_id."/document/".$document["file_name"];
+                $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR."document".DIRECTORY_SEPARATOR.$document["file_name"];
             }
             else
             {
@@ -127,14 +127,14 @@ for ($i = 0; $i < $telegramBot-> UpdateCount(); $i++) {
             //use title and performer
             if(isset($audio['title'])) $filename = $audio['title'].".".$path_parts['extension'];
             if(isset($audio['performer'])) $filename = $audio['performer']."-".$filename;
-            $file_path = $storage.$chat_id."/audio/".$filename;
+            $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR."audio".DIRECTORY_SEPARATOR.$filename;
         }
         if ($voice) 
         {
             $file = $telegramBot->getFile($voice["file_id"]);
             //print_r($file);
             echo  date("Y-m-d H:i:s ")." Get voice from ".$chat_id." - ".$file["result"]["file_path"]."\n";
-            $file_path = $storage.$chat_id."/".$file["result"]["file_path"];
+            $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
         }
         if ($file_path){ 
             // качаем файл
