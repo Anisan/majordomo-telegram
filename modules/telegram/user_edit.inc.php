@@ -38,6 +38,8 @@ if ($this->mode=='update') {
     $rec['ADMIN']=$admin;
     global $history;
     $rec['HISTORY']=$history;
+    global $history_level;
+    $rec['HISTORY_LEVEL']=$history_level;
     global $cmd;
     $rec['CMD']=$cmd;
     global $download;

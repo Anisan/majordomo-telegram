@@ -38,8 +38,22 @@
 <!-- History -->
 <div class="form-group">
  <label class="control-label">History: </label>
- <div class="controls"><input type="checkbox" name="history" value="1"[#if HISTORY="1"#] checked[#endif#]></div>
+ <div class="controls"><input type="checkbox" id="history" name="history" value="1"[#if HISTORY="1"#] checked[#endif#] onchange="OnChangeHistory(this)"></div>
 </div>
+<script type="text/javascript">
+	function OnChangeHistory (select) {    
+    var fDivLevel = document.getElementById('hist_level');
+	fDivLevel.style.display = (select.checked) ? 'block' : 'none';
+  }
+</script> 
+<!-- History level-->
+<div class="form-group" id="hist_level">
+ <label class="control-label">History level: </label>
+ <div class="controls"><input type="text" name="history_level" value="[#HISTORY_LEVEL#]"></div>
+</div>
+<script type="text/javascript">  
+	OnChangeHistory ( document.getElementById('history') );
+</script> 
 <!-- CMD -->
 <div class="form-group">
  <label class="control-label">Commands: </label>
