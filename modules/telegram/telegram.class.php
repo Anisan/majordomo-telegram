@@ -276,6 +276,71 @@ function getKeyb($admin,$cmd) {
     return $keyb;
 }
 
+// send message
+function sendMessageTo($where, $message) {
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $query = "SELECT * FROM tlg_user";
+    if ($query)
+        $query = $query." WHERE ".$where;
+    $users=SQLSelect($query); 
+    $c_users=count($users);
+    if ($c_users) {
+        for($j=0;$j<$c_users;$j++) {
+            $user_id = $users[$j]['USER_ID'];
+            $keyb = $this->getKeyb($users[$j]['ADMIN'],$users[$j]['CMD']);
+            $content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyb);
+            $telegramBot->sendMessage($content);
+        }
+    }
+}
+
+function sendMessageToUser($user_id, $message) {
+    $this->sendMessageTo("USER_ID=".$user_id, $message); 
+}
+
+function sendMessageToAdmin($message) {
+    $this->sendMessageTo("ADMIN=1", $message); 
+}
+
+function sendMessageToAll($message) {
+    $this->sendMessageTo("", $message); 
+}
+
+///send image
+function sendImageTo($where, $image_path) {
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $img = curl_file_create($image_path,'image/png'); 
+    $query = "SELECT * FROM tlg_user";
+    if ($query)
+        $query = $query." WHERE ".$where;
+    $users=SQLSelect($query); 
+    $c_users=count($users);
+    if ($c_users) {
+        for($j=0;$j<$c_users;$j++) {
+            $user_id = $users[$j]['USER_ID'];
+            $keyb = $this->getKeyb($users[$j]['ADMIN'],$users[$j]['CMD']);
+            $content = array('chat_id' => $user_id, 'photo' => $img, 'reply_markup' => $keyb);
+            $telegramBot->sendPhoto($content);
+        }
+    }
+}
+
+function sendImageToUser($user_id, $image_path) {
+    $this->sendImageTo("USER_ID=".$user_id, $image_path); 
+}
+
+function sendImageToAdmin($image_path) {
+    $this->sendImageTo("ADMIN=1", $image_path); 
+}
+
+function sendImageToAll($image_path) {
+    $this->sendImageTo("", $image_path); 
+}
+
 function init() {
     $this->getConfig();
     echo "Token bot - ".$this->config['TLG_TOKEN']."\n";
@@ -439,15 +504,17 @@ function processCycle() {
                     {
                         try {
                             $success = eval($cmd['CODE']);
-                            echo  date("Y-m-d H:i:s ")." Result ".$text."-".$success."\n";
+                            echo  date("Y-m-d H:i:s ")." Command:".$text." Result:".$success."\n";
                             if ($success == false) {
-                                $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Ошибка выполнения кода команды ".$text);
-                                $telegramBot->sendMessage($content);
+                                //нет в выполняемом куске кода return
+                                //$content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Ошибка выполнения кода команды ".$text);
+                                //$telegramBot->sendMessage($content);
                             }
                             else
                             {
                                 $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $success);
                                 $telegramBot->sendMessage($content);
+                                echo  date("Y-m-d H:i:s ")." Send result to "$chat_id.". Command:".$text." Result:".$success."\n";
                             }
                             
                         } catch (Exception $e) {
