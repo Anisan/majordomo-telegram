@@ -311,7 +311,7 @@ function processCycle() {
                     $user_id = $users[$j]['USER_ID'];
                     //самому себе не отправлять
                     if (($rec[$i]['MEMBER_ID'] != $users[$j]['MEMBER_ID']) &&
-                        ($rec[$i]['IMPORTANCE'] <= $users[$j]['HISTORY_LEVEL']))
+                        ($rec[$i]['IMPORTANCE'] >= $users[$j]['HISTORY_LEVEL']))
                     {
                         echo  date("Y-m-d H:i:s ")." Send to ".$user_id." - ".$reply."\n";
                         $keyb = $this->getKeyb($users[$j]['ADMIN'],$users[$j]['CMD']);
