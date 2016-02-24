@@ -514,7 +514,7 @@ function processCycle() {
                             {
                                 $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $success);
                                 $telegramBot->sendMessage($content);
-                                echo  date("Y-m-d H:i:s ")." Send result to "$chat_id.". Command:".$text." Result:".$success."\n";
+                                echo  date("Y-m-d H:i:s ")." Send result to ".$chat_id.". Command:".$text." Result:".$success."\n";
                             }
                             
                         } catch (Exception $e) {
