@@ -10,22 +10,28 @@
 <fieldset>
 <!-- Name -->
 <div class="form-group">
- <label class="control-label">Title: </label>
+ <label class="control-label"><#LANG_TITLE#><span class='support' tabindex="1" data-title="<#LANG_HELP_TITLE#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
  <div class="controls"><input  type="text" name="title" value="[#TITLE#]" class="form-control input"></div>
 </div>
 <!-- DESCRIPTION -->
 <div class="form-group">
- <label class="control-label">Description: </label>
+ <label class="control-label"><#LANG_DESCRIPTION#><span class='support' tabindex="1" data-title="<#LANG_HELP_DESCRIPTION#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
  <div class="controls"><input  type="text" name="description" value="[#DESCRIPTION#]" class="form-control input"></div>
 </div>
 <!-- ACCESS -->
 <div class="form-group">
-	<label class="control-label">Access:</label>
-	<div class="col-sm-5">
+	<label class="control-label"><#LANG_ACCESS_CONTROL#><span class='support' tabindex="1" data-title="<#LANG_HELP_ACCESS_CONTROL#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
+	<div class="controls">
 		<select name="select_access" id="access" class="form-control" onchange="document.member_change.submit();">
-            <option value="0"[#if ACCESS="0"#] selected[#endif#]>Disable</option>
-            <option value="1"[#if ACCESS="1"#] selected[#endif#]>Only admin</option>
-            <option value="2"[#if ACCESS="2"#] selected[#endif#]>All</option>
+            <option value="0"[#if ACCESS="0"#] selected[#endif#]><#LANG_TLG_DISABLE#></option>
+            <option value="1"[#if ACCESS="1"#] selected[#endif#]><#LANG_TLG_ONLY_ADMIN#></option>
+            <option value="2"[#if ACCESS="2"#] selected[#endif#]><#LANG_TLG_ALL#></option>
         </select>
 	</div>
 </div>	
@@ -34,7 +40,7 @@
         <label class="col-lg-4 control-label" for="inputTitle"><#LANG_CODE#>:</label>
         <div class="col-lg-5 [#if ERR_CODE#]alert-danger[#endif#]">
 			[#if ERRORS!=""#]<br><font color='red'>[#ERRORS#]</font><br>[#endif ERRORS#]
-            [#module name="blockly_code" system_name="gpsaction<#ID#>" code_field="code" action=""#] 
+            [#module name="blockly_code" system_name="tlgaction<#ID#>" code_field="code" action=""#] 
 			<div id="code_area">
 			  <textarea name="code" id="code" rows=30 cols=100 class=" form-control field span8">[#CODE#]</textarea>
 			</div>

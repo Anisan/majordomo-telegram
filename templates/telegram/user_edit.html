@@ -10,20 +10,26 @@
 <fieldset>
 <!-- USER_ID -->
 <div class="form-group">
- <label class="control-label">User ID:</label>
+ <label class="col-lg-4 control-label"><#LANG_ID#><span class='support' tabindex="1" data-title="<#LANG_HELP_USERID#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
  <div class="controls">[#USER_ID#]</div>
 </div>
 <!-- Name -->
 <div class="form-group">
- <label class="control-label">Name: </label>
+ <label class="control-label"><#LANG_NAME#><span class='support' tabindex="1" data-title="<#LANG_HELP_NAME#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
  <div class="controls"><input  type="text" name="name" value="[#NAME#]" class="form-control input"></div>
 </div>
 <!-- MEMBER_ID -->
 <div class="form-group">
-	<label class="control-label">Member:</label>
-	<div class="col-sm-5">
+	<label class="control-label"><#LANG_MEMBERS_MEMBER#><span class='support' tabindex="1" data-title="<#LANG_HELP_MEMBER#>">
+	<i class="glyphicon glyphicon-info-sign"></i>
+	</span></label>
+	<div class="controls">
 		<select name="select_member" id="member" class="form-control" onchange="document.member_change.submit();">
-            <option value=0>Выберите</option>
+            <option value=0><#LANG_SELECT#></option>
 			[#begin LIST_MEMBER#]
             <option value="[#ID#]"[#if ID="<#MEMBER_ID#>"#] selected[#endif#]>[#NAME#]</option>
             [#end LIST_MEMBER#]
@@ -32,12 +38,16 @@
 </div>		
 <!-- Admin -->
 <div class="form-group">
- <label class="control-label">Admin: </label>
+ <label class="control-label"><#LANG_TLG_ADMIN#><span class='support' tabindex="1" data-title="<#LANG_HELP_ADMIN#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
  <div class="controls"><input type="checkbox" name="admin" value="1"[#if ADMIN="1"#] checked[#endif#]></div>
 </div>
 <!-- History -->
 <div class="form-group">
- <label class="control-label">History: </label>
+ <label class="control-label"><#LANG_TLG_HISTORY#><span class='support' tabindex="1" data-title="<#LANG_HELP_HISTORY#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
  <div class="controls"><input type="checkbox" id="history" name="history" value="1"[#if HISTORY="1"#] checked[#endif#] onchange="OnChangeHistory(this)"></div>
 </div>
 <script type="text/javascript">
@@ -48,25 +58,33 @@
 </script> 
 <!-- History level-->
 <div class="form-group" id="hist_level">
- <label class="control-label">History level: </label>
- <div class="controls"><input type="text" name="history_level" value="[#HISTORY_LEVEL#]"></div>
+ <label class="control-label"><#LANG_TLG_HISTORY_LEVEL#><span class='support' tabindex="1" data-title="<#LANG_HELP_HISTORY_LEVEL#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
+ <div class="controls"><input type="text" name="history_level" value="[#HISTORY_LEVEL#]" class="form-control input"></div>
 </div>
 <script type="text/javascript">  
 	OnChangeHistory ( document.getElementById('history') );
 </script> 
 <!-- CMD -->
 <div class="form-group">
- <label class="control-label">Commands: </label>
+ <label class="control-label"><#LANG_TLG_COMMANDS#><span class='support' tabindex="1" data-title="<#LANG_HELP_COMMANDS#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
  <div class="controls"><input type="checkbox" name="cmd" value="1"[#if CMD="1"#] checked[#endif#]></div>
 </div>
 <!-- DOWNLOAD -->
 <div class="form-group">
- <label class="control-label">Download files: </label>
+ <label class="control-label"><#LANG_TLG_DOWNLOAD#><span class='support' tabindex="1" data-title="<#LANG_HELP_DOWNLOAD#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
  <div class="controls"><input type="checkbox" name="download" value="1"[#if DOWNLOAD="1"#] checked[#endif#]></div>
 </div>
 <!-- PLAY -->
 <div class="form-group">
- <label class="control-label">Play voice message: </label>
+ <label class="control-label"><#LANG_TLG_PLAY_VOICE#><span class='support' tabindex="1" data-title="<#LANG_HELP_PLAY_VOICE#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
  <div class="controls"><input type="checkbox" name="play" value="1"[#if PLAY="1"#] checked[#endif#]></div>
 </div>
 

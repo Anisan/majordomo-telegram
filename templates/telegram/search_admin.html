@@ -1,6 +1,6 @@
 <!-- table telegram search -->
 <div class="float-right">
-	<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#about">О модуле&nbsp;&nbsp;<span class="glyphicon glyphicon-info-sign icon-white"></span>
+	<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#about"><#LANG_ABOUT#>&nbsp;&nbsp;<span class="glyphicon glyphicon-info-sign icon-white"></span>
 	</button>
 </div>
 
@@ -63,12 +63,19 @@
 <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
 <fieldset>
 <div class="form-group">
- <label class="control-label">Telegram token:</label>
- <div class="controls"><input type="text" name="tlg_token" value="<#TLG_TOKEN#>" class="input"></div>
+ <label class="col-lg-4 control-label"><#LANG_TLG_TOKEN#>
+ <span class='support' tabindex="1" data-title="<#LANG_HELP_TOKEN#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span>
+</label>
+ <div class="col-lg-4"><input class="form-control" type="text" name="tlg_token" value="<#TLG_TOKEN#>" class="input"></div>
 </div>
 <div class="form-group">
- <label class="control-label">Path download storage:</label>
- <div class="controls"><input type="text" name="tlg_storage" value="<#TLG_STORAGE#>" class="input"></div>
+ <label class="col-lg-4 control-label"><#LANG_TLG_STORAGE_PATH#>
+ <span class='support' tabindex="1" data-title="<#LANG_HELP_STORAGE#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </label>
+ <div class="col-lg-4"><input class="form-control" type="text" name="tlg_storage" value="<#TLG_STORAGE#>" class="input"></div>
 </div>
 <label class="control-label" style="visibility:hidden">"<#TLG_test#>"</label>
 <div class="form-actions">
@@ -82,9 +89,10 @@
 <br/>
 
 <ul class="nav nav-tabs">
- <li [#if TAB=="" || TAB=="users"#] class="active"[#endif#]><a href="?tab=users">Users</a> </li>
- <li [#if TAB=="cmd"#] class="active"[#endif#]><a href="?tab=cmd">CMD</a> </li> 
+ <li [#if TAB=="" || TAB=="users"#] class="active"[#endif#]><a href="?tab=users"><#LANG_MODULE_USERS#></a> </li>
+ <li [#if TAB=="cmd"#] class="active"[#endif#]><a href="?tab=cmd"><#LANG_TLG_COMMANDS#></a> </li> 
  <li [#if TAB=="log"#] class="active"[#endif#]><a href="?tab=log"><#LANG_GENERAL_EVENTS_LOG#></a> </li> 
+ <li [#if TAB=="help"#] class="active"[#endif#]><a href="?tab=help"><#LANG_TLG_HELP#></a> </li> 
 </ul> 
 
 [#if TAB="users" || TAB==""#]
@@ -95,4 +103,7 @@
 [#endif#] 
 [#if TAB="log"#]
   [#inc search_log.html#] 
+[#endif#] 
+[#if TAB="help"#]
+  [#inc help.html#] 
 [#endif#] 

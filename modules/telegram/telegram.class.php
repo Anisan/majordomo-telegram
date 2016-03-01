@@ -19,7 +19,7 @@ class telegram extends module {
 */
 function telegram() {
   $this->name="telegram";
-  $this->title="Telegram";
+  $this->title="<#LANG_TELEGRAM#>";
   $this->module_category="<#LANG_SECTION_APPLICATIONS#>";
   $this->checkInstalled();
 }
@@ -584,6 +584,19 @@ function usual(&$out) {
 */
  function install() {
   parent::install();
+ }
+ 
+ /**
+* Uninstall
+*
+* Module uninstall routine
+*
+* @access public
+*/
+ function uninstall() {
+  SQLExec('DROP TABLE IF EXISTS tlg_user');
+  SQLExec('DROP TABLE IF EXISTS tlg_cmd');
+  parent::uninstall();
  }
  
  /**
