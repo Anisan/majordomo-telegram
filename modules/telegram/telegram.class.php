@@ -343,9 +343,11 @@ function sendImageToAll($image_path) {
 
 function init() {
     $this->getConfig();
+    $this->lastID = 0;
     echo "Token bot - ".$this->config['TLG_TOKEN']."\n";
     $rec = SQLSelectOne("SELECT * FROM `shouts` ORDER BY `ID` DESC LIMIT 1"); 
-    $this->lastID = $rec['ID'];  
+    if ($rec)
+        $this->lastID = $rec['ID'];  
     echo "Shouts LastID=".$this->lastID."\n";
     // create bot
     require("./modules/telegram/Telegram.php");
