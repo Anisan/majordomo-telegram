@@ -33,14 +33,18 @@ if ($this->mode=='update') {
     $rec['CODE']=$code;
     global $select_access;
     $rec['ACCESS']=$select_access;
+    global $users_id;
     
     //UPDATING RECORD
     if ($ok) {
       if ($rec['ID']) {
         SQLUpdate($table_name, $rec); // update
+        updateAccess($rec['ID'],$users_id);
       } else {
         $new_rec=1; 
         $rec['ID']=SQLInsert($table_name, $rec); // adding new record
+        updateAccess($rec['ID'],$users_id);
+        $id=$rec['ID'];
       } 
       $out['OK']=1;
     } else {
@@ -50,6 +54,21 @@ if ($this->mode=='update') {
     $ok=1;
 }
 
+$res = SQLSelect("select ID,NAME,ADMIN, (SELECT count(*) FROM tlg_user_cmd where CMD_ID='$id' and tlg_user_cmd.USER_ID=tlg_user.ID) as ACCESS_USER from tlg_user");
+if ($res[0]) {
+    $out['LIST_ACCESS'] = $res;
+}
 outHash($rec, $out);
+
+function updateAccess($cmd_id, $users_id) {
+    SQLSelect("DELETE from tlg_user_cmd where CMD_ID=".$cmd_id);
+    $users = explode(",", $users_id);
+    foreach ( $users as $value ) {
+        $recCU=array();
+        $recCU['CMD_ID']=$cmd_id;
+        $recCU['USER_ID']=$value;
+        $recCU['ID']=SQLInsert('tlg_user_cmd', $recCU);
+    }
+}
   
 ?>

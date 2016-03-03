@@ -20,6 +20,7 @@
 <table   class="table table-stripped">
 <thead>
 <tr>
+ <th>&nbsp;</th>
  <th>
  <a href="?sortby_cmd=TITLE&tab=<#TAB#>"><#LANG_TITLE#></a><nobr>
  [#if SORTBY="TITLE"#](+)[#endif#]
@@ -32,6 +33,13 @@
 <tbody>
 [#begin RESULT#]
 <tr class="hover_btn2">
+  <td width="1%" nowrap>
+  [#if ACCESS==0#]
+   <img src="./img/icons/status/red_32.png">
+  [#else#]
+   <img src="./img/icons/status/green_32.png">
+  [#endif#] 
+ </td>
  <td>
   [#if TITLE!=""#]
    [#TITLE#]

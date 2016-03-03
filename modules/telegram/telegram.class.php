@@ -226,11 +226,13 @@ function delete_user($id) {
   $rec=SQLSelectOne("SELECT * FROM tlg_user WHERE ID='$id'");
   // some action for related tables
   SQLExec("DELETE FROM tlg_user WHERE ID='".$rec['ID']."'"); 
+  SQLExec("DELETE FROM tlg_user_cmd WHERE USER_ID='".$rec['ID']."'"); 
 }
 function delete_CMD($id) {
   $rec=SQLSelectOne("SELECT * FROM tlg_cmd WHERE ID='$id'");
   // some action for related tables
   SQLExec("DELETE FROM tlg_cmd WHERE ID='".$rec['ID']."'"); 
+  SQLExec("DELETE FROM tlg_user_cmd WHERE CMD_ID='".$rec['ID']."'"); 
 }
 
 function tlg_users(&$out) {
@@ -245,21 +247,19 @@ function tlg_cmd(&$out) {
   require(DIR_MODULES.$this->name.'/tlg_cmd.inc.php');
 }
 
-function getKeyb($admin,$cmd) {
+function getKeyb($user) {
     $visible = true;
     // Create option for the custom keyboard. Array of array string
-    if ($admin == 0 && $cmd==0)
+    if ($user['ADMIN'] == 0 && $user['CMD']==0)
     {
         $option = array( );
         $visible = false;
     }
     else
     {
-        if ($cmd==1) $level=2;
-        if ($admin==1) $level=1;
         //$option = array( array("A", "B"), array("C", "D") );
         $option = array();
-        $rec=SQLSelect("SELECT TITLE FROM `tlg_cmd` where ACCESS >= ".$level." order by ID;");  
+        $rec=SQLSelect("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=".$user['ID']." and ACCESS>0 order by tlg_cmd.ID;");  
         $total=count($rec);
         if ($total) {
             for($i=0;$i<$total;$i++) {
@@ -289,8 +289,8 @@ function sendMessageTo($where, $message) {
     if ($c_users) {
         for($j=0;$j<$c_users;$j++) {
             $user_id = $users[$j]['USER_ID'];
-            $keyb = $this->getKeyb($users[$j]['ADMIN'],$users[$j]['CMD']);
-            $content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyb);
+            $keyb = $this->getKeyb($users[$j]);
+            $content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyb, 'parse_mode'=>'HTML');
             $telegramBot->sendMessage($content);
         }
     }
@@ -322,7 +322,7 @@ function sendImageTo($where, $image_path) {
     if ($c_users) {
         for($j=0;$j<$c_users;$j++) {
             $user_id = $users[$j]['USER_ID'];
-            $keyb = $this->getKeyb($users[$j]['ADMIN'],$users[$j]['CMD']);
+            $keyb = $this->getKeyb($users[$j]);
             $content = array('chat_id' => $user_id, 'photo' => $img, 'reply_markup' => $keyb);
             $telegramBot->sendPhoto($content);
         }
@@ -379,7 +379,7 @@ function processCycle() {
                         ($rec[$i]['IMPORTANCE'] >= $users[$j]['HISTORY_LEVEL']))
                     {
                         echo  date("Y-m-d H:i:s ")." Send to ".$user_id." - ".$reply."\n";
-                        $keyb = $this->getKeyb($users[$j]['ADMIN'],$users[$j]['CMD']);
+                        $keyb = $this->getKeyb($users[$j]);
                         $content = array('chat_id' => $user_id, 'text' => $reply, 'reply_markup' => $keyb);
                         $telegramBot->sendMessage($content);
                     }
@@ -496,8 +496,8 @@ function processCycle() {
             //смотрим разрешения на обработку команд
             if ($user['ADMIN']==1 || $user['CMD']==1)
             {
-                $keyb = $this->getKeyb($user['ADMIN'],$user['CMD']);
-                $cmd=SQLSelectOne("SELECT * FROM tlg_cmd WHERE TITLE LIKE '".DBSafe($text)."';"); 
+                $keyb = $this->getKeyb($user);
+                $cmd=SQLSelectOne("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=".$user['ID']." and ACCESS>0 and TITLE LIKE '".DBSafe($text)."';"); 
                 if ($cmd['ID']) {
                     //нашли команду
                     if ($cmd['CODE'])
@@ -512,7 +512,7 @@ function processCycle() {
                             }
                             else
                             {
-                                $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $success);
+                                $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $success, 'parse_mode'=>'HTML');
                                 $telegramBot->sendMessage($content);
                                 echo  date("Y-m-d H:i:s ")." Send result to ".$chat_id.". Command:".$text." Result:".$success."\n";
                             }
@@ -594,6 +594,7 @@ function usual(&$out) {
 * @access public
 */
  function uninstall() {
+  SQLExec('DROP TABLE IF EXISTS tlg_user_cmd');
   SQLExec('DROP TABLE IF EXISTS tlg_user');
   SQLExec('DROP TABLE IF EXISTS tlg_cmd');
   parent::uninstall();
@@ -625,6 +626,10 @@ function usual(&$out) {
  tlg_cmd: DESCRIPTION text
  tlg_cmd: CODE text
  tlg_cmd: ACCESS int(10) NOT NULL DEFAULT '0'
+ 
+ tlg_user_cmd: ID int(10) unsigned NOT NULL auto_increment
+ tlg_user_cmd: USER_ID int(10) NOT NULL
+ tlg_user_cmd: CMD_ID int(10) NOT NULL
  
 EOD;
   parent::dbInstall($data);
