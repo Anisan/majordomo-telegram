@@ -4,7 +4,6 @@
 *
 */
 $dictionary=array(
-'TELEGRAM' => 'Telegram',
 /* general */
 'ABOUT' => 'About',
 'TLG_HELP' => 'Help',

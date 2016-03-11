@@ -19,7 +19,7 @@ class telegram extends module {
 */
 function telegram() {
   $this->name="telegram";
-  $this->title="<#LANG_TELEGRAM#>";
+  $this->title="Telegram";
   $this->module_category="<#LANG_SECTION_APPLICATIONS#>";
   $this->checkInstalled();
 }

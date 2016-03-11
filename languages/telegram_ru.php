@@ -5,7 +5,6 @@
 */
 
 $dictionary=array(
-'TELEGRAM' => 'Телеграм',
 /* general */
 'ABOUT' => 'О модуле',
 'TLG_HELP' => 'Помощь',
