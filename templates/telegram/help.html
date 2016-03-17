@@ -1,29 +1,69 @@
 <div class="panel panel-info">
 	<div class="panel-heading">Регистрация бота</div>
 	<div class="panel-body">
-		<p>Для работы модуля необходимо зарегистрировать бота и получить его уникальный id, являющийся одновременно и токеном. Для этого в Telegram существует специальный бот — @BotFather.
+		<p>Для работы модуля необходимо зарегистрировать бота и получить его уникальный id, являющийся одновременно и токеном. 
+        Для этого в Telegram существует специальный бот — <a href="https://telegram.me/BotFather" target="_blank">@BotFather</a>.
 <br>
 Пишем ему /start и получаем список всех его команд. 
-Первая и главная — /newbot — отправляем ему и бот просит придумать имя нашему новому боту. Единственное ограничение на имя — в конце оно должно оканчиваться на «bot». В случае успеха BotFather возвращает токен бота и ссылку для быстрого добавления бота в контакты, иначе придется поломать голову над именем.
+Первая и главная — /newbot — отправляем ему и бот просит придумать имя нашему новому боту. 
+Единственное ограничение на имя — в конце оно должно оканчиваться на «bot». 
+В случае успеха BotFather возвращает токен бота и ссылку для быстрого добавления бота в контакты.
 <br>
 
-В настройки модуля вносится токен бота вида "123456780:AAHeВ7UcDWvEovvcFaMfUrUVPupNORHWD_k"</code></p>
+В <b>настройки</b> модуля вносится токен бота вида "<b>123456780:AAHeВ7UcDWvEovvcFaMfUrUVPupNORHWD_k</b>"</code></p>
 	</div>
-
 </div>
+<div class="panel panel-info">
+	<div class="panel-heading">Регистрация и настройка пользователя</div>
+    <div class="panel-body">
+    <p><b>Регистрация</b></br>
+    При первом добавлении бота в список контактов, для регистрации нужно нажать в клиенте кнопку "Начать".<br>
+    Либо отправить команду /start.<br>
+    От бота должно прийти в ответ "Вы зарегистрированы! Обратитесь к администратору для получения доступа к функциям."</p>
+    <p><b>Настройка</b></br>
+    Для правильной работы модуля для каждого пользователя необходима привязка к пользователю системы. <br>
+    Данная настройка влияет на то, как будут отображаться в системном чате отправленные пользователем сообщения, и какие сообщения из чата будут отправляться пользователю. <br>
+    Остальные параметры настраиваются в соответствии с тем, какие функции разрешаются данному пользователю.
+    </p>
+	</div>
+</div>
+
+<div class="panel panel-info">
+	<div class="panel-heading">Команды</div>
+    <div class="panel-body">
+    Команды используются для построения клавиатуры в клиенте, содержащей шаблоны сообщений. Одним нажатием кнопки из этой клавиатуры осуществляется отправка команды.</br>
+    У каждой  команды есть настройка контроля доступа, где можно задать пользователей которым данная команда доступна.</br>
+    Если у команды поле код пусто, то команда передается дальше на обработку в сценарии и в processCommand.</br>
+    Если поле кода не пустое, то выполняется только код. Для отправки ответа на команду в конце кода должен быть <b>return</b> с текстовым сообщением.</br>
+    Текст может содержать HTML разметку. Поддерживаются следующие теги:
+    <pre>
+    &lt;b&gt;bold&lt;/b&gt;, &lt;strong&gt;bold&lt;/strong&gt;
+    &lt;i&gt;italic&lt;/i&gt;, &lt;em&gt;italic&lt;/em&gt;
+    &lt;a href=&quot;URL&quot;&gt;inline URL&lt;/a&gt;
+    &lt;code&gt;inline fixed-width code&lt;/code&gt;
+    &lt;pre&gt;pre-formatted fixed-width code block&lt;/pre&gt;</pre></br>
+    Кроме этого можно отправлять <a href="http://apps.timwhitlock.info/emoji/tables/unicode" target="_blank">emoji</a>.
+    <code style="display:block">
+    $emoji = json_decode('"'.'\ud83d\udca1'.'"');
+    return $emoji;</code></br>
+    В коде команды через переменную <b>$chat_id</b> можно узнать ID пользователя отправившего команду.</br>
+    <code style="display:block">return "Ваш UserID- ".$chat_id; </code>
+    </div>
+</div>
+
 <div class="panel panel-info">
 	<div class="panel-heading">Вызов модуля в своих скриптах/методах</div>
 	<div class="panel-body">
 		<p>Для отправки текстовых сообщений<br>
-		<code style="display:block">include(DIR_MODULES . 'telegram/telegram.class.php');<br>
+		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
         $telegram_module = new telegram();<br>
         $telegram_module->sendMessageToUser(139809588 ,"test message");<br>
         $telegram_module->sendMessageToAdmin("test message to admin");<br>
         $telegram_module->sendMessageToAll("test message to all");</code></p>
 	</div>
-    	<div class="panel-body">
+    <div class="panel-body">
 		<p>Для отправки изображений<br>
-		<code style="display:block">include(DIR_MODULES . 'telegram/telegram.class.php');<br>
+		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
         $telegram_module = new telegram();<br>
         $telegram_module->sendImageToUser(139809588 ,'/var/www/images/trees.jpg');<br>
         $telegram_module->sendImageToAdmin('/var/www/images/htc_hero_wallpaper_01.jpg');<br>
