@@ -282,7 +282,7 @@ function sendMessageTo($where, $message) {
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
     $query = "SELECT * FROM tlg_user";
-    if ($query)
+    if ($where!="")
         $query = $query." WHERE ".$where;
     $users=SQLSelect($query); 
     $c_users=count($users);
@@ -315,7 +315,7 @@ function sendImageTo($where, $image_path) {
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
     $img = curl_file_create($image_path,'image/png'); 
     $query = "SELECT * FROM tlg_user";
-    if ($query)
+    if ($where!="")
         $query = $query." WHERE ".$where;
     $users=SQLSelect($query); 
     $c_users=count($users);
