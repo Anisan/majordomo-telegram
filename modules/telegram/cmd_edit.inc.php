@@ -33,6 +33,19 @@ if ($this->mode=='update') {
     $rec['CODE']=$code;
     global $select_access;
     $rec['ACCESS']=$select_access;
+    
+    global $show_mode;
+    $rec['SHOW_MODE']=$show_mode;
+    
+    global $linked_object_new;
+    $rec['LINKED_OBJECT']=$linked_object_new;
+    global $linked_property_new;
+    $rec['LINKED_PROPERTY']=$linked_property_new;
+    global $condition_new;
+    $rec['CONDITION']=$condition_new;
+    global $condition_value_new;
+    $rec['CONDITION_VALUE']=$condition_value_new;
+    
     global $users_id;
     
     //UPDATING RECORD
@@ -58,6 +71,15 @@ $res = SQLSelect("select ID,NAME,ADMIN, (SELECT count(*) FROM tlg_user_cmd where
 if ($res[0]) {
     $out['LIST_ACCESS'] = $res;
 }
+$res = SQLSelect("SELECT * from tlg_user_cmd where CMD_ID=".$id);
+if ($res[0]) {
+    $qs    = array();
+    foreach ($res as $row) {
+        $qs[] = $row['USER_ID'];
+    }
+    $out['USERS_ID'] = implode(', ', $qs);
+}
+
 outHash($rec, $out);
 
 function updateAccess($cmd_id, $users_id) {

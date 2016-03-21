@@ -87,6 +87,62 @@
     OnChangeChecked();
 </script> 
 
+<div class="form-group">
+        <label class="col-lg-4 control-label"><#LANG_TLG_SHOW_COMMAND#></label>
+        <div class="controls">
+        <select name="show_mode" class="form-control" onchange="OnChangeShowMode(this);">
+            <option value="1"[#if SHOW_MODE="1"#] selected[#endif#]><#LANG_TLG_SHOW#>
+            <option value="2"[#if SHOW_MODE="2"#] selected[#endif#]><#LANG_TLG_HIDE#>
+            <option value="3"[#if SHOW_MODE="3"#] selected[#endif#]><#LANG_TLG_CONDITION#>
+        </select>
+        </div>
+</div>
+<script type="text/javascript">
+	function OnChangeShowMode (select) {    
+        var fDivLevel = document.getElementById('condition_block_new');
+        fDivLevel.style.display = (select.value==3) ? 'block' : 'none';
+    }
+</script> 
+
+<div id="condition_block_new" [#if SHOW_MODE!="3"#] style="display:none"[#endif#]>
+   <div class="form-group">
+        <label class="col-lg-4 control-label"><#LANG_LINKED_OBJECT#><#LANG_HCB#>linked_object<#LANG_HCE#></label>
+        <div class="controls">
+                <input type="text" class="form-control" name="linked_object_new" id="linked_object_new" size="10" value="[#LINKED_OBJECT#]">
+        </div>
+        </div>
+     
+        <div class="form-group">
+        <label class="col-lg-4 control-label"><#LANG_LINKED_PROPERTY#><#LANG_HCB#>linked_property<#LANG_HCE#></label>
+        <div class="controls">
+                 <input type="text" class="form-control" name="linked_property_new" id="linked_property_new" size="10" value="[#LINKED_PROPERTY#]">
+        </div>
+        </div>
+        
+    <div class="form-group">
+        <label class="col-lg-4 control-label"><#LANG_CONDITION#></label>
+        <div class="controls">
+         <select name="condition_new" class="form-control">
+      <option value="1"[#if CONDITION="1"#] selected[#endif#]>=
+      <option value="2"[#if CONDITION="2"#] selected[#endif#]>&gt;
+      <option value="3"[#if CONDITION="3"#] selected[#endif#]>&lt;
+      <option value="4"[#if CONDITION="4"#] selected[#endif#]>&lt;&gt;
+     </select>
+        </div>
+        </div>
+
+    <div class="form-group">
+        <label class="col-lg-4 control-label"><#LANG_VALUE#></label>
+        <div class="controls">
+                 <input type="text" class="form-control" name="condition_value_new" size="10" value="[#CONDITION_VALUE#]">
+        </div>
+        </div>
+  
+   
+  </div> 
+  
+  [#module name="linkedobject" object_field="linked_object_new" property_field="linked_property_new"#] 
+
 <!-- CODE (text) -->
 <div class="form-group ">
         <label class="col-lg-4 control-label" for="inputTitle"><#LANG_CODE#>:</label>
@@ -104,7 +160,7 @@
  <button type="submit" name="subm" value="<#LANG_SUBMIT#>" class="btn btn-defaul btn-primary"><#LANG_SUBMIT#></button>
  <a href="?" class="btn btn-default"><#LANG_CANCEL#></a>
 <input type="hidden" name="id" value="<#ID#>">
-<input type="hidden" id="users_id" name="users_id" value="">
+<input type="hidden" id="users_id" name="users_id" value="<#USERS_ID#>">
 <input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
 <input type="hidden" name="edit_mode" value="<#EDIT_MODE#>">
 <input type="hidden" name="mode" value="update">

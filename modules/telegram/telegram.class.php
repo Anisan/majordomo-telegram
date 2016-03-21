@@ -259,11 +259,23 @@ function getKeyb($user) {
     {
         //$option = array( array("A", "B"), array("C", "D") );
         $option = array();
-        $rec=SQLSelect("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=".$user['ID']." and ACCESS>0 order by tlg_cmd.ID;");  
+        $rec=SQLSelect("SELECT *,(select VALUE from pvalues where Property_name=`LINKED_OBJECT`+'.'+`LINKED_PROPERTY` ORDER BY updated DESC limit 1) as pvalue".
+                " FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=".$user['ID']." and ACCESS>0 order by tlg_cmd.ID;");  
         $total=count($rec);
         if ($total) {
             for($i=0;$i<$total;$i++) {
-                $option[] = $rec[$i]["TITLE"];
+                $view = false;
+                if ($rec[$i]["SHOW_MODE"] == 1)
+                    $view = true;
+                elseif ($rec[$i]["SHOW_MODE"] == 3)
+                {
+                    if ($rec[$i]["CONDITION"] == 1 && $rec[$i]["pvalue"] == $rec[$i]["CONDITION_VALUE"]) $view = true;
+                    if ($rec[$i]["CONDITION"] == 2 && $rec[$i]["pvalue"] >  $rec[$i]["CONDITION_VALUE"]) $view = true;
+                    if ($rec[$i]["CONDITION"] == 3 && $rec[$i]["pvalue"] <  $rec[$i]["CONDITION_VALUE"]) $view = true;
+                    if ($rec[$i]["CONDITION"] == 4 && $rec[$i]["pvalue"] <> $rec[$i]["CONDITION_VALUE"]) $view = true;
+                }
+                if ($view)
+                    $option[] = $rec[$i]["TITLE"];
             }
             $option = array_chunk($option, 3);
         }
@@ -277,7 +289,7 @@ function getKeyb($user) {
 }
 
 // send message
-function sendMessageTo($where, $message) {
+function sendMessageTo($where, $message,array $keyb = NULL) {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
@@ -289,27 +301,30 @@ function sendMessageTo($where, $message) {
     if ($c_users) {
         for($j=0;$j<$c_users;$j++) {
             $user_id = $users[$j]['USER_ID'];
-            $keyb = $this->getKeyb($users[$j]);
+            if ($keyb == NULL)
+                $keyb = $this->getKeyb($users[$j]);
+            else 
+                $keyb = $telegramBot->buildKeyBoard($keyb , $resize= true);
             $content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyb, 'parse_mode'=>'HTML');
             $telegramBot->sendMessage($content);
         }
     }
 }
 
-function sendMessageToUser($user_id, $message) {
-    $this->sendMessageTo("USER_ID=".$user_id, $message); 
+function sendMessageToUser($user_id, $message,$keyb = NULL) {
+    $this->sendMessageTo("USER_ID=".$user_id, $message, $keyb); 
 }
 
-function sendMessageToAdmin($message) {
-    $this->sendMessageTo("ADMIN=1", $message); 
+function sendMessageToAdmin($message, $keyb = NULL) {
+    $this->sendMessageTo("ADMIN=1", $message, $keyb); 
 }
 
-function sendMessageToAll($message) {
-    $this->sendMessageTo("", $message); 
+function sendMessageToAll($message, $keyb = NULL) {
+    $this->sendMessageTo("", $message, $keyb); 
 }
 
 ///send image
-function sendImageTo($where, $image_path) {
+function sendImageTo($where, $image_path, array $keyb = NULL) {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
@@ -322,23 +337,26 @@ function sendImageTo($where, $image_path) {
     if ($c_users) {
         for($j=0;$j<$c_users;$j++) {
             $user_id = $users[$j]['USER_ID'];
-            $keyb = $this->getKeyb($users[$j]);
+            if ($keyb == NULL)
+                $keyb = $this->getKeyb($users[$j]);
+            else 
+                $keyb = $telegramBot->buildKeyBoard($keyb , $resize= true);
             $content = array('chat_id' => $user_id, 'photo' => $img, 'reply_markup' => $keyb);
             $telegramBot->sendPhoto($content);
         }
     }
 }
 
-function sendImageToUser($user_id, $image_path) {
-    $this->sendImageTo("USER_ID=".$user_id, $image_path); 
+function sendImageToUser($user_id, $image_path, $keyb = NULL) {
+    $this->sendImageTo("USER_ID=".$user_id, $image_path, $keyb); 
 }
 
-function sendImageToAdmin($image_path) {
-    $this->sendImageTo("ADMIN=1", $image_path); 
+function sendImageToAdmin($image_path, $keyb = NULL) {
+    $this->sendImageTo("ADMIN=1", $image_path, $keyb); 
 }
 
-function sendImageToAll($image_path) {
-    $this->sendImageTo("", $image_path); 
+function sendImageToAll($image_path, $keyb = NULL) {
+    $this->sendImageTo("", $image_path, $keyb); 
 }
 
 function init() {
@@ -628,6 +646,11 @@ function usual(&$out) {
  tlg_cmd: DESCRIPTION text
  tlg_cmd: CODE text
  tlg_cmd: ACCESS int(10) NOT NULL DEFAULT '0'
+ tlg_cmd: SHOW_MODE int(10) NOT NULL DEFAULT '1'
+ tlg_cmd: LINKED_OBJECT varchar(255) NOT NULL DEFAULT ''
+ tlg_cmd: LINKED_PROPERTY varchar(255) NOT NULL DEFAULT '' 
+ tlg_cmd: CONDITION int(10) NOT NULL DEFAULT '1' 
+ tlg_cmd: CONDITION_VALUE varchar(255) NOT NULL DEFAULT '' 
  
  tlg_user_cmd: ID int(10) unsigned NOT NULL auto_increment
  tlg_user_cmd: USER_ID int(10) NOT NULL

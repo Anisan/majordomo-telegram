@@ -18,6 +18,10 @@ $dictionary=array(
 'TLG_DISABLE'=>'Disable',
 'TLG_ONLY_ADMIN'=>'Only administrators',
 'TLG_ALL'=>'All',
+'TLG_SHOW_COMMAND'=>'Show command',
+'TLG_SHOW'=>'Show',
+'TLG_HIDE'=>'Hide',
+'TLG_CONDITION'=>'Condition',
 /* about */
 
 /* help */
