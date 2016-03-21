@@ -289,7 +289,7 @@ function getKeyb($user) {
 }
 
 // send message
-function sendMessageTo($where, $message,array $keyb = NULL) {
+function sendMessageTo($where, $message,array $key = NULL) {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
@@ -301,30 +301,31 @@ function sendMessageTo($where, $message,array $keyb = NULL) {
     if ($c_users) {
         for($j=0;$j<$c_users;$j++) {
             $user_id = $users[$j]['USER_ID'];
-            if ($keyb == NULL)
-                $keyb = $this->getKeyb($users[$j]);
+            print_r ($key);
+            if ($key == NULL)
+                $keyboard = $this->getKeyb($users[$j]);
             else 
-                $keyb = $telegramBot->buildKeyBoard($keyb , $resize= true);
-            $content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyb, 'parse_mode'=>'HTML');
+                $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
+            $content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyboard, 'parse_mode'=>'HTML');
             $telegramBot->sendMessage($content);
         }
     }
 }
 
-function sendMessageToUser($user_id, $message,$keyb = NULL) {
-    $this->sendMessageTo("USER_ID=".$user_id, $message, $keyb); 
+function sendMessageToUser($user_id, $message,$key = NULL) {
+    $this->sendMessageTo("USER_ID=".$user_id, $message, $key); 
 }
 
-function sendMessageToAdmin($message, $keyb = NULL) {
-    $this->sendMessageTo("ADMIN=1", $message, $keyb); 
+function sendMessageToAdmin($message, $key = NULL) {
+    $this->sendMessageTo("ADMIN=1", $message, $key); 
 }
 
-function sendMessageToAll($message, $keyb = NULL) {
-    $this->sendMessageTo("", $message, $keyb); 
+function sendMessageToAll($message, $key = NULL) {
+    $this->sendMessageTo("", $message, $key); 
 }
 
 ///send image
-function sendImageTo($where, $image_path, array $keyb = NULL) {
+function sendImageTo($where, $image_path, array $key = NULL) {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
@@ -337,26 +338,26 @@ function sendImageTo($where, $image_path, array $keyb = NULL) {
     if ($c_users) {
         for($j=0;$j<$c_users;$j++) {
             $user_id = $users[$j]['USER_ID'];
-            if ($keyb == NULL)
-                $keyb = $this->getKeyb($users[$j]);
+            if ($key == NULL)
+                $keyboard = $this->getKeyb($users[$j]);
             else 
-                $keyb = $telegramBot->buildKeyBoard($keyb , $resize= true);
-            $content = array('chat_id' => $user_id, 'photo' => $img, 'reply_markup' => $keyb);
+                $keyboard = $telegramBot->buildKeyBoard($keyboard , $resize= true);
+            $content = array('chat_id' => $user_id, 'photo' => $img, 'reply_markup' => $keyboard);
             $telegramBot->sendPhoto($content);
         }
     }
 }
 
-function sendImageToUser($user_id, $image_path, $keyb = NULL) {
-    $this->sendImageTo("USER_ID=".$user_id, $image_path, $keyb); 
+function sendImageToUser($user_id, $image_path, $key = NULL) {
+    $this->sendImageTo("USER_ID=".$user_id, $image_path, $key); 
 }
 
-function sendImageToAdmin($image_path, $keyb = NULL) {
-    $this->sendImageTo("ADMIN=1", $image_path, $keyb); 
+function sendImageToAdmin($image_path, $key = NULL) {
+    $this->sendImageTo("ADMIN=1", $image_path, $key); 
 }
 
-function sendImageToAll($image_path, $keyb = NULL) {
-    $this->sendImageTo("", $image_path, $keyb); 
+function sendImageToAll($image_path, $key = NULL) {
+    $this->sendImageTo("", $image_path, $key); 
 }
 
 function init() {
