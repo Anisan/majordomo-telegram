@@ -71,13 +71,13 @@ $res = SQLSelect("select ID,NAME,ADMIN, (SELECT count(*) FROM tlg_user_cmd where
 if ($res[0]) {
     $out['LIST_ACCESS'] = $res;
 }
-$res = SQLSelect("SELECT * from tlg_user_cmd where CMD_ID=".$id);
+$res = SQLSelect("SELECT * from tlg_user_cmd where CMD_ID='$id'");
 if ($res[0]) {
     $qs    = array();
     foreach ($res as $row) {
         $qs[] = $row['USER_ID'];
     }
-    $out['USERS_ID'] = implode(', ', $qs);
+    $out['USERS_ID'] = implode(',', $qs);
 }
 
 outHash($rec, $out);
