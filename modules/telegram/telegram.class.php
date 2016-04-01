@@ -520,9 +520,11 @@ function processCycle() {
                 $keyb = $this->getKeyb($user);
                 $cmd=SQLSelectOne("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=".$user['ID']." and ACCESS>0 and TITLE LIKE '".DBSafe($text)."';"); 
                 if ($cmd['ID']) {
+                    echo  date("Y-m-d H:i:s ")." Find command\n";
                     //нашли команду
                     if ($cmd['CODE'])
                     {
+                        echo  date("Y-m-d H:i:s ")." Execute user`s code command\n";
                         try {
                             $success = eval($cmd['CODE']);
                             echo  date("Y-m-d H:i:s ")." Command:".$text." Result:".$success."\n";
@@ -547,6 +549,9 @@ function processCycle() {
                     }
                     // если нет кода, который надо выполнить, то передаем дальше на обработку
                 }
+                else
+                    echo  date("Y-m-d H:i:s ")." Command not found\n";
+                
                 if ($text == "/test") {
                     if ($telegramBot->messageFromGroup()) {
                         $reply = "Chat Group";
@@ -574,9 +579,10 @@ function processCycle() {
                     
                     include_once(DIR_MODULES.'patterns/patterns.class.php');
                     $pt=new patterns();
-
+                    echo  date("Y-m-d H:i:s ")." Check pattern \n";
                     $res=$pt->checkAllPatterns($rec['MEMBER_ID']);
                     if (!$res) {
+                        echo  date("Y-m-d H:i:s ")." Pattern not found. Run processCommand\n";
                         processCommand($text);
                     } 
                 }
