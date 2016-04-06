@@ -582,8 +582,8 @@ function processCycle() {
                     echo  date("Y-m-d H:i:s ")." Check pattern \n";
                     $res=$pt->checkAllPatterns($rec['MEMBER_ID']);
                     if (!$res) {
-                        echo  date("Y-m-d H:i:s ")." Pattern not found. Run processCommand\n";
-                        processCommand($text);
+                        echo  date("Y-m-d H:i:s ")." Pattern not found. Run ThisComputer.processCommand\n";
+                        getObject("ThisComputer")->callMethod("commandReceived", array("command" => $text));
                     } 
                 }
 
