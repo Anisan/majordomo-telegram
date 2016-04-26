@@ -77,6 +77,10 @@
  </label>
  <div class="col-lg-4"><input class="form-control" type="text" name="tlg_storage" value="<#TLG_STORAGE#>" class="input"></div>
 </div>
+<div class="form-group">
+ <label class="control-label">Debug</label>
+ <div class="controls"><input type="checkbox" name="tlg_debug" value="1"[#if TLG_DEBUG="1"#] checked[#endif#]></div>
+</div>
 <label class="control-label" style="visibility:hidden">"<#TLG_test#>"</label>
 <div class="form-actions">
 <button type="submit" name="subm" value="Submit" class="btn btn-primary"><#LANG_UPDATE#></button>
