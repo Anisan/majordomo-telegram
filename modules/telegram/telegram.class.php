@@ -168,6 +168,7 @@ function admin(&$out) {
     $this->getConfig();
     $out['TLG_TOKEN']=$this->config['TLG_TOKEN'];
     $out['TLG_STORAGE']=$this->config['TLG_STORAGE'];
+    $out['TLG_DEBUG']=$this->config['TLG_DEBUG'];
     $out['TLG_test']=$this->data_source."_".$this->view_mode."_".$this->tab;
     if ($this->data_source=='telegram' || $this->data_source=='') {
         if ($this->view_mode=='update_settings') {
@@ -175,6 +176,8 @@ function admin(&$out) {
             $this->config['TLG_TOKEN']=$tlg_token;
             global $tlg_storage;
             $this->config['TLG_STORAGE']=$tlg_storage;
+            global $tlg_debug;
+            $this->config['TLG_DEBUG']=$tlg_debug;
             $this->saveConfig();
             $this->redirect("?");      
             }
@@ -288,6 +291,18 @@ function getKeyb($user) {
     return $keyb;
 }
 
+
+function sendContent($content) {
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    if ($this->config['TLG_DEBUG'])
+        print_r ($content);
+    $res = $telegramBot->sendMessage($content);
+    if ($this->config['TLG_DEBUG'])
+        print_r ($res);
+}
+
 // send message
 function sendMessageTo($where, $message,array $key = NULL) {
     $this->getConfig();
@@ -296,18 +311,23 @@ function sendMessageTo($where, $message,array $key = NULL) {
     $query = "SELECT * FROM tlg_user";
     if ($where!="")
         $query = $query." WHERE ".$where;
+    if ($this->config['TLG_DEBUG'])
+        print_r ($query);
     $users=SQLSelect($query); 
     $c_users=count($users);
     if ($c_users) {
         for($j=0;$j<$c_users;$j++) {
             $user_id = $users[$j]['USER_ID'];
-            print_r ($key);
             if ($key == NULL)
                 $keyboard = $this->getKeyb($users[$j]);
             else 
                 $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
             $content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyboard, 'parse_mode'=>'HTML');
-            $telegramBot->sendMessage($content);
+            $res = $telegramBot->sendMessage($content);
+            if ($this->config['TLG_DEBUG'])
+            {
+                print_r ($res);
+            }
         }
     }
 }
@@ -381,6 +401,8 @@ function init() {
 function processCycle() {
     $this->getConfig();
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $me=$telegramBot->getMe();
+    $bot_name = $me["result"]["username"]; 
     
     // отправка истории
     $rec=SQLSelect("SELECT * FROM `shouts` where ID > ".$this->lastID." order by ID;");  
@@ -402,7 +424,7 @@ function processCycle() {
                         echo  date("Y-m-d H:i:s ")." Send to ".$user_id." - ".$reply."\n";
                         $keyb = $this->getKeyb($users[$j]);
                         $content = array('chat_id' => $user_id, 'text' => $reply, 'reply_markup' => $keyb);
-                        $telegramBot->sendMessage($content);
+                        $this->sendContent($content);
                     }
                 }
                 echo  date("Y-m-d H:i:s ")." Sended - ".$reply."\n";
@@ -419,8 +441,11 @@ function processCycle() {
     for ($i = 0; $i < $telegramBot-> UpdateCount(); $i++) {
         // You NEED to call serveUpdate before accessing the values of message in Telegram Class
         $telegramBot->serveUpdate($i);
-        //$data = $telegramBot->getData();
-        //print_r($data);
+        $data = $telegramBot->getData();
+        if ($this->config['TLG_DEBUG'])
+        {
+            print_r($data);
+        }
         $text = $telegramBot->Text();
         $chat_id = $telegramBot->ChatID();
         $document = $telegramBot->Document();
@@ -494,7 +519,7 @@ function processCycle() {
         }
         echo  date("Y-m-d H:i:s ").$chat_id."=".$text."\n";
 
-        if ($text == "/start") {
+        if ($text == "/start" || $text == "/start@".$bot_name) {
             // найти в базе пользователя
             // если нет добавляем
             $user=SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '".DBSafe($chat_id)."';"); 
@@ -509,7 +534,7 @@ function processCycle() {
             
             $reply = "Вы зарегистрированы! Обратитесь к администратору для получения доступа к функциям.";
             $content = array('chat_id' => $chat_id, 'text' => $reply);
-            $telegramBot->sendMessage($content);
+            $this->sendContent($content);
             continue;
         }
         
@@ -518,7 +543,7 @@ function processCycle() {
             if ($user['ADMIN']==1 || $user['CMD']==1)
             {
                 $keyb = $this->getKeyb($user);
-                $cmd=SQLSelectOne("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=".$user['ID']." and ACCESS>0 and TITLE LIKE '".DBSafe($text)."';"); 
+                $cmd=SQLSelectOne("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=".$user['ID']." and ACCESS>0 and '".DBSafe($text)."' LIKE CONCAT(TITLE,'%');"); 
                 if ($cmd['ID']) {
                     echo  date("Y-m-d H:i:s ")." Find command\n";
                     //нашли команду
@@ -536,14 +561,14 @@ function processCycle() {
                             else
                             {
                                 $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $success, 'parse_mode'=>'HTML');
-                                $telegramBot->sendMessage($content);
+                                $this->sendContent($content);
                                 echo  date("Y-m-d H:i:s ")." Send result to ".$chat_id.". Command:".$text." Result:".$success."\n";
                             }
                             
                         } catch (Exception $e) {
                             registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
                             $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Ошибка выполнения кода команды ".$text);
-                            $telegramBot->sendMessage($content);
+                            $this->sendContent($content);
                         }
                         continue;
                     }
@@ -560,13 +585,13 @@ function processCycle() {
                     }
                         
                     $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $reply);
-                    $telegramBot->sendMessage($content);
+                    $this->sendContent($content);
                 } 
                 else if ($text == "/git") {
                     $reply = "Check me on GitHub: https://github.com/Eleirbag89/TelegramBotPHP";
                     // Build the reply array
                     $content = array('chat_id' => $chat_id, 'text' => $reply);
-                    $telegramBot->sendMessage($content);
+                    $this->sendContent($content);
                 }
                 else
                 {
