@@ -303,23 +303,26 @@ function sendContent($content) {
         print_r ($res);
 }
 
+function getUsers($where)
+{
+    $query = "SELECT * FROM tlg_user";
+    if ($where!="")
+        $query = $query." WHERE ".$where;
+    $users=SQLSelect($query); 
+    return $users;
+}
+
 // send message
 function sendMessageTo($where, $message,array $key = NULL) {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-    $query = "SELECT * FROM tlg_user";
-    if ($where!="")
-        $query = $query." WHERE ".$where;
-    if ($this->config['TLG_DEBUG'])
-        print_r ($query);
-    $users=SQLSelect($query); 
-    $c_users=count($users);
-    if ($c_users) {
-        for($j=0;$j<$c_users;$j++) {
-            $user_id = $users[$j]['USER_ID'];
+    $users = $this->getUsers($where);
+    foreach ($users as $user)
+    {
+            $user_id = $user['USER_ID'];
             if ($key == NULL)
-                $keyboard = $this->getKeyb($users[$j]);
+                $keyboard = $this->getKeyb($user);
             else 
                 $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
             $content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyboard, 'parse_mode'=>'HTML');
@@ -328,7 +331,6 @@ function sendMessageTo($where, $message,array $key = NULL) {
             {
                 print_r ($res);
             }
-        }
     }
 }
 
@@ -350,21 +352,18 @@ function sendImageTo($where, $image_path, array $key = NULL) {
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
     $img = curl_file_create($image_path,'image/png'); 
-    $query = "SELECT * FROM tlg_user";
-    if ($where!="")
-        $query = $query." WHERE ".$where;
-    $users=SQLSelect($query); 
-    $c_users=count($users);
-    if ($c_users) {
-        for($j=0;$j<$c_users;$j++) {
-            $user_id = $users[$j]['USER_ID'];
+    $users = $this->getUsers($where);
+    foreach ($users as $user)
+    {
+        $user_id = $user['USER_ID'];
             if ($key == NULL)
-                $keyboard = $this->getKeyb($users[$j]);
+                $keyboard = $this->getKeyb($user);
             else 
                 $keyboard = $telegramBot->buildKeyBoard($keyboard , $resize= true);
             $content = array('chat_id' => $user_id, 'photo' => $img, 'reply_markup' => $keyboard);
-            $telegramBot->sendPhoto($content);
-        }
+            $res = $telegramBot->sendPhoto($content);
+            if ($this->config['TLG_DEBUG'])
+				print_r ($res);
     }
 }
 
@@ -378,6 +377,70 @@ function sendImageToAdmin($image_path, $key = NULL) {
 
 function sendImageToAll($image_path, $key = NULL) {
     $this->sendImageTo("", $image_path, $key); 
+}
+
+
+function sendFileTo($where, $file_path, array $key = NULL) {
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $file = curl_file_create($file_path); 
+    $users = $this->getUsers($where);
+    foreach ($users as $user)
+    {
+        $user_id = $user['USER_ID'];
+            if ($key == NULL)
+                $keyboard = $this->getKeyb($user);
+            else 
+                $keyboard = $telegramBot->buildKeyBoard($keyboard , $resize= true);
+            $content = array('chat_id' => $user_id, 'document' => $file, 'reply_markup' => $keyboard);
+            $res = $telegramBot->sendDocument($content);
+			if ($this->config['TLG_DEBUG'])
+				print_r ($res);
+    }
+}
+
+function sendFileToUser($user_id, $file_path, $key = NULL) {
+    $this->sendFileTo("USER_ID=".$user_id, $file_path, $key); 
+}
+
+function sendFileToAdmin($file_path, $key = NULL) {
+    $this->sendFileTo("ADMIN=1", $file_path, $key); 
+}
+
+function sendFileToAll($file_path, $key = NULL) {
+    $this->sendFileTo("", $file_path, $key); 
+}
+
+function sendStickerTo($where, $sticker, array $key = NULL) {
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $users = $this->getUsers($where);
+    foreach ($users as $user)
+    {
+        $user_id = $user['USER_ID'];
+            if ($key == NULL)
+                $keyboard = $this->getKeyb($user);
+            else 
+                $keyboard = $telegramBot->buildKeyBoard($keyboard , $resize= true);
+            $content = array('chat_id' => $user_id, 'sticker' => $sticker, 'reply_markup' => $keyboard);
+            $res = $telegramBot->sendSticker($content);
+			if ($this->config['TLG_DEBUG'])
+				print_r ($res);
+    }
+}
+
+function sendStickerToUser($user_id, $sticker, $key = NULL) {
+    $this->sendStickerTo("USER_ID=".$user_id, $sticker, $key); 
+}
+
+function sendStickerToAdmin($sticker, $key = NULL) {
+    $this->sendStickerTo("ADMIN=1", $sticker, $key); 
+}
+
+function sendStickerToAll($sticker, $key = NULL) {
+    $this->sendStickerTo("", $sticker, $key); 
 }
 
 function init() {
@@ -451,6 +514,7 @@ function processCycle() {
         $document = $telegramBot->Document();
         $audio = $telegramBot->Audio();
         $voice = $telegramBot->Voice();
+        $sticker = $telegramBot->Sticker();
         $photo_id = $telegramBot->PhotoIdBigSize();
         // найти в базе пользователя
         $user=SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '".DBSafe($chat_id)."';"); 
@@ -498,6 +562,12 @@ function processCycle() {
                 //print_r($file);
                 echo  date("Y-m-d H:i:s ")." Get voice from ".$chat_id." - ".$file["result"]["file_path"]."\n";
                 $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
+            }
+            if ($sticker) 
+            {
+                $file = $telegramBot->getFile($sticker["file_id"]);
+                echo  date("Y-m-d H:i:s ")." Get sticker from ".$chat_id." - ".$sticker["file_id"]."\n";
+                //$file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
             }
             if ($file_path){ 
                 // качаем файл
