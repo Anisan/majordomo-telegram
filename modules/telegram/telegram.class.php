@@ -443,6 +443,37 @@ function sendStickerToAll($sticker, $key = NULL) {
     $this->sendStickerTo("", $sticker, $key); 
 }
 
+function sendLocationTo($where, $lat, $lon, array $key = NULL) {
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $users = $this->getUsers($where);
+    foreach ($users as $user)
+    {
+        $user_id = $user['USER_ID'];
+            if ($key == NULL)
+                $keyboard = $this->getKeyb($user);
+            else 
+                $keyboard = $telegramBot->buildKeyBoard($keyboard , $resize= true);
+            $content = array('chat_id' => $user_id, 'latitude' => $lat, 'longitude' => $lon, 'reply_markup' => $keyboard);
+            $res = $telegramBot->sendLocation($content);
+			if ($this->config['TLG_DEBUG'])
+				print_r ($res);
+    }
+}
+
+function sendLocationToUser($user_id, $lat, $lon, $key = NULL) {
+    $this->sendLocationTo("USER_ID=".$user_id, $lat, $lon, $key); 
+}
+
+function sendLocationToAdmin($lat, $lon, $key = NULL) {
+    $this->sendLocationTo("ADMIN=1", $lat, $lon, $key); 
+}
+
+function sendLocationToAll($lat, $lon, $key = NULL) {
+    $this->sendLocationTo("", $lat, $lon, $key); 
+}
+
 function init() {
     $this->getConfig();
     $this->lastID = 0;
@@ -516,8 +547,28 @@ function processCycle() {
         $voice = $telegramBot->Voice();
         $sticker = $telegramBot->Sticker();
         $photo_id = $telegramBot->PhotoIdBigSize();
+		$location = $telegramBot->Location();
         // найти в базе пользователя
-        $user=SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '".DBSafe($chat_id)."';"); 
+		$user=SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '".DBSafe($chat_id)."';"); 
+		if ($location) 
+        {
+			$latitude = $location["latitude"];
+			$longitude = $location["longitude"];
+			echo  date("Y-m-d H:i:s ")." Get location from ".$chat_id." - ".$latitude.",".$longitude."\n";
+			if ($user['MEMBER_ID'])
+		    {
+				$sqlQuery = "SELECT * FROM users WHERE ID = '" . $user['MEMBER_ID'] . "'";
+				$userObj = SQLSelectOne($sqlQuery);
+				if ($userObj['LINKED_OBJECT'])
+				{
+					echo  date("Y-m-d H:i:s ")." Update location to user '".$userObj['LINKED_OBJECT']."'\n";
+					setGlobal($userObj['LINKED_OBJECT'] . '.Coordinates', $latitude . ',' . $longitude);
+					setGlobal($userObj['LINKED_OBJECT'] . '.CoordinatesUpdated', date('H:i'));
+					setGlobal($userObj['LINKED_OBJECT'] . '.CoordinatesUpdatedTimestamp', time());
+				}
+			}
+			continue;
+		}
         //permission download file
         if ($user['DOWNLOAD']==1)
         {
