@@ -544,6 +544,7 @@ function processCycle() {
         $chat_id = $telegramBot->ChatID();
         $document = $telegramBot->Document();
         $audio = $telegramBot->Audio();
+        $video = $telegramBot->Video();
         $voice = $telegramBot->Voice();
         $sticker = $telegramBot->Sticker();
         $photo_id = $telegramBot->PhotoIdBigSize();
@@ -588,6 +589,8 @@ function processCycle() {
                 if(!isset($file['error_code'])) 
                 {
                     $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR."document".DIRECTORY_SEPARATOR.$document["file_name"];
+					if (file_exists($file_path)) 
+						$file_path = $storage.$chat_id.DIRECTORY_SEPARATOR."document".DIRECTORY_SEPARATOR.$telegramBot->UpdateID()."_".$document["file_name"];
                 }
                 else
                 {
@@ -607,11 +610,18 @@ function processCycle() {
                 if(isset($audio['performer'])) $filename = $audio['performer']."-".$filename;
                 $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR."audio".DIRECTORY_SEPARATOR.$filename;
             }
-            if ($voice) 
+			if ($voice) 
             {
                 $file = $telegramBot->getFile($voice["file_id"]);
                 //print_r($file);
                 echo  date("Y-m-d H:i:s ")." Get voice from ".$chat_id." - ".$file["result"]["file_path"]."\n";
+                $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
+            }
+            if ($video) 
+            {
+                $file = $telegramBot->getFile($video["file_id"]);
+                //print_r($file);
+                echo  date("Y-m-d H:i:s ")." Get video from ".$chat_id." - ".$file["result"]["file_path"]."\n";
                 $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
             }
             if ($sticker) 

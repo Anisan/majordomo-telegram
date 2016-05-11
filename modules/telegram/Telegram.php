@@ -658,7 +658,10 @@ class TelegramBot {
      * \return the String users's text
      */
     public function Text() {
-        return $this->data["message"] ["text"];
+		if (array_key_exists("text", $this->data["message"]))
+			return $this->data["message"] ["text"];
+		else
+			return null;
     }
 
     /// Get the chat_id of the current message
@@ -734,32 +737,58 @@ class TelegramBot {
 
 /// Get the location in the message
     public function Location() {
-        return $this->data["message"]["location"];
+		if (array_key_exists("location", $this->data["message"]))
+			return $this->data["message"] ["location"];
+		else
+			return null;
     }
 
 /// Get the photo in the message
     public function Photo() {
-        return $this->data["message"]["photo"];
+		if (array_key_exists("photo", $this->data["message"]))
+			return $this->data["message"] ["photo"];
+		else
+			return null;
     }
     
 /// Get the document in the message
     public function Document() {
-        return $this->data["message"]["document"];
+		if (array_key_exists("document", $this->data["message"]))
+			return $this->data["message"] ["document"];
+		else
+			return null;
     }
     
 /// Get the audio in the message
     public function Audio() {
-        return $this->data["message"]["audio"];
+		if (array_key_exists("audio", $this->data["message"]))
+			return $this->data["message"] ["audio"];
+		else
+			return null;
+    }
+
+/// Get the video in the message
+    public function Video() {
+		if (array_key_exists("video", $this->data["message"]))
+			return $this->data["message"] ["video"];
+		else
+			return null;
     }
     
 /// Get the voice in the message
     public function Voice() {
-        return $this->data["message"]["voice"];
+		if (array_key_exists("voice", $this->data["message"]))
+			return $this->data["message"] ["voice"];
+		else
+			return null;
     }
 
 /// Get the sticker in the message
     public function Sticker() {
-        return $this->data["message"]["sticker"];
+		if (array_key_exists("sticker", $this->data["message"]))
+			return $this->data["message"] ["sticker"];
+		else
+			return null;
     }
     
 /// Get the fileid big photo in the message
@@ -918,7 +947,7 @@ class TelegramBot {
     public function getUpdates($offset = 0, $limit = 100, $timeout = 0, $update = true) {
         $content = array('offset' => $offset, 'limit' => $limit, 'timeout' => $timeout);
         $this->updates = $this->endpoint("getUpdates", $content);
-        if ($update) {
+        if ($update && count($this->updates["result"]) > 0) {
             $last_element_id = $this->updates["result"][count($this->updates["result"]) - 1]["update_id"] + 1;
             $content = array('offset' => $last_element_id, 'limit' => "1", 'timeout' => $timeout);
             $this->endpoint("getUpdates", $content);
