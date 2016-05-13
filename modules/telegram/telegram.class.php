@@ -733,14 +733,20 @@ function processCycle() {
                     $rec['ADDED']=date('Y-m-d H:i:s');
                     SQLInsert('shouts', $rec);
                     
-                    include_once(DIR_MODULES.'patterns/patterns.class.php');
-                    $pt=new patterns();
-                    echo  date("Y-m-d H:i:s ")." Check pattern \n";
-                    $res=$pt->checkAllPatterns($rec['MEMBER_ID']);
-                    if (!$res) {
-                        echo  date("Y-m-d H:i:s ")." Pattern not found. Run ThisComputer.processCommand\n";
-                        getObject("ThisComputer")->callMethod("commandReceived", array("command" => $text));
+                    try {
+                        include_once(DIR_MODULES.'patterns/patterns.class.php');
+						$pt=new patterns();
+						echo  date("Y-m-d H:i:s ")." Check pattern \n";
+						$res=$pt->checkAllPatterns($rec['MEMBER_ID']);
+						if (!$res) {
+							echo  date("Y-m-d H:i:s ")." Pattern not found. Run ThisComputer.processCommand\n";
+							getObject("ThisComputer")->callMethod("commandReceived", array("command" => $text));
+						} 
                     } 
+					catch (Exception $e) {
+                        registerError('telegram', 'Exception '.$e->getMessage());
+                        echo  date("Y-m-d H:i:s ")." Exception ".$e->getMessage()."\n";
+                    }
                 }
 
             }

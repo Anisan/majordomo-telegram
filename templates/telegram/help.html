@@ -69,5 +69,33 @@
         $telegram_module->sendImageToAdmin('/var/www/images/htc_hero_wallpaper_01.jpg');<br>
         $telegram_module->sendImageToAll('/var/www/images/htc_hero_wallpaper_01.jpg');</code></p>
 	</div>
+	
+	<div class="panel-body">
+		<p>Для отправки файлов<br>
+		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
+		$telegram_module = new telegram();<br>
+		$telegram_module->sendFileToUser(139809588 ,'/var/www/file.txt');<br>
+		$telegram_module->sendFileToAdmin('/var/www/file.txt');<br>
+		$telegram_module->sendFileToAll('/var/www/file.txt');</code></p>
+	</div>
 
+	<div class="panel-body">
+		<p>Для отправки стикеров<br>
+		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
+		$telegram_module = new telegram();<br>
+		$telegram_module->sendStickerToUser(139809588 ,"BQADAgAD2gADeVziCaKoJ-z5_rAfAg");<br>
+		$telegram_module->sendStickerToAdmin("BQADAgAD2gADeVziCaKoJ-z5_rAfAg");<br>
+		$telegram_module->sendStickerToAll("BQADAgAD2gADeVziCaKoJ-z5_rAfAg");</code>
+		Для получения кода стикера (вида "BQADAgAD2gADeVziCaKoJ-z5_rAfAg") нужно отправить боту стикер и посмотреть код в "Истории событий" модуля.</p>
+	</div>
+	
+	<div class="panel-body">
+		<p>Для отправки местоположения<br>
+		<code style="display:block">include(DIR_MODULES . 'telegram/telegram.class.php');<br>
+		$telegram_module = new telegram();<br>
+		$telegram_module->sendLocationToUser(139809588 , 58.5876084,49.6533398);<br>
+		$telegram_module->sendLocationToAdmin(58.5876084, 49.6533398);<br>
+		$telegram_module->sendLocationToAll(58.5876084, 49.6533398); </code></p>
+	</div>
+	
 </div>
