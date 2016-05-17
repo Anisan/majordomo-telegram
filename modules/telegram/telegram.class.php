@@ -313,6 +313,16 @@ function getUsers($where)
 }
 
 // send message
+function sendMessage($user_id, $message, $keyboard='', $parse_mode='HTML') {
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyboard, 'parse_mode' => $parse_mode);
+    $res = $telegramBot->sendMessage($content);
+    if ($this->config['TLG_DEBUG'])
+        print_r ($res);
+}
+
 function sendMessageTo($where, $message,array $key = NULL) {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
@@ -320,17 +330,15 @@ function sendMessageTo($where, $message,array $key = NULL) {
     $users = $this->getUsers($where);
     foreach ($users as $user)
     {
-            $user_id = $user['USER_ID'];
-            if ($key == NULL)
-                $keyboard = $this->getKeyb($user);
-            else 
-                $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
-            $content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyboard, 'parse_mode'=>'HTML');
-            $res = $telegramBot->sendMessage($content);
-            if ($this->config['TLG_DEBUG'])
-            {
-                print_r ($res);
-            }
+        $user_id = $user['USER_ID'];
+        if ($key == NULL)
+            $keyboard = $this->getKeyb($user);
+        else 
+            $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
+		$content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyboard, 'parse_mode' => 'HTML');
+		$res = $telegramBot->sendMessage($content);
+		if ($this->config['TLG_DEBUG'])
+			print_r ($res);
     }
 }
 
@@ -347,6 +355,18 @@ function sendMessageToAll($message, $key = NULL) {
 }
 
 ///send image
+function sendImage($user_id, $image_path, $message='',$keyboard='') {
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $img = curl_file_create($image_path,'image/png'); 
+    $users = $this->getUsers($where);
+    $content = array('chat_id' => $user_id, 'photo' => $img, 'caption' => $message, 'reply_markup' => $keyboard);
+    $res = $telegramBot->sendPhoto($content);
+    if ($this->config['TLG_DEBUG'])
+		print_r ($res);
+}
+
 function sendImageTo($where, $image_path, array $key = NULL) {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
@@ -379,6 +399,16 @@ function sendImageToAll($image_path, $key = NULL) {
     $this->sendImageTo("", $image_path, $key); 
 }
 
+function sendFile($user_id, $file_path, $keyboard='') {
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $file = curl_file_create($file_path); 
+    $content = array('chat_id' => $user_id, 'document' => $file, 'reply_markup' => $keyboard);
+    $res = $telegramBot->sendDocument($content);
+    if ($this->config['TLG_DEBUG'])
+	    print_r ($res);
+}
 
 function sendFileTo($where, $file_path, array $key = NULL) {
     $this->getConfig();
@@ -412,6 +442,16 @@ function sendFileToAll($file_path, $key = NULL) {
     $this->sendFileTo("", $file_path, $key); 
 }
 
+function sendSticker($user_id, $sticker, $keyboard = '') {
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $content = array('chat_id' => $user_id, 'sticker' => $sticker, 'reply_markup' => $keyboard);
+    $res = $telegramBot->sendSticker($content);
+	if ($this->config['TLG_DEBUG'])
+		print_r ($res);
+}
+
 function sendStickerTo($where, $sticker, array $key = NULL) {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
@@ -441,6 +481,16 @@ function sendStickerToAdmin($sticker, $key = NULL) {
 
 function sendStickerToAll($sticker, $key = NULL) {
     $this->sendStickerTo("", $sticker, $key); 
+}
+
+function sendLocation($user_id, $lat, $lon, $keyboard='') {
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $content = array('chat_id' => $user_id, 'latitude' => $lat, 'longitude' => $lon, 'reply_markup' => $keyboard);
+    $res = $telegramBot->sendLocation($content);
+	if ($this->config['TLG_DEBUG'])
+		print_r ($res);
 }
 
 function sendLocationTo($where, $lat, $lon, array $key = NULL) {
