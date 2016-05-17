@@ -323,7 +323,7 @@ function sendMessage($user_id, $message, $keyboard='', $parse_mode='HTML') {
         print_r ($res);
 }
 
-function sendMessageTo($where, $message,array $key = NULL) {
+function sendMessageTo($where, $message, array $key = NULL) {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
@@ -342,7 +342,7 @@ function sendMessageTo($where, $message,array $key = NULL) {
     }
 }
 
-function sendMessageToUser($user_id, $message,$key = NULL) {
+function sendMessageToUser($user_id, $message, $key = NULL) {
     $this->sendMessageTo("USER_ID=".$user_id, $message, $key); 
 }
 
@@ -355,19 +355,18 @@ function sendMessageToAll($message, $key = NULL) {
 }
 
 ///send image
-function sendImage($user_id, $image_path, $message='',$keyboard='') {
+function sendImage($user_id, $image_path, $message='', $keyboard='') {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
     $img = curl_file_create($image_path,'image/png'); 
-    $users = $this->getUsers($where);
     $content = array('chat_id' => $user_id, 'photo' => $img, 'caption' => $message, 'reply_markup' => $keyboard);
     $res = $telegramBot->sendPhoto($content);
     if ($this->config['TLG_DEBUG'])
 		print_r ($res);
 }
 
-function sendImageTo($where, $image_path, array $key = NULL) {
+function sendImageTo($where, $image_path, $message='', array $key = NULL) {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
@@ -380,23 +379,23 @@ function sendImageTo($where, $image_path, array $key = NULL) {
                 $keyboard = $this->getKeyb($user);
             else 
                 $keyboard = $telegramBot->buildKeyBoard($keyboard , $resize= true);
-            $content = array('chat_id' => $user_id, 'photo' => $img, 'reply_markup' => $keyboard);
+            $content = array('chat_id' => $user_id, 'photo' => $img, 'caption' => $message, 'reply_markup' => $keyboard);
             $res = $telegramBot->sendPhoto($content);
             if ($this->config['TLG_DEBUG'])
 				print_r ($res);
     }
 }
 
-function sendImageToUser($user_id, $image_path, $key = NULL) {
-    $this->sendImageTo("USER_ID=".$user_id, $image_path, $key); 
+function sendImageToUser($user_id, $image_path, $message='', $key = NULL) {
+    $this->sendImageTo("USER_ID=".$user_id, $image_path, $message, $key); 
 }
 
-function sendImageToAdmin($image_path, $key = NULL) {
-    $this->sendImageTo("ADMIN=1", $image_path, $key); 
+function sendImageToAdmin($image_path, $message='', $key = NULL) {
+    $this->sendImageTo("ADMIN=1", $image_path, $message, $key); 
 }
 
-function sendImageToAll($image_path, $key = NULL) {
-    $this->sendImageTo("", $image_path, $key); 
+function sendImageToAll($image_path, $message='', $key = NULL) {
+    $this->sendImageTo("", $image_path, $message, $key); 
 }
 
 function sendFile($user_id, $file_path, $keyboard='') {
