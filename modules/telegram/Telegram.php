@@ -517,6 +517,11 @@ class TelegramBot {
     public function sendLocation(array $content) {
         return $this->endpoint("sendLocation", $content);
     }
+	
+	
+	public function sendVenue(array $content) {
+        return $this->endpoint("sendVenue", $content);
+    }
 
     /// Send a chat action
     /**
