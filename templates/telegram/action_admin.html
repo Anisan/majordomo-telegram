@@ -24,4 +24,13 @@
     [#endif ID#]   
     [#inc cmd_edit.html#]
 [#endif VIEW_MODE#]
+[#if VIEW_MODE="event_edit"#]
+    <p align=center>
+        <a href="?tab=events">&lt;&lt;&lt; <#LANG_BACK#></a>
+    </p>  
+    [#if ID!=""#]
+        [#if TITLE!=""#]<h4>[#TITLE#]</h4>[#endif TITLE#]
+    [#endif ID#]   
+    [#inc event_edit.html#]
+[#endif VIEW_MODE#]
 [#endif DATA_SOURCE#]

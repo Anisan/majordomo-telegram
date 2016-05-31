@@ -1,0 +1,174 @@
+<!-- Table 'node' edit -->
+<br/>
+<form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
+[#if OK#]
+<div class="alert alert-success"><#LANG_DATA_SAVED#></div>
+[#endif OK#]
+[#if ERR#]
+<div class="alert alert-error"><#LANG_FILLOUT_REQURED#></div>
+[#endif ERR#]
+<fieldset>
+<!-- Name -->
+<div class="form-group">
+ <label class="control-label"><#LANG_TITLE#><span class='support' tabindex="1" data-title="Title event">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
+ <div class="controls"><input  type="text" name="title" value="[#TITLE#]" class="form-control input"></div>
+</div>
+<!-- DESCRIPTION -->
+<div class="form-group">
+ <label class="control-label"><#LANG_DESCRIPTION#><span class='support' tabindex="1" data-title="Description event">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
+ <div class="controls"><input  type="text" name="description" value="[#DESCRIPTION#]" class="form-control input"></div>
+</div>
+<!-- ENABLE -->
+<div class="form-group">
+ <label class="control-label">Enable<span class='support' tabindex="1" data-title="Enable event">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </span></label>
+ <div class="controls"><input type="checkbox" name="enable" value="1"[#if ENABLE="1"#] checked[#endif#]></div>
+</div> 
+
+<!-- TYPE_EVENT -->
+<div class="form-group">
+        <label class="col-lg-4 control-label">Event</label>
+        <div class="controls">
+        <select name="type_event" id="type_event" class="form-control" onchange="OnChangeType(this);">
+            <option value="1"[#if TYPE_EVENT="1"#] selected[#endif#]>Текстовое сообщение
+            <option value="2"[#if TYPE_EVENT="2"#] selected[#endif#]>Изображение
+            <option value="3"[#if TYPE_EVENT="3"#] selected[#endif#]>Голос
+            <option value="4"[#if TYPE_EVENT="4"#] selected[#endif#]>Аудио
+            <option value="5"[#if TYPE_EVENT="5"#] selected[#endif#]>Видео
+            <option value="6"[#if TYPE_EVENT="6"#] selected[#endif#]>Документ
+            <option value="7"[#if TYPE_EVENT="7"#] selected[#endif#]>Стикер
+            <option value="8"[#if TYPE_EVENT="8"#] selected[#endif#]>Местоположение
+        </select>
+        </div>
+</div>
+<script type="text/javascript">
+	function OnChangeType (select) {    
+        var i;
+        var list="";
+        var x = document.getElementsByClassName("help");
+        for (i = 0; i < x.length; i++) {
+            if (x[i].id == 'type_block_'+select.value)
+				x[i].style.display = 'block';
+			else
+				x[i].style.display = 'none';
+        }
+    }
+</script> 
+
+<div class="help" id="type_block_1" [#if TYPE_EVENT!="1"#] style="display:none"[#endif#]> 
+<div class="controls"> 
+<div class="panel panel-info">
+    <div class="panel-body">	
+	$text - текст полученного сообщения;
+    $chat_id - идентификатор отправителя
+	</div>
+</div>
+</div>
+</div>
+<div class="help" id="type_block_2" [#if TYPE_EVENT!="2"#] style="display:none"[#endif#]> 
+<div class="controls"> 
+<div class="panel panel-info">
+    <div class="panel-body">	
+	$chat_id - идентификатор отправителя;
+	$file_path - путь к полученному файлу
+	</div>
+</div>
+</div>
+</div>
+<div class="help" id="type_block_3" [#if TYPE_EVENT!="3"#] style="display:none"[#endif#]> 
+<div class="controls"> 
+<div class="panel panel-info">
+    <div class="panel-body">	
+	$chat_id - идентификатор отправителя;
+	$file_path - путь к полученному файлу
+	</div>
+</div>
+</div>
+</div>
+<div class="help" id="type_block_4" [#if TYPE_EVENT!="4"#] style="display:none"[#endif#]> 
+<div class="controls"> 
+<div class="panel panel-info">
+    <div class="panel-body">	
+	$chat_id - идентификатор отправителя;
+	$file_path - путь к полученному файлу
+	</div>
+</div>
+</div>
+</div>
+<div class="help" id="type_block_5" [#if TYPE_EVENT!="5"#] style="display:none"[#endif#]> 
+<div class="controls"> 
+<div class="panel panel-info">
+    <div class="panel-body">	
+	$chat_id - идентификатор отправителя;
+	$file_path - путь к полученному файлу
+	</div>
+</div>
+</div>
+</div>
+<div class="help" id="type_block_6" [#if TYPE_EVENT!="6"#] style="display:none"[#endif#]> 
+<div class="controls"> 
+<div class="panel panel-info">
+    <div class="panel-body">	
+	$chat_id - идентификатор отправителя;
+	$file_path - путь к полученному файлу
+	</div>
+</div>
+</div>
+</div>
+<div class="help" id="type_block_7" [#if TYPE_EVENT!="7"#] style="display:none"[#endif#]> 
+<div class="controls"> 
+<div class="panel panel-info">
+    <div class="panel-body">	
+	$chat_id - идентификатор отправителя;
+	$sticker_id - идентификатор стикера
+	</div>
+</div>
+</div>
+</div>
+<div class="help" id="type_block_8" [#if TYPE_EVENT!="8"#] style="display:none"[#endif#]> 
+<div class="controls"> 
+<div class="panel panel-info">
+    <div class="panel-body">	
+	$chat_id - идентификатор отправителя;
+	$latitude - широта;
+	$longitude - долгота
+	</div>
+</div>
+</div>
+</div>
+<!-- CODE (text) -->
+<div class="form-group ">
+        <label class="col-lg-4 control-label" for="inputTitle"><#LANG_CODE#>:</label>
+        <div class="col-lg-5 [#if ERR_CODE#]alert-danger[#endif#]">
+			[#if ERRORS!=""#]<br><font color='red'>[#ERRORS#]</font><br>[#endif ERRORS#]
+            [#module name="blockly_code" system_name="tlgaction<#ID#>" code_field="code" action=""#] 
+			<div id="code_area">
+			  <textarea name="code" id="code" rows=30 cols=100 class=" form-control field span8">[#CODE#]</textarea>
+			</div>
+		</div>
+</div> 
+
+<script type="text/javascript">  
+	OnChangeType(document.getElementById('type_event'));
+    OnChangeChecked();
+</script> 
+
+<div class="form-actions">
+ <button type="submit" name="subm" value="<#LANG_SUBMIT#>" class="btn btn-defaul btn-primary"><#LANG_SUBMIT#></button>
+ <a href="?" class="btn btn-default"><#LANG_CANCEL#></a>
+<input type="hidden" name="id" value="<#ID#>">
+<input type="hidden" id="users_id" name="users_id" value="<#USERS_ID#>">
+<input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
+<input type="hidden" name="edit_mode" value="<#EDIT_MODE#>">
+<input type="hidden" name="mode" value="update">
+<input type="hidden" name="data_source" value="<#DATA_SOURCE#>">
+<input type="hidden" name="tab" value="<#TAB#>">
+</div>
+</fieldset>
+</form>
+<hr/>

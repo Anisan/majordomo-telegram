@@ -95,6 +95,7 @@
 <ul class="nav nav-tabs">
  <li [#if TAB=="" || TAB=="users"#] class="active"[#endif#]><a href="?tab=users"><#LANG_MODULE_USERS#></a> </li>
  <li [#if TAB=="cmd"#] class="active"[#endif#]><a href="?tab=cmd"><#LANG_TLG_COMMANDS#></a> </li> 
+ <li [#if TAB=="events"#] class="active"[#endif#]><a href="?tab=events">Events</a> </li> 
  <li [#if TAB=="log"#] class="active"[#endif#]><a href="?tab=log"><#LANG_GENERAL_EVENTS_LOG#></a> </li> 
  <li [#if TAB=="help"#] class="active"[#endif#]><a href="?tab=help"><#LANG_TLG_HELP#></a> </li> 
 </ul> 
@@ -104,6 +105,9 @@
 [#endif#] 
 [#if TAB="cmd"#]
   [#inc search_cmd.html#] 
+[#endif#] 
+[#if TAB="events"#]
+  [#inc search_events.html#] 
 [#endif#] 
 [#if TAB="log"#]
   [#inc search_log.html#] 

@@ -187,18 +187,27 @@ function admin(&$out) {
         if ($this->view_mode=='cmd_edit') {
             $this->edit_cmd($out, $this->id);
         }
+        if ($this->view_mode=='event_edit') {
+            $this->edit_event($out, $this->id);
+        }
         if ($this->view_mode=='user_delete') {
           $this->delete_user($this->id);
           $this->redirect("?");
         } 
         if ($this->view_mode=='cmd_delete') {
           $this->delete_cmd($this->id);
-          $this->redirect("?");
+          $this->redirect("?tab=cmd");
+        } 
+        if ($this->view_mode=='event_delete') {
+          $this->delete_event($this->id);
+          $this->redirect("?tab=events");
         } 
         
         if ($this->view_mode=='' || $this->view_mode=='search_ms') {
           if ($this->tab=='cmd'){
             $this->tlg_cmd($out);
+          } else if ($this->tab=='events'){
+            $this->tlg_events($out);
           } else if ($this->tab=='log'){
             $this->tlg_log($out);
           } else {
@@ -225,6 +234,9 @@ function edit_user(&$out, $id) {
 function edit_cmd(&$out, $id) {
   require(DIR_MODULES.$this->name.'/cmd_edit.inc.php');
 }
+function edit_event(&$out, $id) {
+  require(DIR_MODULES.$this->name.'/event_edit.inc.php');
+}
 /**
 * Delete user
 *
@@ -236,11 +248,17 @@ function delete_user($id) {
   SQLExec("DELETE FROM tlg_user WHERE ID='".$rec['ID']."'"); 
   SQLExec("DELETE FROM tlg_user_cmd WHERE USER_ID='".$rec['ID']."'"); 
 }
-function delete_CMD($id) {
+function delete_cmd($id) {
   $rec=SQLSelectOne("SELECT * FROM tlg_cmd WHERE ID='$id'");
   // some action for related tables
   SQLExec("DELETE FROM tlg_cmd WHERE ID='".$rec['ID']."'"); 
   SQLExec("DELETE FROM tlg_user_cmd WHERE CMD_ID='".$rec['ID']."'"); 
+}
+
+function delete_event($id) {
+  $rec=SQLSelectOne("SELECT * FROM tlg_event WHERE ID='$id'");
+  // some action for related tables
+  SQLExec("DELETE FROM tlg_event WHERE ID='".$rec['ID']."'"); 
 }
 
 function tlg_users(&$out) {
@@ -254,6 +272,11 @@ function tlg_log(&$out) {
 function tlg_cmd(&$out) {
   require(DIR_MODULES.$this->name.'/tlg_cmd.inc.php');
 }
+
+function tlg_events(&$out) {
+  require(DIR_MODULES.$this->name.'/tlg_events.inc.php');
+}
+
 
 function getKeyb($user) {
     $visible = true;
@@ -646,11 +669,25 @@ function processCycle() {
 					setGlobal($userObj['LINKED_OBJECT'] . '.CoordinatesUpdatedTimestamp', time());
 				}
 			}
+			// get events for location
+			$events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=8 and ENABLE=1;"); 
+			foreach ($events as $event)
+			{
+				if ($event['CODE']){
+					echo  date("Y-m-d H:i:s ")." Execute code event ".$event['TITLE']."\n";
+					try {
+						eval($event['CODE']);
+					} catch (Exception $e) {
+						registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
+					}
+				}
+			}
 			continue;
 		}
         //permission download file
         if ($user['DOWNLOAD']==1)
         {
+			$type = 0;
             //папку с файлами в настройках
             $storage = $this->config['TLG_STORAGE'].DIRECTORY_SEPARATOR;
             if ($photo_id) 
@@ -658,6 +695,7 @@ function processCycle() {
                 $file = $telegramBot->getFile($photo_id);
                 echo  date("Y-m-d H:i:s ")." Get photo from ".$chat_id." - ".$file["result"]["file_path"]."\n";
                 $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
+				$type =2;
             }
             if ($document) 
             {
@@ -675,6 +713,7 @@ function processCycle() {
                     $file_path = "";
                     echo  date("Y-m-d H:i:s ").$file['description']."\n";
                 }
+				$type = 6;
             }
             if ($audio) 
             {
@@ -687,6 +726,7 @@ function processCycle() {
                 if(isset($audio['title'])) $filename = $audio['title'].".".$path_parts['extension'];
                 if(isset($audio['performer'])) $filename = $audio['performer']."-".$filename;
                 $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR."audio".DIRECTORY_SEPARATOR.$filename;
+				$type = 4;
             }
 			if ($voice) 
             {
@@ -694,6 +734,7 @@ function processCycle() {
                 //print_r($file);
                 echo  date("Y-m-d H:i:s ")." Get voice from ".$chat_id." - ".$file["result"]["file_path"]."\n";
                 $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
+				$type = 3;
             }
             if ($video) 
             {
@@ -701,12 +742,15 @@ function processCycle() {
                 //print_r($file);
                 echo  date("Y-m-d H:i:s ")." Get video from ".$chat_id." - ".$file["result"]["file_path"]."\n";
                 $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
+				$type = 5;
             }
             if ($sticker) 
             {
                 $file = $telegramBot->getFile($sticker["file_id"]);
                 echo  date("Y-m-d H:i:s ")." Get sticker from ".$chat_id." - ".$sticker["file_id"]."\n";
                 //$file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
+				$sticker_id = $sticker["file_id"];
+				$type = 7;
             }
             if ($file_path){ 
                 // качаем файл
@@ -721,11 +765,41 @@ function processCycle() {
                 @touch($file_path);
                 playSound($file_path, 1, $level);
             }
+			
+			if ($file_path || $sticker_id){ 
+				// get events
+				$events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=".$type." and ENABLE=1;"); 
+				foreach ($events as $event)
+				{
+					if ($event['CODE']){
+						echo  date("Y-m-d H:i:s ")." Execute code event ".$event['TITLE']."\n";
+						try {
+							eval($event['CODE']);
+						} catch (Exception $e) {
+							registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
+						}
+					}
+				}
+			}
             $file_path = "";
         }    
         if ($text=="") {
             continue;
         }
+		// get events for text message
+		$events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=1 and ENABLE=1;"); 
+		foreach ($events as $event)
+		{
+			if ($event['CODE']){
+                echo  date("Y-m-d H:i:s ")." Execute code event ".$event['TITLE']."\n";
+				try {
+                    eval($event['CODE']);
+                } catch (Exception $e) {
+                    registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
+                }
+			}
+		}
+		
         echo  date("Y-m-d H:i:s ").$chat_id."=".$text."\n";
 
         if ($text == "/start" || $text == "/start@".$bot_name) {
@@ -903,6 +977,13 @@ function usual(&$out) {
  tlg_user_cmd: USER_ID int(10) NOT NULL
  tlg_user_cmd: CMD_ID int(10) NOT NULL
  
+ tlg_event: ID int(10) unsigned NOT NULL auto_increment
+ tlg_event: TITLE varchar(255) NOT NULL DEFAULT ''
+ tlg_event: DESCRIPTION text
+ tlg_event: TYPE_EVENT int(3) unsigned NOT NULL DEFAULT '1' 
+ tlg_event: ENABLE int(3) unsigned NOT NULL DEFAULT '0' 
+ tlg_event: CODE text
+  
 EOD;
   parent::dbInstall($data);
   
