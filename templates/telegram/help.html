@@ -52,12 +52,22 @@
 </div>
 
 <div class="panel panel-info">
+	<div class="panel-heading">События</div>
+    <div class="panel-body">
+	Данный функционал позволяет навесить на события, такие как получение текстового сообщения, файла, стикера, местоположения и др, свой обработчик.</br>
+	Например, при получении аудиофайла, добавить его в плейлист и выполнить его воспроизведение.</br>
+	Для каждого из типов событий в выполняемый код передаются определенные параметры, такие как например <b>$chat_id</b>. 
+	Более подробно о параметрах расписано в подсказке, которая появляется при выборе типа события.
+    </div>
+</div>
+
+<div class="panel panel-info">
 	<div class="panel-heading">Вызов модуля в своих скриптах/методах</div>
 	<div class="panel-body">
 		<p>Для отправки текстовых сообщений<br>
 		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
         $telegram_module = new telegram();<br>
-        $telegram_module->sendMessageToUser(139809588 ,"test message");<br>
+        $telegram_module->sendMessageToUser(139809588, "test message");<br>
         $telegram_module->sendMessageToAdmin("test message to admin");<br>
         $telegram_module->sendMessageToAll("test message to all");</code></p>
 	</div>
@@ -65,16 +75,17 @@
 		<p>Для отправки изображений<br>
 		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
         $telegram_module = new telegram();<br>
-        $telegram_module->sendImageToUser(139809588 ,'/var/www/images/trees.jpg');<br>
+        $telegram_module->sendImageToUser(139809588, '/var/www/images/trees.jpg', 'Description');<br>
         $telegram_module->sendImageToAdmin('/var/www/images/htc_hero_wallpaper_01.jpg');<br>
-        $telegram_module->sendImageToAll('/var/www/images/htc_hero_wallpaper_01.jpg');</code></p>
+        $telegram_module->sendImageToAll('/var/www/images/htc_hero_wallpaper_01.jpg');</code>
+		К изображению можно добавить текстовое описание</p>
 	</div>
 	
 	<div class="panel-body">
 		<p>Для отправки файлов<br>
 		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
 		$telegram_module = new telegram();<br>
-		$telegram_module->sendFileToUser(139809588 ,'/var/www/file.txt');<br>
+		$telegram_module->sendFileToUser(139809588, '/var/www/file.txt');<br>
 		$telegram_module->sendFileToAdmin('/var/www/file.txt');<br>
 		$telegram_module->sendFileToAll('/var/www/file.txt');</code></p>
 	</div>
@@ -93,9 +104,18 @@
 		<p>Для отправки местоположения<br>
 		<code style="display:block">include(DIR_MODULES . 'telegram/telegram.class.php');<br>
 		$telegram_module = new telegram();<br>
-		$telegram_module->sendLocationToUser(139809588 , 58.5876084,49.6533398);<br>
+		$telegram_module->sendLocationToUser(139809588, 58.5876084, 49.6533398);<br>
 		$telegram_module->sendLocationToAdmin(58.5876084, 49.6533398);<br>
 		$telegram_module->sendLocationToAll(58.5876084, 49.6533398); </code></p>
+	</div>
+	
+	<div class="panel-body">
+		<p>Для отправки места (местоположение с описанием)<br>
+		<code style="display:block">include(DIR_MODULES . 'telegram/telegram.class.php');<br>
+		$telegram_module = new telegram();<br>
+		$telegram_module->sendVenueToUser(139809588, 58.5876084, 49.6533398,'Venue', 'Address');<br>
+		$telegram_module->sendVenueToAdmin(58.5876084, 49.6533398, 'Venue', '');<br>
+		$telegram_module->sendVenueToAll(58.5876084, 49.6533398, 'Venue', 'Address'); </code></p>
 	</div>
 	
 </div>

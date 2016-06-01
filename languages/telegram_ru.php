@@ -23,6 +23,17 @@ $dictionary=array(
 'TLG_SHOW'=>'Показать',
 'TLG_HIDE'=>'Скрыть',
 'TLG_CONDITION'=>'Условие',
+'TLG_EVENTS'=>'События',
+'TLG_EVENT'=>'Событие',
+'TLG_ENABLE'=>'Включить',
+'TLG_EVENT_TEXT'=>'Текстовое сообщение',
+'TLG_EVENT_IMAGE'=>'Изображение',
+'TLG_EVENT_VOICE'=>'Голосовое сообщение',
+'TLG_EVENT_AUDIO'=>'Аудио',
+'TLG_EVENT_VIDEO'=>'Видео',
+'TLG_EVENT_DOCUMENT'=>'Документ',
+'TLG_EVENT_STICKER'=>'Стикер',
+'TLG_EVENT_LOCATION'=>'Местоположение',
 /* about */
 
 /* help */

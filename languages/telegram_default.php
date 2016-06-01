@@ -22,6 +22,17 @@ $dictionary=array(
 'TLG_SHOW'=>'Show',
 'TLG_HIDE'=>'Hide',
 'TLG_CONDITION'=>'Condition',
+'TLG_EVENTS'=>'Events',
+'TLG_EVENT'=>'Event',
+'TLG_ENABLE'=>'Enable',
+'TLG_EVENT_TEXT'=>'Text message',
+'TLG_EVENT_IMAGE'=>'Image',
+'TLG_EVENT_VOICE'=>'Voice',
+'TLG_EVENT_AUDIO'=>'Audio',
+'TLG_EVENT_VIDEO'=>'Video',
+'TLG_EVENT_DOCUMENT'=>'Document',
+'TLG_EVENT_STICKER'=>'Sticker',
+'TLG_EVENT_LOCATION'=>'Location',
 /* about */
 
 /* help */

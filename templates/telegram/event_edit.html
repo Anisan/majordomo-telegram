@@ -10,39 +10,33 @@
 <fieldset>
 <!-- Name -->
 <div class="form-group">
- <label class="control-label"><#LANG_TITLE#><span class='support' tabindex="1" data-title="Title event">
- <i class="glyphicon glyphicon-info-sign"></i>
- </span></label>
+ <label class="control-label"><#LANG_TITLE#></label>
  <div class="controls"><input  type="text" name="title" value="[#TITLE#]" class="form-control input"></div>
 </div>
 <!-- DESCRIPTION -->
 <div class="form-group">
- <label class="control-label"><#LANG_DESCRIPTION#><span class='support' tabindex="1" data-title="Description event">
- <i class="glyphicon glyphicon-info-sign"></i>
- </span></label>
+ <label class="control-label"><#LANG_DESCRIPTION#></label>
  <div class="controls"><input  type="text" name="description" value="[#DESCRIPTION#]" class="form-control input"></div>
 </div>
 <!-- ENABLE -->
 <div class="form-group">
- <label class="control-label">Enable<span class='support' tabindex="1" data-title="Enable event">
- <i class="glyphicon glyphicon-info-sign"></i>
- </span></label>
+ <label class="control-label"><#LANG_TLG_ENABLE#></label>
  <div class="controls"><input type="checkbox" name="enable" value="1"[#if ENABLE="1"#] checked[#endif#]></div>
 </div> 
 
 <!-- TYPE_EVENT -->
 <div class="form-group">
-        <label class="col-lg-4 control-label">Event</label>
+        <label class="col-lg-4 control-label"><#LANG_TLG_EVENT#></label>
         <div class="controls">
         <select name="type_event" id="type_event" class="form-control" onchange="OnChangeType(this);">
-            <option value="1"[#if TYPE_EVENT="1"#] selected[#endif#]>Текстовое сообщение
-            <option value="2"[#if TYPE_EVENT="2"#] selected[#endif#]>Изображение
-            <option value="3"[#if TYPE_EVENT="3"#] selected[#endif#]>Голос
-            <option value="4"[#if TYPE_EVENT="4"#] selected[#endif#]>Аудио
-            <option value="5"[#if TYPE_EVENT="5"#] selected[#endif#]>Видео
-            <option value="6"[#if TYPE_EVENT="6"#] selected[#endif#]>Документ
-            <option value="7"[#if TYPE_EVENT="7"#] selected[#endif#]>Стикер
-            <option value="8"[#if TYPE_EVENT="8"#] selected[#endif#]>Местоположение
+            <option value="1"[#if TYPE_EVENT="1"#] selected[#endif#]><#LANG_TLG_EVENT_TEXT#>
+            <option value="2"[#if TYPE_EVENT="2"#] selected[#endif#]><#LANG_TLG_EVENT_IMAGE#>
+            <option value="3"[#if TYPE_EVENT="3"#] selected[#endif#]><#LANG_TLG_EVENT_VOICE#>
+            <option value="4"[#if TYPE_EVENT="4"#] selected[#endif#]><#LANG_TLG_EVENT_AUDIO#>
+            <option value="5"[#if TYPE_EVENT="5"#] selected[#endif#]><#LANG_TLG_EVENT_VIDEO#>
+            <option value="6"[#if TYPE_EVENT="6"#] selected[#endif#]><#LANG_TLG_EVENT_DOCUMENT#>
+            <option value="7"[#if TYPE_EVENT="7"#] selected[#endif#]><#LANG_TLG_EVENT_STICKER#>
+            <option value="8"[#if TYPE_EVENT="8"#] selected[#endif#]><#LANG_TLG_EVENT_LOCATION#>
         </select>
         </div>
 </div>
