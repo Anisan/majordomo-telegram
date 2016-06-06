@@ -34,6 +34,7 @@ $dictionary=array(
 'TLG_EVENT_DOCUMENT'=>'Документ',
 'TLG_EVENT_STICKER'=>'Стикер',
 'TLG_EVENT_LOCATION'=>'Местоположение',
+'TLG_COUNT_ROW'=>'Команд в строке',
 /* about */
 
 /* help */
@@ -50,7 +51,8 @@ $dictionary=array(
 'HELP_PLAY_VOICE'=>'Проигрывать голосовые сообщения от пользователя',
 'HELP_TITLE'=>'Имя команды (отображается на клавиатуре в Telegram клиенте)',
 'HELP_DESCRIPTION'=>'Описание команды',
-'HELP_ACCESS_CONTROL'=>'Ограничение доступа к команде'
+'HELP_ACCESS_CONTROL'=>'Ограничение доступа к команде',
+'HELP_COUNTROW'=>'Количество кнопок команд в одной строке на клавиатуре в Telegram клиенте'
 
 /* end module names */
 );

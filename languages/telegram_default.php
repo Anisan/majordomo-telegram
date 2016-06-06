@@ -33,6 +33,7 @@ $dictionary=array(
 'TLG_EVENT_DOCUMENT'=>'Document',
 'TLG_EVENT_STICKER'=>'Sticker',
 'TLG_EVENT_LOCATION'=>'Location',
+'TLG_COUNT_ROW'=>'Count commands on row',
 /* about */
 
 /* help */
@@ -49,7 +50,8 @@ $dictionary=array(
 'HELP_PLAY_VOICE'=>'Play voice from user',
 'HELP_TITLE'=>'Title command (view in keyboard telegram client)',
 'HELP_DESCRIPTION'=>'Description command',
-'HELP_ACCESS_CONTROL'=>'Access control command'
+'HELP_ACCESS_CONTROL'=>'Access control command',
+'HELP_COUNTROW'=>'Count commands on row'
 
 /* end module names */
 );

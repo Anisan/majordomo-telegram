@@ -168,6 +168,10 @@ function admin(&$out) {
     $this->getConfig();
     $out['TLG_TOKEN']=$this->config['TLG_TOKEN'];
     $out['TLG_STORAGE']=$this->config['TLG_STORAGE'];
+    $out['TLG_COUNT_ROW']=$this->config['TLG_COUNT_ROW'];
+	if (!$out['TLG_COUNT_ROW'])
+		$out['TLG_COUNT_ROW']=3;
+    
     $out['TLG_DEBUG']=$this->config['TLG_DEBUG'];
     $out['TLG_test']=$this->data_source."_".$this->view_mode."_".$this->tab;
     if ($this->data_source=='telegram' || $this->data_source=='') {
@@ -176,6 +180,8 @@ function admin(&$out) {
             $this->config['TLG_TOKEN']=$tlg_token;
             global $tlg_storage;
             $this->config['TLG_STORAGE']=$tlg_storage;
+            global $tlg_count_row;
+            $this->config['TLG_COUNT_ROW']=$tlg_count_row;
             global $tlg_debug;
             $this->config['TLG_DEBUG']=$tlg_debug;
             $this->saveConfig();
@@ -308,7 +314,7 @@ function getKeyb($user) {
                 if ($view)
                     $option[] = $rec[$i]["TITLE"];
             }
-            $option = array_chunk($option, 3);
+            $option = array_chunk($option, $this->config['TLG_COUNT_ROW']);
         }
     }
     
