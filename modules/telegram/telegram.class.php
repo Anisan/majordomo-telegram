@@ -297,7 +297,7 @@ function getKeyb($user) {
         //$option = array( array("A", "B"), array("C", "D") );
         $option = array();
         $rec=SQLSelect("SELECT *,(select VALUE from pvalues where Property_name=`LINKED_OBJECT`+'.'+`LINKED_PROPERTY` ORDER BY updated DESC limit 1) as pvalue".
-                " FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=".$user['ID']." and ACCESS>0 order by tlg_cmd.ID;");  
+                " FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=".$user['ID']." and ACCESS>0 order by tlg_cmd.PRIORITY desc, tlg_cmd.TITLE;");  
         $total=count($rec);
         if ($total) {
             for($i=0;$i<$total;$i++) {
@@ -407,7 +407,7 @@ function sendImageTo($where, $image_path, $message='', array $key = NULL) {
         if ($key == NULL)
             $keyboard = $this->getKeyb($user);
         else 
-            $keyboard = $telegramBot->buildKeyBoard($keyboard , $resize= true);
+            $keyboard = $telegramBot->buildKeyBoard($key, $resize= true);
         $content = array('chat_id' => $user_id, 'photo' => $img, 'caption' => $message, 'reply_markup' => $keyboard);
         $res = $telegramBot->sendPhoto($content);
 		$this->debug($res);
@@ -448,7 +448,7 @@ function sendFileTo($where, $file_path, array $key = NULL) {
         if ($key == NULL)
             $keyboard = $this->getKeyb($user);
         else 
-            $keyboard = $telegramBot->buildKeyBoard($keyboard , $resize= true);
+            $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
         $content = array('chat_id' => $user_id, 'document' => $file, 'reply_markup' => $keyboard);
         $res = $telegramBot->sendDocument($content);
 		$this->debug($res);
@@ -487,7 +487,7 @@ function sendStickerTo($where, $sticker, array $key = NULL) {
         if ($key == NULL)
             $keyboard = $this->getKeyb($user);
         else 
-            $keyboard = $telegramBot->buildKeyBoard($keyboard , $resize= true);
+            $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
         $content = array('chat_id' => $user_id, 'sticker' => $sticker, 'reply_markup' => $keyboard);
         $res = $telegramBot->sendSticker($content);
 		$this->debug($res);
@@ -526,7 +526,7 @@ function sendLocationTo($where, $lat, $lon, array $key = NULL) {
         if ($key == NULL)
             $keyboard = $this->getKeyb($user);
         else 
-            $keyboard = $telegramBot->buildKeyBoard($keyboard , $resize= true);
+            $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
         $content = array('chat_id' => $user_id, 'latitude' => $lat, 'longitude' => $lon, 'reply_markup' => $keyboard);
         $res = $telegramBot->sendLocation($content);
 		$this->debug($res);
@@ -565,7 +565,7 @@ function sendVenueTo($where, $lat, $lon, $title, $address, array $key = NULL) {
         if ($key == NULL)
             $keyboard = $this->getKeyb($user);
         else 
-            $keyboard = $telegramBot->buildKeyBoard($keyboard , $resize= true);
+            $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
         $content = array('chat_id' => $user_id, 'latitude' => $lat, 'longitude' => $lon, 'title' => $title, 'address' => $address, 'reply_markup' => $keyboard);
         $res = $telegramBot->sendVenue($content);
 		$this->debug($res);
@@ -978,6 +978,7 @@ function usual(&$out) {
  tlg_cmd: LINKED_PROPERTY varchar(255) NOT NULL DEFAULT '' 
  tlg_cmd: CONDITION int(10) NOT NULL DEFAULT '1' 
  tlg_cmd: CONDITION_VALUE varchar(255) NOT NULL DEFAULT '' 
+ tlg_cmd: PRIORITY int(10) NOT NULL DEFAULT '1' 
  
  tlg_user_cmd: ID int(10) unsigned NOT NULL auto_increment
  tlg_user_cmd: USER_ID int(10) NOT NULL

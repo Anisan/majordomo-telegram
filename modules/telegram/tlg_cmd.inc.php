@@ -12,16 +12,16 @@
   // FIELDS ORDER
   global $sortby_cmd;
   if (!$sortby_cmd) {
-   $sortby_cmd=$session->data['telegram_sort'];
+   $sortby_cmd=$session->data['telegram_sort_cmd'];
   } else {
-   if ($session->data['telegram_sort']==$sortby_cmd) {
+   if ($session->data['telegram_sort_cmd']==$sortby_cmd) {
     if (Is_Integer(strpos($sortby_cmd, ' DESC'))) {
      $sortby_cmd=str_replace(' DESC', '', $sortby_cmd);
     } else {
      $sortby_cmd=$sortby_cmd." DESC";
     }
    }
-   $session->data['telegram_sort']=$sortby_cmd;
+   $session->data['telegram_sort_cmd']=$sortby_cmd;
   }
   if (!$sortby_cmd) $sortby_cmd="TITLE";
   $out['SORTBY']=$sortby_cmd;

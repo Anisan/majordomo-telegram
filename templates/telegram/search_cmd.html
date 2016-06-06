@@ -27,6 +27,11 @@
  [#if SORTBY="TITLE DESC"#](-)[#endif#]</nobr>
  </th>
  <th><#LANG_DESCRIPTION#></th>
+ <th>
+ <a href="?sortby_cmd=PRIORITY&tab=<#TAB#>"><#LANG_PRIORITY#></a><nobr>
+ [#if SORTBY="PRIORITY"#](+)[#endif#]
+ [#if SORTBY="PRIORITY DESC"#](-)[#endif#]</nobr>
+ </th>
  <th>&nbsp;</th>
 </tr>
 </thead>
@@ -54,6 +59,13 @@
    &nbsp;
   [#endif#]
  </td>  
+  <td>
+  [#if PRIORITY!=""#]
+   [#PRIORITY#]
+  [#else#]
+   &nbsp;
+  [#endif#]
+ </td> 
  <td width="1%" nowrap>
   [#if "<#ACTION#>"=="admin"#]
     <a href="?view_mode=cmd_edit&id=[#ID#]" class="btn btn-default btn-sm" title="<#LANG_EDIT#>"><i class="glyphicon glyphicon-pencil"></i></a>

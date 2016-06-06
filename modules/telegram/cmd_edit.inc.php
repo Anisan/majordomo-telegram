@@ -46,6 +46,9 @@ if ($this->mode=='update') {
     global $condition_value_new;
     $rec['CONDITION_VALUE']=$condition_value_new;
     
+	global $priority;
+    $rec['PRIORITY']=$priority;
+    
     global $users_id;
     
     //UPDATING RECORD

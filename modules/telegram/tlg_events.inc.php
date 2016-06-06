@@ -10,24 +10,24 @@
   
   
   // FIELDS ORDER
-  global $sortby_cmd;
-  if (!$sortby_cmd) {
-   $sortby_cmd=$session->data['telegram_sort'];
+  global $sortby_event;
+  if (!$sortby_event) {
+   $sortby_event=$session->data['telegram_sort_event'];
   } else {
-   if ($session->data['telegram_sort']==$sortby_cmd) {
-    if (Is_Integer(strpos($sortby_cmd, ' DESC'))) {
-     $sortby_cmd=str_replace(' DESC', '', $sortby_cmd);
+   if ($session->data['telegram_sort_event']==$sortby_event) {
+    if (Is_Integer(strpos($sortby_event, ' DESC'))) {
+     $sortby_event=str_replace(' DESC', '', $sortby_event);
     } else {
-     $sortby_cmd=$sortby_cmd." DESC";
+     $sortby_event=$sortby_event." DESC";
     }
    }
-   $session->data['telegram_sort']=$sortby_cmd;
+   $session->data['telegram_sort_event']=$sortby_event;
   }
-  if (!$sortby_cmd) $sortby_cmd="TITLE";
-  $out['SORTBY']=$sortby_cmd;
+  if (!$sortby_event) $sortby_event="TITLE";
+  $out['SORTBY']=$sortby_event;
   
   // SEARCH RESULTS  
-  $res=SQLSelect("SELECT * FROM tlg_event ORDER BY ".$sortby_cmd);
+  $res=SQLSelect("SELECT * FROM tlg_event ORDER BY ".$sortby_event);
   if ($res[0]['ID']) {   
     colorizeArray($res);
     $total=count($res);
