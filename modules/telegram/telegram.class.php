@@ -314,7 +314,9 @@ function getKeyb($user) {
                 if ($view)
                     $option[] = $rec[$i]["TITLE"];
             }
-            $option = array_chunk($option, $this->config['TLG_COUNT_ROW']);
+			$count_row = $this->config['TLG_COUNT_ROW'];
+            if (!$count_row) $count_row = 3;
+            $option = array_chunk($option, $count_row);
         }
     }
     
