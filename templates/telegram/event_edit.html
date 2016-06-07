@@ -37,6 +37,7 @@
             <option value="6"[#if TYPE_EVENT="6"#] selected[#endif#]><#LANG_TLG_EVENT_DOCUMENT#>
             <option value="7"[#if TYPE_EVENT="7"#] selected[#endif#]><#LANG_TLG_EVENT_STICKER#>
             <option value="8"[#if TYPE_EVENT="8"#] selected[#endif#]><#LANG_TLG_EVENT_LOCATION#>
+            <option value="9"[#if TYPE_EVENT="9"#] selected[#endif#]>Callback
         </select>
         </div>
 </div>
@@ -131,6 +132,17 @@
 	$chat_id - идентификатор отправителя;
 	$latitude - широта;
 	$longitude - долгота
+	</div>
+</div>
+</div>
+</div>
+<div class="help" id="type_block_8" [#if TYPE_EVENT!="8"#] style="display:none"[#endif#]> 
+<div class="controls"> 
+<div class="panel panel-info">
+    <div class="panel-body">	
+	$chat_id - идентификатор отправителя;
+	$callback - ответ на запрос;
+	$message_id - message_id сообщения с запросом;
 	</div>
 </div>
 </div>

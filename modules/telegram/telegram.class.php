@@ -314,9 +314,7 @@ function getKeyb($user) {
                 if ($view)
                     $option[] = $rec[$i]["TITLE"];
             }
-            $count_row = $this->config['TLG_COUNT_ROW'];
-            if (!$count_row) $count_row = 3;
-            $option = array_chunk($option, $count_row);
+            $option = array_chunk($option, $this->config['TLG_COUNT_ROW']);
         }
     }
     
@@ -327,6 +325,17 @@ function getKeyb($user) {
     return $keyb;
 }
 
+function buildInlineKeyboardButton($text, $url = "", $callback_data = "", $switch_inline_query = "")
+{
+	$telegramBot = new TelegramBot("");
+	return $telegramBot->buildInlineKeyboardButton($text, $url, $callback_data, $switch_inline_query);
+}
+
+function buildInlineKeyBoard(array $option)
+{
+	$telegramBot = new TelegramBot("");
+	return $telegramBot->buildInlineKeyBoard($option);
+}
 
 function sendContent($content) {
     $this->getConfig();
@@ -345,7 +354,14 @@ function getUsers($where)
     $users=SQLSelect($query); 
     return $users;
 }
-
+function editMessage($user_id, $message_id, $message, $keyboard='') {
+	$this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $content = array('chat_id' => $user_id,'message_id'=>$message_id, 'text' => $message, 'reply_markup' => $keyboard);
+    $res = $telegramBot->editMessageText($content);
+    $this->debug($res);
+}
 // send message
 function sendMessage($user_id, $message, $keyboard='', $parse_mode='HTML') {
     $this->getConfig();
@@ -645,10 +661,32 @@ function processCycle() {
     // Get all the new updates and set the new correct update_id
     $req = $telegramBot->getUpdates($timeout=5);
     for ($i = 0; $i < $telegramBot-> UpdateCount(); $i++) {
+		$skip = false;
         // You NEED to call serveUpdate before accessing the values of message in Telegram Class
         $telegramBot->serveUpdate($i);
         $data = $telegramBot->getData();
         $this->debug($data);
+		$callback = $telegramBot->Callback_Data();
+		if ($callback)
+		{
+			$chat_id = $telegramBot->Callback_ChatID();
+			$message_id = $telegramBot->Callback_Message()["message_id"];
+			// get events for callback
+			$events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=9 and ENABLE=1;"); 
+			foreach ($events as $event)
+			{
+				if ($event['CODE']){
+					echo  date("Y-m-d H:i:s ")." Execute code event ".$event['TITLE']."\n";
+					try {
+						eval($event['CODE']);
+					} catch (Exception $e) {
+						registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
+					}
+				}
+			}
+			continue;
+		}
+		
         $text = $telegramBot->Text();
         $chat_id = $telegramBot->ChatID();
         $document = $telegramBot->Document();
@@ -794,6 +832,8 @@ function processCycle() {
         if ($text=="") {
             continue;
         }
+		
+        echo  date("Y-m-d H:i:s ").$chat_id."=".$text."\n";
 		// get events for text message
 		$events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=1 and ENABLE=1;"); 
 		foreach ($events as $event)
@@ -807,9 +847,14 @@ function processCycle() {
                 }
 			}
 		}
+		// пропуск дальнейшей обработки если с обработчике событий установили $skip
+		if ($skip) 
+		{
+			echo  date("Y-m-d H:i:s ")." Skip next processing message\n";
+            continue;
+		}
 		
-        echo  date("Y-m-d H:i:s ").$chat_id."=".$text."\n";
-
+		
         if ($text == "/start" || $text == "/start@".$bot_name) {
             // найти в базе пользователя
             // если нет добавляем

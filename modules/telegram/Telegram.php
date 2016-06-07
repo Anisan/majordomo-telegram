@@ -102,6 +102,9 @@ class TelegramBot {
         return $this->endpoint("sendMessage", $content);
     }
 
+	public function editMessageText(array $content) {
+        return $this->endpoint("editMessageText", $content);
+    }
     /// Answer a callback Query
     /**
      * Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to the user as a notification at the top of the chat screen or as an alert. On success, <em>True</em> is returned.<br/>Values inside $content:<br/>
