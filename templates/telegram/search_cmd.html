@@ -21,6 +21,7 @@
 <thead>
 <tr>
  <th>&nbsp;</th>
+ <th>&nbsp;</th>
  <th>
  <a href="?sortby_cmd=TITLE&tab=<#TAB#>"><#LANG_TITLE#></a><nobr>
  [#if SORTBY="TITLE"#](+)[#endif#]
@@ -40,9 +41,20 @@
 <tr class="hover_btn2">
   <td width="1%" nowrap>
   [#if ACCESS==0#]
-   <img src="./img/icons/status/red_32.png">
+   <img src="../templates/telegram/img/disable.png">
   [#else#]
-   <img src="./img/icons/status/green_32.png">
+   <img src="../templates/telegram/img/enable.png">
+  [#endif#] 
+ </td>
+ <td width="1%" nowrap>
+  [#if SHOW_MODE==1#]
+   <img src="../templates/telegram/img/eye1.png">
+  [#endif#] 
+  [#if SHOW_MODE==2#]
+   <img src="../templates/telegram/img/eye3.png">
+  [#endif#] 
+  [#if SHOW_MODE==3#]
+   <img src="../templates/telegram/img/eye2.png">
   [#endif#] 
  </td>
  <td>
