@@ -47,6 +47,11 @@ class TelegramBot {
     public function getMe() {
         return $this->endpoint("getMe", array(), false);
     }
+	
+	public function getChat($chat_id) {
+		$content = array('chat_id' => $chat_id);
+        return $this->endpoint("getChat", $content);
+    }
 
     /// Send a message
     /**

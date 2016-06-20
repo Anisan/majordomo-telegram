@@ -619,7 +619,43 @@ function init() {
     if ($me)
         echo "Me: @".$me["result"]["username"]." (".$me["result"]["id"].")\n"; 
     else
+	{
         echo "Error connect, invalid token\n";
+		return;
+	}
+	$users = $this->getUsers("");
+	foreach ($users as $user)
+    {
+		$this->updateInfo($telegramBot,$user);
+	}
+}
+
+function updateInfo($telegramBot,$user)
+{
+    $chat = $telegramBot->getChat($user['USER_ID']);
+    $this->debug($chat);
+    if ($user['NAME'] == "")
+    {
+        // set name
+        if ($chat["result"]["type"]=="private")
+            $user["NAME"] = $chat["result"]["first_name"]." ".$chat["result"]["last_name"];
+        else
+            $user["NAME"] = $chat["result"]["title"];
+        SQLUpdate("tlg_user", $user);
+    }
+    if ($chat["result"]["type"]=="private")
+    {
+        $content = array('user_id' => $user['USER_ID']);
+        $image = $telegramBot->getUserProfilePhotos($content);
+        //$this->debug($image);
+        $file = $telegramBot->getFile($image["result"]["photos"][0][0]["file_id"]);
+        $this->debug($file);
+        $file_path = ROOT."cached".DIRECTORY_SEPARATOR."telegram".DIRECTORY_SEPARATOR.$user['USER_ID'].".jpg";
+        // качаем файл
+        $path_parts = pathinfo($file_path);
+        if (!is_dir($path_parts['dirname'])) mkdir($path_parts['dirname'], 0777, true);
+        $telegramBot->downloadFile($file["result"]["file_path"], $file_path); 
+    }    
 }
 
 function processCycle() {
@@ -863,16 +899,14 @@ function processCycle() {
             $user=SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '".DBSafe($chat_id)."';"); 
             if (!$user['ID']) {
                 $user['USER_ID']=$chat_id;
-                $name = $telegramBot->Username();
-                $user['NAME']=$name;
                 $user['CREATED'] = date('Y/m/d H:i:s');
                 $user['ID']=SQLInsert('tlg_user', $user);
                 echo  date("Y-m-d H:i:s ")." Added - ".$name."-".$chat_id."\n";
             } 
-            
             $reply = "Вы зарегистрированы! Обратитесь к администратору для получения доступа к функциям.";
             $content = array('chat_id' => $chat_id, 'text' => $reply);
             $this->sendContent($content);
+            $this->updateInfo($telegramBot,$user);
             continue;
         }
         

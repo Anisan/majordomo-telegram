@@ -13,7 +13,11 @@
  <label class="col-lg-4 control-label"><#LANG_ID#><span class='support' tabindex="1" data-title="<#LANG_HELP_USERID#>">
  <i class="glyphicon glyphicon-info-sign"></i>
  </span></label>
- <div class="controls">[#USER_ID#]</div>
+[#if ID==""#]
+  <div class="controls"><input  type="text" name="user_id" value="" class="form-control input"></div>
+ [#else#]
+  <div class="controls">[#USER_ID#]</div>
+[#endif ID#]
 </div>
 <!-- Name -->
 <div class="form-group">

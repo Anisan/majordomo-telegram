@@ -1,4 +1,5 @@
 <br/>
+<a href="?view_mode=user_edit" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> <#LANG_ADD_NEW_RECORD#></a>  
 
 <!-- results -->
 [#if RESULT#]
@@ -20,6 +21,7 @@
 <table   class="table table-stripped">
 <thead>
 <tr>
+ <th>&nbsp;</th>
  <th>
  <a href="?sortby_user=USER_ID"><#LANG_ID#></a><nobr>
  [#if SORTBY="USER_ID"#](+)[#endif#]
@@ -41,6 +43,7 @@
 <tbody>
 [#begin RESULT#]
 <tr class="hover_btn2">
+ <td><img src="../cached/telegram/[#USER_ID#].jpg" height="30px" onerror="this.src='../templates/telegram/img/none.jpg'"></td>
  <td><b>[#USER_ID#]</b></td>
  <td>
   [#if NAME!=""#]
