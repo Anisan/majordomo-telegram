@@ -678,7 +678,7 @@ function processCycle() {
                 for($j=0;$j<$c_users;$j++) {
                     $user_id = $users[$j]['USER_ID'];
                     //самому себе не отправлять
-                    if (($rec[$i]['MEMBER_ID'] != $users[$j]['MEMBER_ID']) &&
+                    if (($rec[$i]['MEMBER_ID'] != $users[$j]['MEMBER_ID'] || (!$rec[$i]['MEMBER_ID'] && !$users[$j]['MEMBER_ID'])) &&
                         ($rec[$i]['IMPORTANCE'] >= $users[$j]['HISTORY_LEVEL']))
                     {
                         echo  date("Y-m-d H:i:s ")." Send to ".$user_id." - ".$reply."\n";
