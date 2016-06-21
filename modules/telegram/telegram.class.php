@@ -665,7 +665,7 @@ function processCycle() {
     $bot_name = $me["result"]["username"]; 
     
     // отправка истории
-    $rec=SQLSelect("SELECT * FROM `shouts` where ID > ".$this->lastID." order by ID;");  
+    $rec=SQLSelect("SELECT *,(select NAME from users where users.ID=shouts.MEMBER_ID)as NAME FROM `shouts` where ID > ".$this->lastID." order by ID;");  
     $total=count($rec);
     if ($total) {
         // найти кому отправить
@@ -674,6 +674,8 @@ function processCycle() {
         if ($c_users) {
             for($i=0;$i<$total;$i++) {
                 $reply = $rec[$i]['MESSAGE'];
+				if ($rec[$i]['NAME'])
+					$reply = $rec[$i]['NAME'].": ".$reply;	
                 //отправлять всем у кого есть разрешения на получение истории
                 for($j=0;$j<$c_users;$j++) {
                     $user_id = $users[$j]['USER_ID'];
