@@ -623,6 +623,7 @@ function init() {
         echo "Error connect, invalid token\n";
 		return;
 	}
+	echo "Update user info\n";
 	$users = $this->getUsers("");
 	foreach ($users as $user)
     {
@@ -710,7 +711,8 @@ function processCycle() {
 		if ($callback)
 		{
 			$chat_id = $telegramBot->Callback_ChatID();
-			$message_id = $telegramBot->Callback_Message()["message_id"];
+			$cbm = $telegramBot->Callback_Message();
+            $message_id = $cbm["message_id"]; 
 			// get events for callback
 			$events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=9 and ENABLE=1;"); 
 			foreach ($events as $event)
