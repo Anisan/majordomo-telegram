@@ -169,8 +169,8 @@ function admin(&$out) {
     $out['TLG_TOKEN']=$this->config['TLG_TOKEN'];
     $out['TLG_STORAGE']=$this->config['TLG_STORAGE'];
     $out['TLG_COUNT_ROW']=$this->config['TLG_COUNT_ROW'];
-	if (!$out['TLG_COUNT_ROW'])
-		$out['TLG_COUNT_ROW']=3;
+        if (!$out['TLG_COUNT_ROW'])
+                $out['TLG_COUNT_ROW']=3;
     
     $out['TLG_DEBUG']=$this->config['TLG_DEBUG'];
     $out['TLG_test']=$this->data_source."_".$this->view_mode."_".$this->tab;
@@ -314,7 +314,7 @@ function getKeyb($user) {
                 if ($view)
                     $option[] = $rec[$i]["TITLE"];
             }
-			$count_row = $this->config['TLG_COUNT_ROW'];
+                        $count_row = $this->config['TLG_COUNT_ROW'];
             if (!$count_row) $count_row = 3;
             $option = array_chunk($option, $count_row);
         }
@@ -329,21 +329,21 @@ function getKeyb($user) {
 
 function buildInlineKeyboardButton($text, $url = "", $callback_data = "", $switch_inline_query = "")
 {
-	$telegramBot = new TelegramBot("");
-	return $telegramBot->buildInlineKeyboardButton($text, $url, $callback_data, $switch_inline_query);
+        $telegramBot = new TelegramBot("");
+        return $telegramBot->buildInlineKeyboardButton($text, $url, $callback_data, $switch_inline_query);
 }
 
 function buildInlineKeyBoard(array $option)
 {
-	$telegramBot = new TelegramBot("");
-	return $telegramBot->buildInlineKeyBoard($option);
+        $telegramBot = new TelegramBot("");
+        return $telegramBot->buildInlineKeyBoard($option);
 }
 
 function sendContent($content) {
     $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-	$this->debug($content);
+        $this->debug($content);
     $res = $telegramBot->sendMessage($content);
     $this->debug($res);
 }
@@ -357,7 +357,7 @@ function getUsers($where)
     return $users;
 }
 function editMessage($user_id, $message_id, $message, $keyboard='') {
-	$this->getConfig();
+        $this->getConfig();
     include_once("./modules/telegram/Telegram.php");
     $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
     $content = array('chat_id' => $user_id,'message_id'=>$message_id, 'text' => $message, 'reply_markup' => $keyboard);
@@ -386,9 +386,9 @@ function sendMessageTo($where, $message, array $key = NULL) {
             $keyboard = $this->getKeyb($user);
         else 
             $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
-		$content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyboard, 'parse_mode' => 'HTML');
-		$res = $telegramBot->sendMessage($content);
-		$this->debug($res);
+                $content = array('chat_id' => $user_id, 'text' => $message, 'reply_markup' => $keyboard, 'parse_mode' => 'HTML');
+                $res = $telegramBot->sendMessage($content);
+                $this->debug($res);
     }
 }
 
@@ -430,7 +430,7 @@ function sendImageTo($where, $image_path, $message='', array $key = NULL) {
             $keyboard = $telegramBot->buildKeyBoard($key, $resize= true);
         $content = array('chat_id' => $user_id, 'photo' => $img, 'caption' => $message, 'reply_markup' => $keyboard);
         $res = $telegramBot->sendPhoto($content);
-		$this->debug($res);
+                $this->debug($res);
     }
 }
 
@@ -471,7 +471,7 @@ function sendFileTo($where, $file_path, array $key = NULL) {
             $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
         $content = array('chat_id' => $user_id, 'document' => $file, 'reply_markup' => $keyboard);
         $res = $telegramBot->sendDocument($content);
-		$this->debug($res);
+                $this->debug($res);
     }
 }
 
@@ -510,7 +510,7 @@ function sendStickerTo($where, $sticker, array $key = NULL) {
             $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
         $content = array('chat_id' => $user_id, 'sticker' => $sticker, 'reply_markup' => $keyboard);
         $res = $telegramBot->sendSticker($content);
-		$this->debug($res);
+                $this->debug($res);
     }
 }
 
@@ -549,7 +549,7 @@ function sendLocationTo($where, $lat, $lon, array $key = NULL) {
             $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
         $content = array('chat_id' => $user_id, 'latitude' => $lat, 'longitude' => $lon, 'reply_markup' => $keyboard);
         $res = $telegramBot->sendLocation($content);
-		$this->debug($res);
+                $this->debug($res);
     }
 }
 
@@ -588,7 +588,7 @@ function sendVenueTo($where, $lat, $lon, $title, $address, array $key = NULL) {
             $keyboard = $telegramBot->buildKeyBoard($key , $resize= true);
         $content = array('chat_id' => $user_id, 'latitude' => $lat, 'longitude' => $lon, 'title' => $title, 'address' => $address, 'reply_markup' => $keyboard);
         $res = $telegramBot->sendVenue($content);
-		$this->debug($res);
+                $this->debug($res);
     }
 }
 
@@ -619,16 +619,16 @@ function init() {
     if ($me)
         echo "Me: @".$me["result"]["username"]." (".$me["result"]["id"].")\n"; 
     else
-	{
+        {
         echo "Error connect, invalid token\n";
-		return;
-	}
-	echo "Update user info\n";
-	$users = $this->getUsers("");
-	foreach ($users as $user)
+                return;
+        }
+        echo "Update user info\n";
+        $users = $this->getUsers("");
+        foreach ($users as $user)
     {
-		$this->updateInfo($telegramBot,$user);
-	}
+                $this->updateInfo($telegramBot,$user);
+        }
 }
 
 function updateInfo($telegramBot,$user)
@@ -666,6 +666,7 @@ function processCycle() {
     $bot_name = $me["result"]["username"]; 
     
     // отправка истории
+    /*
     $rec=SQLSelect("SELECT *,(select NAME from users where users.ID=shouts.MEMBER_ID)as NAME FROM `shouts` where ID > ".$this->lastID." order by ID;");  
     $total=count($rec);
     if ($total) {
@@ -675,8 +676,8 @@ function processCycle() {
         if ($c_users) {
             for($i=0;$i<$total;$i++) {
                 $reply = $rec[$i]['MESSAGE'];
-				if ($rec[$i]['NAME'])
-					$reply = $rec[$i]['NAME'].": ".$reply;	
+                                if ($rec[$i]['NAME'])
+                                        $reply = $rec[$i]['NAME'].": ".$reply;  
                 //отправлять всем у кого есть разрешения на получение истории
                 for($j=0;$j<$c_users;$j++) {
                     $user_id = $users[$j]['USER_ID'];
@@ -697,38 +698,39 @@ function processCycle() {
         else
             $this->lastID = $rec[$total-1]['ID'];
     }  
+    */
 
     
     // Get all the new updates and set the new correct update_id
     $req = $telegramBot->getUpdates($timeout=5);
     for ($i = 0; $i < $telegramBot-> UpdateCount(); $i++) {
-		$skip = false;
+                $skip = false;
         // You NEED to call serveUpdate before accessing the values of message in Telegram Class
         $telegramBot->serveUpdate($i);
         $data = $telegramBot->getData();
         $this->debug($data);
-		$callback = $telegramBot->Callback_Data();
-		if ($callback)
-		{
-			$chat_id = $telegramBot->Callback_ChatID();
-			$cbm = $telegramBot->Callback_Message();
+                $callback = $telegramBot->Callback_Data();
+                if ($callback)
+                {
+                        $chat_id = $telegramBot->Callback_ChatID();
+                        $cbm = $telegramBot->Callback_Message();
             $message_id = $cbm["message_id"]; 
-			// get events for callback
-			$events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=9 and ENABLE=1;"); 
-			foreach ($events as $event)
-			{
-				if ($event['CODE']){
-					echo  date("Y-m-d H:i:s ")." Execute code event ".$event['TITLE']."\n";
-					try {
-						eval($event['CODE']);
-					} catch (Exception $e) {
-						registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
-					}
-				}
-			}
-			continue;
-		}
-		
+                        // get events for callback
+                        $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=9 and ENABLE=1;"); 
+                        foreach ($events as $event)
+                        {
+                                if ($event['CODE']){
+                                        echo  date("Y-m-d H:i:s ")." Execute code event ".$event['TITLE']."\n";
+                                        try {
+                                                eval($event['CODE']);
+                                        } catch (Exception $e) {
+                                                registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
+                                        }
+                                }
+                        }
+                        continue;
+                }
+                
         $text = $telegramBot->Text();
         $chat_id = $telegramBot->ChatID();
         $document = $telegramBot->Document();
@@ -737,45 +739,64 @@ function processCycle() {
         $voice = $telegramBot->Voice();
         $sticker = $telegramBot->Sticker();
         $photo_id = $telegramBot->PhotoIdBigSize();
-		$location = $telegramBot->Location();
+        $username = $telegramBot->Username();
+
+        $fullname = $telegramBot->FirstName().' '.$telegramBot->LastName();
+
+        $location = $telegramBot->Location();
+
         // найти в базе пользователя
-		$user=SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '".DBSafe($chat_id)."';"); 
-		if ($location) 
-        {
-			$latitude = $location["latitude"];
-			$longitude = $location["longitude"];
-			echo  date("Y-m-d H:i:s ")." Get location from ".$chat_id." - ".$latitude.",".$longitude."\n";
-			if ($user['MEMBER_ID'])
-		    {
-				$sqlQuery = "SELECT * FROM users WHERE ID = '" . $user['MEMBER_ID'] . "'";
-				$userObj = SQLSelectOne($sqlQuery);
-				if ($userObj['LINKED_OBJECT'])
-				{
-					echo  date("Y-m-d H:i:s ")." Update location to user '".$userObj['LINKED_OBJECT']."'\n";
-					setGlobal($userObj['LINKED_OBJECT'] . '.Coordinates', $latitude . ',' . $longitude);
-					setGlobal($userObj['LINKED_OBJECT'] . '.CoordinatesUpdated', date('H:i'));
-					setGlobal($userObj['LINKED_OBJECT'] . '.CoordinatesUpdatedTimestamp', time());
-				}
-			}
-			// get events for location
-			$events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=8 and ENABLE=1;"); 
-			foreach ($events as $event)
-			{
-				if ($event['CODE']){
-					echo  date("Y-m-d H:i:s ")." Execute code event ".$event['TITLE']."\n";
-					try {
-						eval($event['CODE']);
-					} catch (Exception $e) {
-						registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
-					}
-				}
-			}
-			continue;
-		}
+                $user=SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '".DBSafe($chat_id)."';");
+                if ($chat_id<0 && substr($text, 0, strlen('@'.$bot_name)) === '@'.$bot_name) {
+                 //DebMes("Direct message to bot: ".$bot_name. " ($text)");
+                 $text=str_replace('@'.$bot_name, '', $text);
+                 $source_user=SQLSelectOne("SELECT * FROM tlg_user WHERE TRIM(NAME) LIKE '".DBSafe(trim($username))."'");
+                 if ($source_user['ID']) {
+                  $user=$source_user;
+                  //DebMes("New user check: ".serialize($user));
+                 } else {
+                  //DebMes("Cannot find user: ".$username);
+                 }
+                } else {
+                 //DebMes("Chatid: ".$chat_id."; Bot-name: ".$bot_name."; Message: ".$text);
+                }
+
+                if ($location) 
+                {
+                        $latitude = $location["latitude"];
+                        $longitude = $location["longitude"];
+                        echo  date("Y-m-d H:i:s ")." Get location from ".$chat_id." - ".$latitude.",".$longitude."\n";
+                        if ($user['MEMBER_ID'])
+                        {
+                                $sqlQuery = "SELECT * FROM users WHERE ID = '" . $user['MEMBER_ID'] . "'";
+                                $userObj = SQLSelectOne($sqlQuery);
+                                if ($userObj['LINKED_OBJECT'])
+                                {
+                                        echo  date("Y-m-d H:i:s ")." Update location to user '".$userObj['LINKED_OBJECT']."'\n";
+                                        setGlobal($userObj['LINKED_OBJECT'] . '.Coordinates', $latitude . ',' . $longitude);
+                                        setGlobal($userObj['LINKED_OBJECT'] . '.CoordinatesUpdated', date('H:i'));
+                                        setGlobal($userObj['LINKED_OBJECT'] . '.CoordinatesUpdatedTimestamp', time());
+                                }
+                        }
+                        // get events for location
+                        $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=8 and ENABLE=1;"); 
+                        foreach ($events as $event)
+                        {
+                                if ($event['CODE']){
+                                        echo  date("Y-m-d H:i:s ")." Execute code event ".$event['TITLE']."\n";
+                                        try {
+                                                eval($event['CODE']);
+                                        } catch (Exception $e) {
+                                                registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
+                                        }
+                                }
+                        }
+                        continue;
+                }
         //permission download file
         if ($user['DOWNLOAD']==1)
         {
-			$type = 0;
+                        $type = 0;
             //папку с файлами в настройках
             $storage = $this->config['TLG_STORAGE'].DIRECTORY_SEPARATOR;
             if ($photo_id) 
@@ -783,7 +804,7 @@ function processCycle() {
                 $file = $telegramBot->getFile($photo_id);
                 echo  date("Y-m-d H:i:s ")." Get photo from ".$chat_id." - ".$file["result"]["file_path"]."\n";
                 $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
-				$type =2;
+                                $type =2;
             }
             if ($document) 
             {
@@ -793,15 +814,15 @@ function processCycle() {
                 if(!isset($file['error_code'])) 
                 {
                     $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR."document".DIRECTORY_SEPARATOR.$document["file_name"];
-					if (file_exists($file_path)) 
-						$file_path = $storage.$chat_id.DIRECTORY_SEPARATOR."document".DIRECTORY_SEPARATOR.$telegramBot->UpdateID()."_".$document["file_name"];
+                                        if (file_exists($file_path)) 
+                                                $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR."document".DIRECTORY_SEPARATOR.$telegramBot->UpdateID()."_".$document["file_name"];
                 }
                 else
                 {
                     $file_path = "";
                     echo  date("Y-m-d H:i:s ").$file['description']."\n";
                 }
-				$type = 6;
+                                $type = 6;
             }
             if ($audio) 
             {
@@ -814,15 +835,15 @@ function processCycle() {
                 if(isset($audio['title'])) $filename = $audio['title'].".".$path_parts['extension'];
                 if(isset($audio['performer'])) $filename = $audio['performer']."-".$filename;
                 $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR."audio".DIRECTORY_SEPARATOR.$filename;
-				$type = 4;
+                                $type = 4;
             }
-			if ($voice) 
+                        if ($voice) 
             {
                 $file = $telegramBot->getFile($voice["file_id"]);
                 //print_r($file);
                 echo  date("Y-m-d H:i:s ")." Get voice from ".$chat_id." - ".$file["result"]["file_path"]."\n";
                 $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
-				$type = 3;
+                                $type = 3;
             }
             if ($video) 
             {
@@ -830,15 +851,15 @@ function processCycle() {
                 //print_r($file);
                 echo  date("Y-m-d H:i:s ")." Get video from ".$chat_id." - ".$file["result"]["file_path"]."\n";
                 $file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
-				$type = 5;
+                                $type = 5;
             }
             if ($sticker) 
             {
                 $file = $telegramBot->getFile($sticker["file_id"]);
                 echo  date("Y-m-d H:i:s ")." Get sticker from ".$chat_id." - ".$sticker["file_id"]."\n";
                 //$file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
-				$sticker_id = $sticker["file_id"];
-				$type = 7;
+                                $sticker_id = $sticker["file_id"];
+                                $type = 7;
             }
             if ($file_path){ 
                 // качаем файл
@@ -853,50 +874,51 @@ function processCycle() {
                 @touch($file_path);
                 playSound($file_path, 1, $level);
             }
-			
-			if ($file_path || $sticker_id){ 
-				// get events
-				$events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=".$type." and ENABLE=1;"); 
-				foreach ($events as $event)
-				{
-					if ($event['CODE']){
-						echo  date("Y-m-d H:i:s ")." Execute code event ".$event['TITLE']."\n";
-						try {
-							eval($event['CODE']);
-						} catch (Exception $e) {
-							registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
-						}
-					}
-				}
-			}
+                        
+                        if ($file_path || $sticker_id){ 
+                                // get events
+                                $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=".$type." and ENABLE=1;"); 
+                                foreach ($events as $event)
+                                {
+                                        if ($event['CODE']){
+                                                echo  date("Y-m-d H:i:s ")." Execute code event ".$event['TITLE']."\n";
+                                                try {
+                                                        eval($event['CODE']);
+                                                } catch (Exception $e) {
+                                                        registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
+                                                }
+                                        }
+                                }
+                        }
             $file_path = "";
         }    
         if ($text=="") {
             continue;
         }
-		
-        echo  date("Y-m-d H:i:s ").$chat_id."=".$text."\n";
-		// get events for text message
-		$events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=1 and ENABLE=1;"); 
-		foreach ($events as $event)
-		{
-			if ($event['CODE']){
+                
+        echo  date("Y-m-d H:i:s ").$chat_id." (".$username.", ".$fullname.")=".$text."\n";
+
+                // get events for text message
+                $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=1 and ENABLE=1;"); 
+                foreach ($events as $event)
+                {
+                        if ($event['CODE']){
                 echo  date("Y-m-d H:i:s ")." Execute code event ".$event['TITLE']."\n";
-				try {
+                                try {
                     eval($event['CODE']);
                 } catch (Exception $e) {
                     registerError('telegram', sprintf('Exception in "%s" method '.$e->getMessage(), $text));
                 }
-			}
-		}
-		// пропуск дальнейшей обработки если с обработчике событий установили $skip
-		if ($skip) 
-		{
-			echo  date("Y-m-d H:i:s ")." Skip next processing message\n";
+                        }
+                }
+                // пропуск дальнейшей обработки если с обработчике событий установили $skip
+                if ($skip) 
+                {
+                        echo  date("Y-m-d H:i:s ")." Skip next processing message\n";
             continue;
-		}
-		
-		
+                }
+                
+                
         if ($text == "/start" || $text == "/start@".$bot_name) {
             // найти в базе пользователя
             // если нет добавляем
@@ -959,39 +981,37 @@ function processCycle() {
                     } else {
                         $reply = "Private Chat";
                     }
-                        
                     $content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => $reply);
                     $this->sendContent($content);
                 } 
-                else if ($text == "/git") {
-                    $reply = "Check me on GitHub: https://github.com/Eleirbag89/TelegramBotPHP";
-                    // Build the reply array
-                    $content = array('chat_id' => $chat_id, 'text' => $reply);
-                    $this->sendContent($content);
-                }
                 else
                 {
+                    /*
                     $rec=array();
                     $rec['ROOM_ID']=0;
                     $rec['MEMBER_ID']=$user['MEMBER_ID'];
                     $rec['MESSAGE']=htmlspecialchars($text);
                     $rec['ADDED']=date('Y-m-d H:i:s');
                     SQLInsert('shouts', $rec);
+                    */
+                    say(htmlspecialchars($text), 0, $user['MEMBER_ID'], 'telegram'.$user['ID']);
                     
+                    /*
                     try {
                         include_once(DIR_MODULES.'patterns/patterns.class.php');
-						$pt=new patterns();
-						echo  date("Y-m-d H:i:s ")." Check pattern \n";
-						$res=$pt->checkAllPatterns($rec['MEMBER_ID']);
-						if (!$res) {
-							echo  date("Y-m-d H:i:s ")." Pattern not found. Run ThisComputer.processCommand\n";
-							getObject("ThisComputer")->callMethod("commandReceived", array("command" => $text));
-						} 
+                                                $pt=new patterns();
+                                                echo  date("Y-m-d H:i:s ")." Check pattern \n";
+                                                $res=$pt->checkAllPatterns($rec['MEMBER_ID']);
+                                                if (!$res) {
+                                                        echo  date("Y-m-d H:i:s ")." Pattern not found. Run ThisComputer.processCommand\n";
+                                                        getObject("ThisComputer")->callMethod("commandReceived", array("command" => $text));
+                                                } 
                     } 
-					catch (Exception $e) {
+                                        catch (Exception $e) {
                         registerError('telegram', 'Exception '.$e->getMessage());
                         echo  date("Y-m-d H:i:s ")." Exception ".$e->getMessage()."\n";
                     }
+                    */
                 }
 
             }
@@ -1009,6 +1029,53 @@ function processCycle() {
 function usual(&$out) {
  $this->admin($out);
 }
+
+ function processSubscription($event, &$details) {
+  $this->getConfig();
+  if ($event=='SAY') { // || $event=='SAYTO' || $event=='REPLYTO'
+    //DebMes("processing $event event: ".serialize($details));
+    $level=$details['level'];
+    $message=$details['message'];
+    if ($details['destination']) {
+     $destination=$details['destination'];
+    } elseif ($details['source']) {
+     $destination=$details['source'];
+    }
+
+    $this->getConfig();
+    include_once("./modules/telegram/Telegram.php");
+    $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+    $me=$telegramBot->getMe();
+    $bot_name = $me["result"]["username"]; 
+    
+        $users=SQLSelect("SELECT * FROM tlg_user WHERE HISTORY=1;"); 
+        $c_users=count($users);
+        if ($c_users) {
+
+                $reply = $message;
+
+                for($j=0;$j<$c_users;$j++) {
+                    $user_id = $users[$j]['USER_ID'];
+                    if (
+                        $destination == 'telegram'.$users[$j]['ID'] || (!$destination && ($level >= $users[$j]['HISTORY_LEVEL'])) 
+                       )
+                    {
+                        echo  date("Y-m-d H:i:s ")." Send to ".$user_id." - ".$reply."\n";
+                        DebMes("Telegram sending to ".$user_id." - ".$reply);
+                        $keyb = $this->getKeyb($users[$j]);
+                        $content = array('chat_id' => $user_id, 'text' => $reply, 'reply_markup' => $keyb);
+                        $this->sendContent($content);
+                    }
+                }
+                //DebMes("Telegram Sent: ".$reply);
+                //echo  date("Y-m-d H:i:s ")." Sended - ".$reply."\n";
+       } else {
+        DebMes("No users to send data");
+       }
+  }
+
+ }
+
 /**
 * Install
 *
@@ -1017,6 +1084,9 @@ function usual(&$out) {
 * @access private
 */
  function install() {
+  subscribeToEvent($this->name, 'SAY');
+  subscribeToEvent($this->name, 'SAYTO');
+  subscribeToEvent($this->name, 'SAYREPLY');
   parent::install();
  }
  
