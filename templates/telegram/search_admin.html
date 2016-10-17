@@ -54,7 +54,10 @@
 </div>
 
 <div>
- Telegram  <a class="btn btn-default" href="#" onClick="$('#api_settings').toggle();return false;"><#LANG_SETUP#></a>   
+ <a href="https://telegram.org/">
+	<img src="../templates/telegram/image.png"  width="24" height="24">Telegram
+ </a>  
+ <a class="btn btn-default" href="#" onClick="$('#api_settings').toggle();return false;"><#LANG_SETUP#></a>   
  &nbsp;
 </div>
 
@@ -68,22 +71,80 @@
  <i class="glyphicon glyphicon-info-sign"></i>
  </span>
 </label>
- <div class="col-lg-4"><input class="form-control" type="text" name="tlg_token" value="<#TLG_TOKEN#>" class="input"></div>
+ <div class="col-lg-6"><input class="form-control" type="text" name="tlg_token" value="<#TLG_TOKEN#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_STORAGE_PATH#>
  <span class='support' tabindex="1" data-title="<#LANG_HELP_STORAGE#>">
  <i class="glyphicon glyphicon-info-sign"></i>
  </label>
- <div class="col-lg-4"><input class="form-control" type="text" name="tlg_storage" value="<#TLG_STORAGE#>" class="input"></div>
+ <div class="col-lg-6"><input class="form-control" type="text" name="tlg_storage" value="<#TLG_STORAGE#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_COUNT_ROW#>
  <span class='support' tabindex="1" data-title="<#LANG_HELP_COUNTROW#>">
  <i class="glyphicon glyphicon-info-sign"></i>
  </label>
- <div class="col-lg-4"><input class="form-control" type="text" name="tlg_count_row" value="<#TLG_COUNT_ROW#>" class="input"></div>
+ <div class="col-lg-6"><input class="form-control" type="text" name="tlg_count_row" value="<#TLG_COUNT_ROW#>" class="input"></div>
 </div>
+ <div class="form-group">
+ <label class="control-label">Use webhook</label>
+ <div class="controls"><input type="checkbox" id="tlg_webhook" name="tlg_webhook" onchange="OnChangeWebHook(this);" value="1"[#if TLG_WEBHOOK="1"#] checked[#endif#]></div>
+</div>
+<script type="text/javascript">
+ function OnChangeWebHook (select) {    
+  var fDivLevel = document.getElementById('webhook_settings');
+  fDivLevel.style.display = (select.checked) ? 'block' : 'none';
+ }
+
+	function showInfo(){  
+	    var url="?webhookinfo=1";
+		$.ajax({  
+			url: url,  
+			cache: false,  
+			success: function(html){  
+				$("#info").html(html);  
+			}  
+		});  
+	}  
+	function setWebHook(){  
+	    var url="?setwebhook=1";
+		$.ajax({  
+			url: url,  
+			cache: false,  
+			success: function(html){  
+				$("#info").html(html);  
+			}  
+		});  
+	}  
+	function cleanWebHook(){  
+	    var url="?cleanwebhook=1";
+		$.ajax({  
+			url: url,  
+			cache: false,  
+			success: function(html){  
+				$("#info").html(html);  
+			}  
+		});  
+	}  
+</script> 
+<div style="display:none" id='webhook_settings'>
+<div class="form-group">
+ <label class="col-lg-4 control-label">Webhook URL
+  <span class='support' tabindex="1" data-title="<#LANG_HELP_COUNTROW#>">
+ </label>
+ <div class="col-lg-6">
+	<input class="form-control" type="text" name="tlg_webhook_url" value="<#TLG_WEBHOOK_URL#>" class="input"></br>
+	 <button onclick="setWebHook();return false;" class="btn btn-default">Set webhook</button>
+	 <button onclick="cleanWebHook();return false;" class="btn btn-default">Clean webhook</button>
+	 <button onclick="showInfo();return false;" class="btn btn-default">Status webhook</button></br>
+	 <div id="info"></div>
+ </div>
+</div>
+</div>
+<script type="text/javascript">  
+OnChangeWebHook(document.getElementById('tlg_webhook'));
+</script> 
 <div class="form-group">
  <label class="control-label">Debug</label>
  <div class="controls"><input type="checkbox" name="tlg_debug" value="1"[#if TLG_DEBUG="1"#] checked[#endif#]></div>

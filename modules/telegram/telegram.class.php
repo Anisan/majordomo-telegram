@@ -30,7 +30,7 @@ class telegram extends module {
      *
      * @access public
      */
-    function saveParams() {
+    function saveParams($data=0) {
         $p = array();
         if(IsSet($this->id)) {
             $p["id"] = $this->id;
@@ -114,6 +114,7 @@ class telegram extends module {
             $this->log(print_r($content,true));
     }
     function log($message) {
+        //echo $message . "\n";
         // DEBUG MESSAGE LOG
         if(!is_dir(ROOT . 'debmes')) {
             mkdir(ROOT . 'debmes', 0777);
@@ -176,6 +177,42 @@ class telegram extends module {
             exit;
         }
         $this->getConfig();
+        global $webhookinfo;
+        if ($webhookinfo)
+        {
+            header("HTTP/1.0: 200 OK\n");
+            header('Content-Type: text/html; charset=utf-8');
+            require_once("./modules/telegram/Telegram.php");
+            $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+            $webhookInfo = $telegramBot->getWebhookInfo();
+            $this->debug($webhookInfo);
+            echo print_r($webhookInfo,true);
+            exit;
+        }
+        global $setwebhook;
+        if ($setwebhook)
+        {
+            header("HTTP/1.0: 200 OK\n");
+            header('Content-Type: text/html; charset=utf-8');
+            require_once("./modules/telegram/Telegram.php");
+            $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+            $webhookRes = $telegramBot->setWebhook($this->config['TLG_WEBHOOK_URL']."/webhook_telegram.php");
+            $this->debug($webhookRes);
+            echo print_r($webhookRes,true);
+            exit;
+        }
+        global $cleanwebhook;
+        if ($cleanwebhook)
+        {
+            header("HTTP/1.0: 200 OK\n");
+            header('Content-Type: text/html; charset=utf-8');
+            require_once("./modules/telegram/Telegram.php");
+            $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+            $webhookRes = $telegramBot->setWebhook("");
+            $this->debug($webhookRes);
+            echo print_r($webhookRes,true);
+            exit;
+        }
         $out['TLG_TOKEN'] = $this->config['TLG_TOKEN'];
         $out['TLG_STORAGE'] = $this->config['TLG_STORAGE'];
         $out['TLG_COUNT_ROW'] = $this->config['TLG_COUNT_ROW'];
@@ -183,6 +220,10 @@ class telegram extends module {
             $out['TLG_COUNT_ROW'] = 3;
         $out['TLG_DEBUG'] = $this->config['TLG_DEBUG'];
         $out['TLG_test'] = $this->data_source . "_" . $this->view_mode . "_" . $this->tab;
+        // get webhook info
+        $out['TLG_WEBHOOK'] = $this->config['TLG_WEBHOOK'];
+        $out['TLG_WEBHOOK_URL'] = $this->config['TLG_WEBHOOK_URL'];
+        
         if($this->data_source == 'telegram' || $this->data_source == '') {
             if($this->view_mode == 'update_settings') {
                 global $tlg_token;
@@ -193,6 +234,10 @@ class telegram extends module {
                 $this->config['TLG_COUNT_ROW'] = $tlg_count_row;
                 global $tlg_debug;
                 $this->config['TLG_DEBUG'] = $tlg_debug;
+                global $tlg_webhook;
+                $this->config['TLG_WEBHOOK'] = $tlg_webhook;
+                global $tlg_webhook_url;
+                $this->config['TLG_WEBHOOK_URL'] = $tlg_webhook_url;
                 $this->saveConfig();
                 $this->redirect("?");
             }
@@ -229,6 +274,24 @@ class telegram extends module {
                 }
             }
         }
+        global $webhook_set;
+        if ($webhook_set) {
+            //require_once("./modules/telegram/Telegram.php");
+            $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+            global $tlg_webhook_url;
+            $webhookRes = $telegramBot->setWebhook($this->config['TLG_WEBHOOK_URL']."/webhook_telegram.php");
+            $this->debug($webhookRes);
+            $this->redirect("?");
+        }
+        global $webhook_clean;
+        if ($webhook_clean) {
+            //require_once("./modules/telegram/Telegram.php");
+            $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+            $webhookRes = $telegramBot->setWebhook("");
+            $this->debug($webhookRes);
+            $this->redirect("?");
+        }         
+        
     }
     /**
      * Edit/add
@@ -632,7 +695,11 @@ class telegram extends module {
         $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $me = $telegramBot->getMe();
         if($me)
+        {
             $this->log("Me: @" . $me["result"]["username"] . " (" . $me["result"]["id"] . ")");
+            $this->config['TLG_BOTNAME'] = $me["result"]["username"];
+            $this->saveConfig();
+        }
         else {
             $this->log("Error connect, invalid token");
             return;
@@ -640,7 +707,7 @@ class telegram extends module {
         $this->log("Update user info");
         $users = $this->getUsers("");
         foreach($users as $user) {
-            $this->updateInfo($telegramBot, $user);
+           $this->updateInfo($telegramBot, $user);
         }
     }
     function updateInfo($telegramBot, $user) {
@@ -670,18 +737,25 @@ class telegram extends module {
             $telegramBot->downloadFile($file["result"]["file_path"], $file_path);
         }
     }
+    
     function processCycle() {
         $this->getConfig();
+        if ($this->config['TLG_WEBHOOK'])
+            return;
         $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-        $me = $telegramBot->getMe();
-        $bot_name = $me["result"]["username"];
         
         // Get all the new updates and set the new correct update_id
         $req = $telegramBot->getUpdates($timeout = 5);
         for($i = 0; $i < $telegramBot->UpdateCount(); $i++) {
-            $skip = false;
             // You NEED to call serveUpdate before accessing the values of message in Telegram Class
             $telegramBot->serveUpdate($i);
+            $this->processMessage($telegramBot);
+        }
+    }
+    function processMessage($telegramBot) {
+        $skip = false;
+        $bot_name = $this->config['TLG_BOTNAME'];
+        
             $data = $telegramBot->getData();
             $this->debug($data);
             $callback = $telegramBot->Callback_Data();
@@ -702,7 +776,7 @@ class telegram extends module {
                         }
                     }
                 }
-                continue;
+                return;
             }
             $text = $telegramBot->Text();
             $chat_id = $telegramBot->ChatID();
@@ -757,7 +831,7 @@ class telegram extends module {
                         }
                     }
                 }
-                continue;
+                return;
             }
             //permission download file
             if($user['DOWNLOAD'] == 1) {
@@ -850,7 +924,7 @@ class telegram extends module {
                 $file_path = "";
             }
             if($text == "") {
-                continue;
+                return;
             }
             $this->log($chat_id . " (" . $username . ", " . $fullname . ")=" . $text);
             // get events for text message
@@ -869,7 +943,7 @@ class telegram extends module {
             // пропуск дальнейшей обработки если с обработчике событий установили $skip
             if($skip) {
                 $this->log("Skip next processing message");
-                continue;
+                return;
             }
             if($text == "/start" || $text == "/start@" . $bot_name) {
                 // найти в базе пользователя
@@ -888,7 +962,7 @@ class telegram extends module {
                 );
                 $this->sendContent($content);
                 $this->updateInfo($telegramBot, $user);
-                continue;
+                return;
             }
             if($user['ID']) {
                 //смотрим разрешения на обработку команд
@@ -927,7 +1001,7 @@ class telegram extends module {
                                 );
                                 $this->sendContent($content);
                             }
-                            continue;
+                            return;
                         }
                         // если нет кода, который надо выполнить, то передаем дальше на обработку
                     } else
@@ -949,7 +1023,6 @@ class telegram extends module {
                     }
                 }
             }
-        }
     }
     /**
      * FrontEnd
@@ -1006,7 +1079,7 @@ class telegram extends module {
      *
      * @access private
      */
-    function install() {
+    function install($data='') {
         subscribeToEvent($this->name, 'SAY');
         subscribeToEvent($this->name, 'SAYTO');
         subscribeToEvent($this->name, 'SAYREPLY');

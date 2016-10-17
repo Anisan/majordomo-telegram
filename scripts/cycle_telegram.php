@@ -12,9 +12,10 @@ include_once("./load_settings.php");
 include_once(DIR_MODULES . "control_modules/control_modules.class.php");
 $ctl = new control_modules();
 include_once(DIR_MODULES . 'telegram/telegram.class.php');
+echo date("H:i:s") . " Running " . basename(__FILE__) . PHP_EOL;
 $telegram_module = new telegram();
+echo date("H:i:s") . " Init module " . PHP_EOL;
 $telegram_module->init();
-echo date("H:i:s") . " running " . basename(__FILE__) . PHP_EOL;
 $latest_check=0;
 while (1)
 {
@@ -27,7 +28,7 @@ while (1)
       $db->Disconnect();
       exit;
    }
-   sleep(1);
+   sleep(3);
 }
 DebMes("Unexpected close of cycle: " . basename(__FILE__));
  
