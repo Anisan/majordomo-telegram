@@ -1067,7 +1067,8 @@ class telegram extends module {
                         $content = array(
                             'chat_id' => $user_id,
                             'text' => $reply,
-                            'reply_markup' => $keyb
+                            'reply_markup' => $keyb,
+                            'parse_mode' => 'HTML'
                         );
                         $this->sendContent($content);
                     }
