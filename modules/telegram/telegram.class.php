@@ -119,14 +119,9 @@ class telegram extends module {
         if(!is_dir(ROOT . 'debmes')) {
             mkdir(ROOT . 'debmes', 0777);
         }
-        $today_file = ROOT . 'debmes/log_' . date('Y-m-d') . '-cycle_telegram.php.txt';
-        $f = fopen($today_file, "a+");
-        if($f) {
-            fputs($f, date("H:i:s"));
-            fputs($f, " " . $message . "\n");
-            fclose($f);
-            @chmod($today_file, 0666);
-        }
+        $today_file = ROOT . 'debmes/log_' . date('Y-m-d') . '-telegram.php.txt';
+        $data = date("H:i:s")." " . $message . "\n";
+        file_put_contents($today_file, $data, FILE_APPEND | LOCK_EX);
     }
     /**
      * BackEnd
@@ -144,7 +139,7 @@ class telegram extends module {
             header('Content-Type: text/html; charset=utf-8');
             $limit = 50;
             // Find last midifed
-            $filename = ROOT . 'debmes/log_*-cycle_telegram.php.txt';
+            $filename = ROOT . 'debmes/log_*-telegram.php.txt';
             foreach(glob($filename) as $file) {
                 $LastModified[] = filemtime($file);
                 $FileName[] = $file;
@@ -211,6 +206,17 @@ class telegram extends module {
             $webhookRes = $telegramBot->setWebhook("");
             $this->debug($webhookRes);
             echo print_r($webhookRes,true);
+            exit;
+        }
+        global $sendMessage;
+        if ($sendMessage)
+        {
+            header("HTTP/1.0: 200 OK\n");
+            header('Content-Type: text/html; charset=utf-8');
+            global $user;
+            global $text;
+            $this->sendMessageToUser($user,$text);
+            echo "Ok";
             exit;
         }
         $out['TLG_TOKEN'] = $this->config['TLG_TOKEN'];

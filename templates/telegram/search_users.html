@@ -16,6 +16,20 @@
 </center>
 [#endif PAGES#]
 <!-- / paging -->
+<script type="text/javascript">
+	function sendMessage(user_id){ 
+        var text = prompt("Input text message:", '');
+		if (text == null) return;
+	    var url="?sendMessage=1&user="+user_id+"&text="+text;
+		$.ajax({  
+			url: url,  
+			cache: false,  
+			success: function(html){  
+				alert(html);  
+			}  
+		});  
+	}  
+</script> 
 <!-- search results (list) -->
 <form action="?" method="post" name="frmList_telegram" style="padding:0px" class="form">
 <table   class="table table-stripped">
@@ -89,6 +103,7 @@
  </td>  
  <td width="1%" nowrap>
   [#if "<#ACTION#>"=="admin"#]
+    <button onclick="sendMessage([#USER_ID#]);return false;" title="Send message" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-flash"></i></button>
     <a href="?view_mode=user_edit&id=[#ID#]" class="btn btn-default btn-sm" title="<#LANG_EDIT#>"><i class="glyphicon glyphicon-pencil"></i></a>
     <a href="?view_mode=user_delete&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="<#LANG_DELETE#>"><i class="glyphicon glyphicon-remove"></i></a>
   [#endif ACTION#]
