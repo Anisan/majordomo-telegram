@@ -424,6 +424,25 @@ class telegram extends module {
         $res = $telegramBot->editMessageText($content);
         $this->debug($res);
     }
+    // Chat Action
+    //typing for text messages
+    //upload_photo for photos
+    //record_video or upload_video for videos
+    //record_audio or upload_audio for audio files
+    //upload_document for general files
+    //find_location for location data
+    function sendAction($user_id, $action = 'typing') {
+        $this->getConfig();
+        include_once("./modules/telegram/Telegram.php");
+        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+        $content = array(
+            'chat_id' => $user_id,
+            'action' => $action
+        );
+        $res = $telegramBot->sendChatAction($content);
+        $this->debug($res);
+    }
+    
     // send message
     function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML') {
         $this->getConfig();
