@@ -181,7 +181,18 @@ class telegram extends module {
             $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
             $webhookInfo = $telegramBot->getWebhookInfo();
             $this->debug($webhookInfo);
-            echo print_r($webhookInfo,true);
+            $info = "<b>Url:</b> ".$webhookInfo["result"]["url"];
+            if ($info["result"]["has_custom_certificate"] == 1)
+                $info .= "</br><b>Use custom certificate</b>";
+            $info .= "</br><b>Pending update count:</b> ".$webhookInfo["result"]["pending_update_count"];
+            if (isset($webhookInfo["result"]["last_error_date"]))
+            {
+                $err_date = date('d M Y H:i:s',$webhookInfo["result"]["last_error_date"]);
+                $info .= "</br><b>Last error date:</b> ".$err_date;
+            }
+            if (isset($webhookInfo["result"]["last_error_message"]))
+                $info .= "</br><b>Last error:</b> ".$webhookInfo["result"]["last_error_message"];
+            echo $info;
             exit;
         }
         global $setwebhook;
@@ -191,9 +202,9 @@ class telegram extends module {
             header('Content-Type: text/html; charset=utf-8');
             require_once("./modules/telegram/Telegram.php");
             $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-            $webhookRes = $telegramBot->setWebhook($this->config['TLG_WEBHOOK_URL']."/webhook_telegram.php");
+            $webhookRes = $telegramBot->setWebhook($this->config['TLG_WEBHOOK_URL']."/webhook_telegram.php",$this->config['TLG_WEBHOOK_CERT']);
             $this->debug($webhookRes);
-            echo print_r($webhookRes,true);
+            echo $webhookRes[description];
             exit;
         }
         global $cleanwebhook;
@@ -205,7 +216,7 @@ class telegram extends module {
             $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
             $webhookRes = $telegramBot->setWebhook("");
             $this->debug($webhookRes);
-            echo print_r($webhookRes,true);
+            echo $webhookRes[description];
             exit;
         }
         global $sendMessage;
@@ -229,6 +240,7 @@ class telegram extends module {
         // get webhook info
         $out['TLG_WEBHOOK'] = $this->config['TLG_WEBHOOK'];
         $out['TLG_WEBHOOK_URL'] = $this->config['TLG_WEBHOOK_URL'];
+        $out['TLG_WEBHOOK_CERT'] = $this->config['TLG_WEBHOOK_CERT'];
         
         if($this->data_source == 'telegram' || $this->data_source == '') {
             if($this->view_mode == 'update_settings') {
@@ -244,6 +256,8 @@ class telegram extends module {
                 $this->config['TLG_WEBHOOK'] = $tlg_webhook;
                 global $tlg_webhook_url;
                 $this->config['TLG_WEBHOOK_URL'] = $tlg_webhook_url;
+                global $tlg_webhook_cert;
+                $this->config['TLG_WEBHOOK_CERT'] = $tlg_webhook_cert;
                 $this->saveConfig();
                 $this->redirect("?");
             }
@@ -280,24 +294,6 @@ class telegram extends module {
                 }
             }
         }
-        global $webhook_set;
-        if ($webhook_set) {
-            //require_once("./modules/telegram/Telegram.php");
-            $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-            global $tlg_webhook_url;
-            $webhookRes = $telegramBot->setWebhook($this->config['TLG_WEBHOOK_URL']."/webhook_telegram.php");
-            $this->debug($webhookRes);
-            $this->redirect("?");
-        }
-        global $webhook_clean;
-        if ($webhook_clean) {
-            //require_once("./modules/telegram/Telegram.php");
-            $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-            $webhookRes = $telegramBot->setWebhook("");
-            $this->debug($webhookRes);
-            $this->redirect("?");
-        }         
-        
     }
     /**
      * Edit/add

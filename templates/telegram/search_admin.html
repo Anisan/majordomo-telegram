@@ -13,10 +13,15 @@
 				<h4 class="modal-title">Telegram bot</h4>
 			</div>
 			<div class="modal-body">
-				<p> Модуль Telegram бота.<br>
+				<div class="float-right">
+				<a href="https://telegram.org/">
+					<img src="../templates/telegram/image.png"  width="48" height="48">
+				</a>  
+				</div>
+                <p class="float-left"> Модуль Telegram бота.<br>
 				Обсуждение модуля <a href="http://majordomo.smartliving.ru/forum/viewtopic.php?f=5&t=2768" target="_blank">здесь</a>.<br>
 				</p>
-                <hr size="1">
+				<hr size="1">
 				<div class="float-right">
                 <div class="ewm-widget-donate" data-guid="076ef900-156a-40cc-a7c8-c48f9f6ca64d" data-type="compact"></div>
                 <script type="text/javascript">//<!--
@@ -130,15 +135,20 @@
 </script> 
 <div style="display:none" id='webhook_settings'>
 <div class="form-group">
- <label class="col-lg-4 control-label">Webhook URL
-  <span class='support' tabindex="1" data-title="<#LANG_HELP_COUNTROW#>">
+ <label class="col-lg-4 control-label">Webhook URL</label>
+  <div class="col-lg-6">
+	<input class="form-control" type="text" name="tlg_webhook_url" value="<#TLG_WEBHOOK_URL#>" class="input">
+ </div>
  </label>
+</div>
+<div class="form-group">
+ <label class="col-lg-4 control-label">Path to certificate</label>
  <div class="col-lg-6">
-	<input class="form-control" type="text" name="tlg_webhook_url" value="<#TLG_WEBHOOK_URL#>" class="input"></br>
+	<input class="form-control" type="text" name="tlg_webhook_cert" value="<#TLG_WEBHOOK_CERT#>" class="input"></br>
 	 <button onclick="setWebHook();return false;" class="btn btn-default">Set webhook</button>
 	 <button onclick="cleanWebHook();return false;" class="btn btn-default">Clean webhook</button>
 	 <button onclick="showInfo();return false;" class="btn btn-default">Status webhook</button></br>
-	 <div id="info"></div>
+    <div id="info"></div>
  </div>
 </div>
 </div>
