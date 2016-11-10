@@ -741,10 +741,10 @@ class telegram extends module {
 	function sendVoiceToUser($user_id, $file_path, $key = NULL) {
         $this->sendVoiceTo("USER_ID=" . $user_id, $file_path, $key);
     }
-    function sendVoiceToAdmin($lat, $file_path, $key = NULL) {
+    function sendVoiceToAdmin($file_path, $key = NULL) {
         $this->sendVoiceTo("ADMIN=1", $file_path, $key);
     }
-    function sendVoiceToAll($lat, $file_path, $key = NULL) {
+    function sendVoiceToAll($file_path, $key = NULL) {
         $this->sendVoiceTo("", $file_path, $key);
     }
     
