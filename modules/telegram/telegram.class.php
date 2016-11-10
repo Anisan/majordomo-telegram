@@ -392,12 +392,12 @@ class telegram extends module {
         $telegramBot = new TelegramBot("");
         return $telegramBot->buildInlineKeyBoard($option);
     }
-    function sendContent($content) {
+    function sendContent($content, $endpoint = "sendMessage") {
         $this->getConfig();
         include_once("./modules/telegram/Telegram.php");
         $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $this->debug($content);
-        $res = $telegramBot->sendMessage($content);
+		$res = $telegramBot->endpoint($endpoint, $content);
         $this->debug($res);
     }
     function getUsers($where) {
@@ -703,6 +703,51 @@ class telegram extends module {
     function sendVenueToAll($lat, $lon, $title, $address, $key = NULL) {
         $this->sendVenueTo("", $lat, $lon, $title, $address, $key);
     }
+    
+	function sendVoice($user_id, $file_path, $keyboard = '') {
+        $this->getConfig();
+        include_once("./modules/telegram/Telegram.php");
+        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+        $file = curl_file_create($file_path);
+		$content = array(
+			'chat_id' => $user_id,
+			'voice' => $file,
+			'reply_markup' => $keyboard
+		);
+		$res = $telegramBot->sendVoice($content);
+		$this->debug($res);
+    }
+    function sendVoiceTo($where, $file_path, array $key = NULL) {
+        $this->getConfig();
+        include_once("./modules/telegram/Telegram.php");
+        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+        $file = curl_file_create($file_path);
+		$users = $this->getUsers($where);
+        foreach($users as $user) {
+            $user_id = $user['USER_ID'];
+			if($key == NULL)
+				$keyboard = $this->getKeyb($user);
+			else
+				$keyboard = $telegramBot->buildKeyBoard($key, $resize = true);
+			$content = array(
+				'chat_id' => $user_id,
+				'voice' => $file,
+				'reply_markup' => $keyboard
+			);
+			$res = $telegramBot->sendVoice($content);
+			$this->debug($res);
+		}
+    }
+	function sendVoiceToUser($user_id, $file_path, $key = NULL) {
+        $this->sendVoiceTo("USER_ID=" . $user_id, $file_path, $key);
+    }
+    function sendVoiceToAdmin($lat, $file_path, $key = NULL) {
+        $this->sendVoiceTo("ADMIN=1", $file_path, $key);
+    }
+    function sendVoiceToAll($lat, $file_path, $key = NULL) {
+        $this->sendVoiceTo("", $file_path, $key);
+    }
+    
     function init() {
         $this->getConfig();
         $this->lastID = 0;
@@ -1026,25 +1071,33 @@ class telegram extends module {
                         }
                         // если нет кода, который надо выполнить, то передаем дальше на обработку
                     } else
+					{
                         $this->log("Command not found");
-                    if($text == "/test") {
-                        if($telegramBot->messageFromGroup()) {
-                            $reply = "Chat Group";
-                        } else {
-                            $reply = "Private Chat";
-                        }
-                        $content = array(
-                            'chat_id' => $chat_id,
-                            'reply_markup' => $keyb,
-                            'text' => $reply
-                        );
-                        $this->sendContent($content);
-                    } else {
                         say(htmlspecialchars($text), 0, $user['MEMBER_ID'], 'telegram' . $user['ID']);
                     }
                 }
             }
     }
+	
+	function execCommand($chat_id, $command)
+	{
+		$user = SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '" . DBSafe($chat_id) . "';");
+		$cmd = SQLSelectOne("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=" . $user['ID'] . " and ACCESS>0 and '" . DBSafe($command) . "' LIKE CONCAT(TITLE,'%');");
+        if($cmd['ID']) {
+			$this->log("execCommand => Find command");
+            if($cmd['CODE']) {
+                $this->log("execCommand => Execute user`s code command");
+                try {
+					$text = $command;
+                    eval($cmd['CODE']);
+                }
+                catch(Exception $e) {
+                    registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
+                }
+			}
+        }        
+	}
+	
     /**
      * FrontEnd
      *
