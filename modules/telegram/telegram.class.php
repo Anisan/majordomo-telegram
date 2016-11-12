@@ -1089,7 +1089,19 @@ class telegram extends module {
                 $this->log("execCommand => Execute user`s code command");
                 try {
 					$text = $command;
-                    eval($cmd['CODE']);
+                    $success = eval($cmd['CODE']);
+                    $this->log("Command:" . $text . " Result:" . $success);
+                    if($success == false) {
+                        //нет в выполняемом куске кода return
+                    } else {
+                        $content = array(
+                        'chat_id' => $chat_id,
+                        'text' => $success,
+                        'parse_mode' => 'HTML'
+                        );
+                        $this->sendContent($content);
+                        $this->log("Send result to " . $chat_id . ". Command:" . $text . " Result:" . $success);
+                    }
                 }
                 catch(Exception $e) {
                     registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
