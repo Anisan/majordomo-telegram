@@ -198,6 +198,11 @@ class telegram extends module {
         global $setwebhook;
         if ($setwebhook)
         {
+			global $tlg_webhook_url;
+            $this->config['TLG_WEBHOOK_URL'] = $tlg_webhook_url;
+            global $tlg_webhook_cert;
+            $this->config['TLG_WEBHOOK_CERT'] = $tlg_webhook_cert;
+            $this->saveConfig();
             header("HTTP/1.0: 200 OK\n");
             header('Content-Type: text/html; charset=utf-8');
             require_once("./modules/telegram/Telegram.php");
@@ -294,6 +299,17 @@ class telegram extends module {
                 }
             }
         }
+		global $update_user_info;
+		if ($update_user_info) {
+			$this->log("Update user info");
+			$users = $this->getUsers("");
+			require("./modules/telegram/Telegram.php");
+			$telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+			foreach($users as $user) {
+				$this->updateInfo($telegramBot, $user);
+			}
+			$this->redirect("?");
+		} 
     }
     /**
      * Edit/add
@@ -407,6 +423,15 @@ class telegram extends module {
         $users = SQLSelect($query);
         return $users;
     }
+	
+	function getUserName($chat_id) {
+        $query = "SELECT * FROM tlg_user WHERE USER_ID=" . $chat_id;
+        $user = SQLSelectOne($query);
+		if($user)
+			return $user['NAME'];
+        return "Unknow";
+    }
+	
     function editMessage($user_id, $message_id, $message, $keyboard = '') {
         $this->getConfig();
         include_once("./modules/telegram/Telegram.php");
@@ -792,15 +817,18 @@ class telegram extends module {
                 'user_id' => $user['USER_ID']
             );
             $image = $telegramBot->getUserProfilePhotos($content);
-            //$this->debug($image);
-            $file = $telegramBot->getFile($image["result"]["photos"][0][0]["file_id"]);
-            $this->debug($file);
-            $file_path = ROOT . "cached" . DIRECTORY_SEPARATOR . "telegram" . DIRECTORY_SEPARATOR . $user['USER_ID'] . ".jpg";
-            // качаем файл
-            $path_parts = pathinfo($file_path);
-            if(!is_dir($path_parts['dirname']))
-                mkdir($path_parts['dirname'], 0777, true);
-            $telegramBot->downloadFile($file["result"]["file_path"], $file_path);
+            $this->debug($image);
+			if ($image["result"]["total_count"] > 0)
+			{
+				$file = $telegramBot->getFile($image["result"]["photos"][0][0]["file_id"]);
+				$this->debug($file);
+				$file_path = ROOT . "cached" . DIRECTORY_SEPARATOR . "telegram" . DIRECTORY_SEPARATOR . $user['USER_ID'] . ".jpg";
+				// качаем файл
+				$path_parts = pathinfo($file_path);
+				if(!is_dir($path_parts['dirname']))
+					mkdir($path_parts['dirname'], 0777, true);
+				$telegramBot->downloadFile($file["result"]["file_path"], $file_path);
+			}
         }
     }
     

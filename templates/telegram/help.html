@@ -1,3 +1,4 @@
+<br/>
 <div class="panel-group" id="accordion">
 	<div class="panel panel-info">
 		<div class="panel-heading">
@@ -122,6 +123,13 @@
 		$telegram_module->sendFileToUser(139809588, '/var/www/file.txt');<br>
 		$telegram_module->sendFileToAdmin('/var/www/file.txt');<br>
 		$telegram_module->sendFileToAll('/var/www/file.txt');</code></p>
+		
+		<p><b>Для отправки голосового сообщения</b><br>
+		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
+		$telegram_module = new telegram();<br>
+		$telegram_module->sendVoiceToUser(139809588, $file_path);<br>
+		$telegram_module->sendVoiceToAdmin($file_path);<br>
+		$telegram_module->sendVoiceToAll($file_path);</code></p>
 
 		<p><b>Для отправки стикеров</b><br>
 		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
@@ -163,6 +171,11 @@
 		...........<br>
 		///<br>
 		$telegram_module->sendMessage($chat_id,$message); </code></p>
+		
+		<p><b>Получение имени пользователя по его chat_id (только для зарегистрированных пользователей в модуле)</b><br>
+		<code style="display:block">include(DIR_MODULES . 'telegram/telegram.class.php');<br>
+		$telegram_module = new telegram();<br>
+		$telegram_module->getUserName(139809588);</code></p>
 		</div>
 		</div>
 	</div>

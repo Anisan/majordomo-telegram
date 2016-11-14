@@ -102,7 +102,11 @@
 		});  
 	}  
 	function setWebHook(){  
-	    var url="?setwebhook=1";
+		var webhook_url = document.getElementsByName('tlg_webhook_url')[0].value;
+		webhook_url = encodeURIComponent(webhook_url);
+	    var webhook_cert = document.getElementsByName('tlg_webhook_cert')[0].value;
+		webhook_cert = encodeURIComponent(webhook_cert);
+	    var url="?setwebhook=1&tlg_webhook_url="+webhook_url+"&tlg_webhook_cert="+webhook_cert;
 		$.ajax({  
 			url: url,  
 			cache: false,  
