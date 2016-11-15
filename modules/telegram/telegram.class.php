@@ -287,6 +287,18 @@ class telegram extends module {
                 $this->delete_event($this->id);
                 $this->redirect("?tab=events");
             }
+			if ($this->view_mode=='export_command') {
+				$this->export_command($out, $this->id);
+			}
+			if ($this->view_mode=='import_command') {
+				$this->import_command($out);
+			}
+            if ($this->view_mode=='export_event') {
+				$this->export_event($out, $this->id);
+			}
+			if ($this->view_mode=='import_event') {
+				$this->import_event($out);
+			}
             if($this->view_mode == '' || $this->view_mode == 'search_ms') {
                 if($this->tab == 'cmd') {
                     $this->tlg_cmd($out);
@@ -325,6 +337,119 @@ class telegram extends module {
     function edit_event(&$out, $id) {
         require(DIR_MODULES . $this->name . '/event_edit.inc.php');
     }
+	
+	/**
+     * Export/import
+     *
+     * @access public
+     */
+	function removeBOM($data) {
+		if (0 === strpos(bin2hex($data), 'efbbbf')) {
+			return substr($data, 3);
+		}
+	}
+	function export_command(&$out, $id) {
+		$command=SQLSelectOne("SELECT * FROM tlg_cmd WHERE ID='".(int)$id."'");
+		unset($command['ID']);
+		$data=json_encode($command);
+		$filename="Command_Telegram_".urlencode($command['TITLE']);
+		$ext = "txt";
+		$mime_type = (PMA_USR_BROWSER_AGENT == 'IE' || PMA_USR_BROWSER_AGENT == 'OPERA')
+			? 'application/octetstream' : 'application/octet-stream';
+		header('Content-Type: ' . $mime_type);
+		if (PMA_USR_BROWSER_AGENT == 'IE')
+		{
+			header('Content-Disposition: inline; filename="' . $filename . '.' . $ext . '"');
+			header("Content-Transfer-Encoding: binary");
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			header('Pragma: public');
+			print $data;
+		} else {
+			header('Content-Disposition: attachment; filename="' . $filename . '.' . $ext . '"');
+			header("Content-Transfer-Encoding: binary");
+			header('Expires: 0');
+			header('Pragma: no-cache');
+			print $data;
+		}
+	exit;
+	}
+	function import_command(&$out) {
+		global $file;
+		global $overwrite;
+		$data=LoadFile($file);
+		$command=json_decode($this->removeBOM($data), true);
+		if (is_array($command)) {
+			$rec=SQLSelectOne("SELECT * FROM tlg_cmd WHERE TITLE='". DBSafe($command["TITLE"]) . "'");
+			if ($rec['ID'])
+			{
+				if ($overwrite)
+				{
+					$command{'ID'} = $rec['ID'];
+					SQLUpdate("tlg_cmd", $command); // update
+				}
+				else
+				{
+					$command["TITLE"] .= "_copy";
+					SQLInsert("tlg_cmd", $command); // adding new record
+				}
+			}	
+			else
+				SQLInsert("tlg_cmd", $command); // adding new record
+		}
+		$this->redirect("?tab=cmd");
+ 	}
+	function export_event(&$out, $id) {
+		$event=SQLSelectOne("SELECT * FROM tlg_event WHERE ID='".(int)$id."'");
+		unset($event['ID']);
+		$data=json_encode($event);
+		$filename="Event_Telegram_".urlencode($event['TITLE']);
+		$ext = "txt";
+		$mime_type = (PMA_USR_BROWSER_AGENT == 'IE' || PMA_USR_BROWSER_AGENT == 'OPERA')
+			? 'application/octetstream' : 'application/octet-stream';
+		header('Content-Type: ' . $mime_type);
+		if (PMA_USR_BROWSER_AGENT == 'IE')
+		{
+			header('Content-Disposition: inline; filename="' . $filename . '.' . $ext . '"');
+			header("Content-Transfer-Encoding: binary");
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+			header('Pragma: public');
+			print $data;
+		} else {
+			header('Content-Disposition: attachment; filename="' . $filename . '.' . $ext . '"');
+			header("Content-Transfer-Encoding: binary");
+			header('Expires: 0');
+			header('Pragma: no-cache');
+			print $data;
+		}
+	exit;
+	}
+	function import_event(&$out) {
+		global $file;
+		global $overwrite;
+		$data=LoadFile($file);
+		$event=json_decode($this->removeBOM($data), true);
+		if (is_array($event)) {
+			$rec=SQLSelectOne("SELECT * FROM tlg_event WHERE TITLE='". DBSafe($event["TITLE"]) . "'");
+			if ($rec['ID'])
+			{
+				if ($overwrite)
+				{
+					$event{'ID'} = $rec['ID'];
+					SQLUpdate("tlg_event", $event); // update
+				}
+				else
+				{
+					$event["TITLE"] .= "_copy";
+					SQLInsert("tlg_event", $event); // adding new record
+				}
+			}	
+			else
+				SQLInsert("tlg_event", $event); // adding new record
+		}
+		$this->redirect("?tab=events");
+ 	}
     /**
      * Delete user
      *

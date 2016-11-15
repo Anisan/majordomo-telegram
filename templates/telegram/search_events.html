@@ -1,5 +1,22 @@
 <br/>
 <a href="?view_mode=event_edit" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i> <#LANG_ADD_NEW_RECORD#></a> 
+<a class="btn btn-default" href="#event_tools" data-toggle="collapse"><i class="glyphicon glyphicon-wrench"></i> <#LANG_TOOLS#></a>
+<br>&nbsp;
+<div class="collapse panel panel-default" id='event_tools'>
+<div class="panel-heading"><#LANG_IMPORT#></div>
+  <div class="panel-body">
+    <form action="?" enctype="multipart/form-data" method="post">
+		<input type="file" name="file" enctype="multipart/form-data" class="btn btn-default">
+		<div class="checkbox">
+			<label><input type="checkbox" name="overwrite" value="1"><#LANG_OVERWRITE#></label>
+		</div>
+		<button type="submit" class="btn btn-default">
+			<i class="glyphicon glyphicon-import"></i> <#LANG_IMPORT#>
+		</button>
+        <input type="hidden" name="view_mode" value="import_event">
+    </form>
+</div>
+</div>
 <!-- results -->
 [#if RESULT#]
 <!-- paging -->

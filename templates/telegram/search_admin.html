@@ -62,7 +62,7 @@
  <a href="https://telegram.org/">
 	<img src="../templates/telegram/image.png"  width="24" height="24">Telegram
  </a>&nbsp;
- <a class="btn btn-default" href="#api_settings" data-toggle="collapse"><#LANG_SETUP#></a>   
+ <a class="btn btn-default" href="#api_settings" data-toggle="collapse"><i class="glyphicon glyphicon-cog"></i> <#LANG_SETUP#></a>   
 </div>
 
 <div class="collapse" id='api_settings'>&nbsp;
@@ -142,9 +142,12 @@
  <label class="col-lg-4 control-label">Path to certificate</label>
  <div class="col-lg-6">
 	<input class="form-control" type="text" name="tlg_webhook_cert" value="<#TLG_WEBHOOK_CERT#>" class="input"></br>
-	 <button onclick="setWebHook();return false;" class="btn btn-default">Set webhook</button>
-	 <button onclick="cleanWebHook();return false;" class="btn btn-default">Clean webhook</button>
-	 <button onclick="showInfo();return false;" class="btn btn-default">Status webhook</button></br>
+	 <button onclick="setWebHook();return false;" class="btn btn-default">
+		<i class="glyphicon glyphicon-plus-sign"></i> Set webhook</button>
+	 <button onclick="cleanWebHook();return false;" class="btn btn-default">
+		<i class="glyphicon glyphicon-remove-sign"></i> Clean webhook</button>
+	 <button onclick="showInfo();return false;" class="btn btn-default">
+		<i class="glyphicon glyphicon-info-sign"></i> Status webhook</button></br>
     <div id="info"></div>
  </div>
 </div>
