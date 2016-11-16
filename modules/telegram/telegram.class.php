@@ -540,6 +540,7 @@ class telegram extends module {
         $this->debug($content);
 		$res = $telegramBot->endpoint($endpoint, $content);
         $this->debug($res);
+		return $res;
     }
     function getUsers($where) {
         $query = "SELECT * FROM tlg_user";
@@ -569,6 +570,7 @@ class telegram extends module {
         );
         $res = $telegramBot->editMessageText($content);
         $this->debug($res);
+		return $res;
     }
     // Chat Action
     //typing for text messages
@@ -587,6 +589,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendChatAction($content);
         $this->debug($res);
+		return $res;
     }
     
     // send message
@@ -602,6 +605,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendMessage($content);
         $this->debug($res);
+		return res;
     }
     function sendMessageTo($where, $message, array $key = NULL) {
         $this->getConfig();
@@ -647,6 +651,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendPhoto($content);
         $this->debug($res);
+		return $res;
     }
     function sendImageTo($where, $image_path, $message = '', array $key = NULL) {
         $this->getConfig();
@@ -691,6 +696,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendDocument($content);
         $this->debug($res);
+		return $res;
     }
     function sendFileTo($where, $file_path, array $key = NULL) {
         $this->getConfig();
@@ -733,6 +739,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendSticker($content);
         $this->debug($res);
+		return $res;
     }
     function sendStickerTo($where, $sticker, array $key = NULL) {
         $this->getConfig();
@@ -775,6 +782,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendLocation($content);
         $this->debug($res);
+		return $res;
     }
     function sendLocationTo($where, $lat, $lon, array $key = NULL) {
         $this->getConfig();
@@ -820,6 +828,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendVenue($content);
         $this->debug($res);
+		return $res;
     }
     function sendVenueTo($where, $lat, $lon, $title, $address, array $key = NULL) {
         $this->getConfig();
@@ -854,7 +863,7 @@ class telegram extends module {
         $this->sendVenueTo("", $lat, $lon, $title, $address, $key);
     }
     
-	function sendVoice($user_id, $file_path, $keyboard = '') {
+	function sendVoice($user_id, $file_path, $caption='', $keyboard = '') {
         $this->getConfig();
         include_once("./modules/telegram/Telegram.php");
         $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
@@ -862,12 +871,14 @@ class telegram extends module {
 		$content = array(
 			'chat_id' => $user_id,
 			'voice' => $file,
+			'caption' => $caption,
 			'reply_markup' => $keyboard
 		);
 		$res = $telegramBot->sendVoice($content);
 		$this->debug($res);
+		return $res;
     }
-    function sendVoiceTo($where, $file_path, array $key = NULL) {
+    function sendVoiceTo($where, $file_path, $caption='', array $key = NULL) {
         $this->getConfig();
         include_once("./modules/telegram/Telegram.php");
         $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
@@ -882,30 +893,26 @@ class telegram extends module {
 			$content = array(
 				'chat_id' => $user_id,
 				'voice' => $file,
+				'caption' => $caption,
 				'reply_markup' => $keyboard
 			);
 			$res = $telegramBot->sendVoice($content);
 			$this->debug($res);
 		}
     }
-	function sendVoiceToUser($user_id, $file_path, $key = NULL) {
-        $this->sendVoiceTo("USER_ID=" . $user_id, $file_path, $key);
+	function sendVoiceToUser($user_id, $file_path, $caption='', $key = NULL) {
+        $this->sendVoiceTo("USER_ID=" . $user_id, $file_path, $caption, $key);
     }
-    function sendVoiceToAdmin($file_path, $key = NULL) {
-        $this->sendVoiceTo("ADMIN=1", $file_path, $key);
+    function sendVoiceToAdmin($file_path, $caption='', $key = NULL) {
+        $this->sendVoiceTo("ADMIN=1", $file_path, $caption, $key);
     }
-    function sendVoiceToAll($file_path, $key = NULL) {
-        $this->sendVoiceTo("", $file_path, $key);
+    function sendVoiceToAll($file_path, $caption='', $key = NULL) {
+        $this->sendVoiceTo("", $file_path, $caption, $key);
     }
     
     function init() {
         $this->getConfig();
-        $this->lastID = 0;
         $this->log("Token bot - " . $this->config['TLG_TOKEN']);
-        $rec = SQLSelectOne("SELECT * FROM `shouts` ORDER BY `ID` DESC LIMIT 1");
-        if($rec)
-            $this->lastID = $rec['ID'];
-        $this->log("Shouts LastID=" . $this->lastID);
         // create bot
         require("./modules/telegram/Telegram.php");
         $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
