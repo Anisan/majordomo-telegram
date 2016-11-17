@@ -540,7 +540,7 @@ class telegram extends module {
         $this->debug($content);
 		$res = $telegramBot->endpoint($endpoint, $content);
         $this->debug($res);
-		return $res;
+	return $res;
     }
     function getUsers($where) {
         $query = "SELECT * FROM tlg_user";
@@ -570,7 +570,7 @@ class telegram extends module {
         );
         $res = $telegramBot->editMessageText($content);
         $this->debug($res);
-		return $res;
+	return $res;
     }
     // Chat Action
     //typing for text messages
@@ -589,7 +589,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendChatAction($content);
         $this->debug($res);
-		return $res;
+	return $res;
     }
     
     // send message
@@ -605,7 +605,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendMessage($content);
         $this->debug($res);
-		return res;
+	return $res;
     }
     function sendMessageTo($where, $message, array $key = NULL) {
         $this->getConfig();
@@ -651,7 +651,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendPhoto($content);
         $this->debug($res);
-		return $res;
+	return $res;
     }
     function sendImageTo($where, $image_path, $message = '', array $key = NULL) {
         $this->getConfig();
@@ -696,7 +696,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendDocument($content);
         $this->debug($res);
-		return $res;
+	return $res;
     }
     function sendFileTo($where, $file_path, array $key = NULL) {
         $this->getConfig();
@@ -739,7 +739,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendSticker($content);
         $this->debug($res);
-		return $res;
+	return $res;
     }
     function sendStickerTo($where, $sticker, array $key = NULL) {
         $this->getConfig();
@@ -782,7 +782,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendLocation($content);
         $this->debug($res);
-		return $res;
+	return $res;
     }
     function sendLocationTo($where, $lat, $lon, array $key = NULL) {
         $this->getConfig();
@@ -828,7 +828,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendVenue($content);
         $this->debug($res);
-		return $res;
+	return $res;
     }
     function sendVenueTo($where, $lat, $lon, $title, $address, array $key = NULL) {
         $this->getConfig();
