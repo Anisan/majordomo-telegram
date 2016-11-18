@@ -1112,7 +1112,7 @@ class telegram extends module {
                 if($sticker) {
                     $file = $telegramBot->getFile($sticker["file_id"]);
                     $this->log("Get sticker from " . $chat_id . " - " . $sticker["file_id"]);
-                    //$file_path = $storage.$chat_id.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
+                    $file_path = $storage.'stickers'.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
                     $sticker_id = $sticker["file_id"];
                     $type = 7;
                 }
@@ -1323,9 +1323,9 @@ class telegram extends module {
      * @access private
      */
     function install($data='') {
-        subscribeToEvent($this->name, 'SAY');
-        subscribeToEvent($this->name, 'SAYTO');
-        subscribeToEvent($this->name, 'SAYREPLY');
+        subscribeToEvent($this->name, 'SAY', '', 10);
+        subscribeToEvent($this->name, 'SAYTO', '', 10);
+        subscribeToEvent($this->name, 'SAYREPLY', '', 10);
         parent::install();
     }
     /**
