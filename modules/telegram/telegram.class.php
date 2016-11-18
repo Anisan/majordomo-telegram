@@ -487,7 +487,7 @@ class telegram extends module {
     function getKeyb($user) {
         $visible = true;
         // Create option for the custom keyboard. Array of array string
-        if($user['ADMIN'] == 0 && $user['CMD'] == 0) {
+        if($user['CMD'] == 0) {
             $option = array();
             $visible = false;
         } else {
@@ -538,9 +538,9 @@ class telegram extends module {
         include_once("./modules/telegram/Telegram.php");
         $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $this->debug($content);
-		$res = $telegramBot->endpoint($endpoint, $content);
+        $res = $telegramBot->endpoint($endpoint, $content);
         $this->debug($res);
-	return $res;
+    return $res;
     }
     function getUsers($where) {
         $query = "SELECT * FROM tlg_user";
@@ -553,8 +553,8 @@ class telegram extends module {
 	function getUserName($chat_id) {
         $query = "SELECT * FROM tlg_user WHERE USER_ID=" . $chat_id;
         $user = SQLSelectOne($query);
-		if($user)
-			return $user['NAME'];
+        if($user)
+            return $user['NAME'];
         return "Unknow";
     }
 	
@@ -570,7 +570,7 @@ class telegram extends module {
         );
         $res = $telegramBot->editMessageText($content);
         $this->debug($res);
-	return $res;
+    return $res;
     }
     // Chat Action
     //typing for text messages
@@ -589,7 +589,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendChatAction($content);
         $this->debug($res);
-	return $res;
+    return $res;
     }
     
     // send message
@@ -605,7 +605,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendMessage($content);
         $this->debug($res);
-	return $res;
+    return $res;
     }
     function sendMessageTo($where, $message, array $key = NULL) {
         $this->getConfig();
@@ -651,7 +651,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendPhoto($content);
         $this->debug($res);
-	return $res;
+    return $res;
     }
     function sendImageTo($where, $image_path, $message = '', array $key = NULL) {
         $this->getConfig();
@@ -696,7 +696,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendDocument($content);
         $this->debug($res);
-	return $res;
+    return $res;
     }
     function sendFileTo($where, $file_path, array $key = NULL) {
         $this->getConfig();
@@ -739,7 +739,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendSticker($content);
         $this->debug($res);
-	return $res;
+    return $res;
     }
     function sendStickerTo($where, $sticker, array $key = NULL) {
         $this->getConfig();
@@ -782,7 +782,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendLocation($content);
         $this->debug($res);
-	return $res;
+    return $res;
     }
     function sendLocationTo($where, $lat, $lon, array $key = NULL) {
         $this->getConfig();
@@ -828,7 +828,7 @@ class telegram extends module {
         );
         $res = $telegramBot->sendVenue($content);
         $this->debug($res);
-	return $res;
+    return $res;
     }
     function sendVenueTo($where, $lat, $lon, $title, $address, array $key = NULL) {
         $this->getConfig();
@@ -863,7 +863,7 @@ class telegram extends module {
         $this->sendVenueTo("", $lat, $lon, $title, $address, $key);
     }
     
-	function sendVoice($user_id, $file_path, $caption='', $keyboard = '') {
+    function sendVoice($user_id, $file_path, $caption='', $keyboard = '') {
         $this->getConfig();
         include_once("./modules/telegram/Telegram.php");
         $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
@@ -936,31 +936,28 @@ class telegram extends module {
     function updateInfo($telegramBot, $user) {
         $chat = $telegramBot->getChat($user['USER_ID']);
         $this->debug($chat);
-        if($user['NAME'] == "") {
-            // set name
-            if($chat["result"]["type"] == "private")
-                $user["NAME"] = $chat["result"]["first_name"] . " " . $chat["result"]["last_name"];
-            else
-                $user["NAME"] = $chat["result"]["title"];
-            SQLUpdate("tlg_user", $user);
-        }
+        // set name
+        if($chat["result"]["type"] == "private")
+            $user["NAME"] = $chat["result"]["first_name"] . " " . $chat["result"]["last_name"];
+        else
+            $user["NAME"] = $chat["result"]["title"];
+        SQLUpdate("tlg_user", $user);
         if($chat["result"]["type"] == "private") {
             $content = array(
                 'user_id' => $user['USER_ID']
             );
             $image = $telegramBot->getUserProfilePhotos($content);
             $this->debug($image);
-			if ($image["result"]["total_count"] > 0)
-			{
-				$file = $telegramBot->getFile($image["result"]["photos"][0][0]["file_id"]);
-				$this->debug($file);
-				$file_path = ROOT . "cached" . DIRECTORY_SEPARATOR . "telegram" . DIRECTORY_SEPARATOR . $user['USER_ID'] . ".jpg";
-				// качаем файл
-				$path_parts = pathinfo($file_path);
-				if(!is_dir($path_parts['dirname']))
-					mkdir($path_parts['dirname'], 0777, true);
-				$telegramBot->downloadFile($file["result"]["file_path"], $file_path);
-			}
+            if ($image["result"]["total_count"] > 0)
+            {
+                $file = $telegramBot->getFile($image["result"]["photos"][0][0]["file_id"]);
+                $this->debug($file);
+                $file_path = ROOT . "cached" . DIRECTORY_SEPARATOR . "telegram" . DIRECTORY_SEPARATOR . $user['USER_ID'] . ".jpg";
+                $path_parts = pathinfo($file_path);
+                if(!is_dir($path_parts['dirname']))
+                    mkdir($path_parts['dirname'], 0777, true);
+                $telegramBot->downloadFile($file["result"]["file_path"], $file_path);
+            }
         }
     }
     
@@ -1192,7 +1189,7 @@ class telegram extends module {
             }
             if($user['ID']) {
                 //смотрим разрешения на обработку команд
-                if($user['ADMIN'] == 1 || $user['CMD'] == 1) {
+                if($user['CMD'] == 1) {
                     $keyb = $this->getKeyb($user);
                     $cmd = SQLSelectOne("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=" . $user['ID'] . " and ACCESS>0 and '" . DBSafe($text) . "' LIKE CONCAT(TITLE,'%');");
                     if($cmd['ID']) {
@@ -1231,11 +1228,10 @@ class telegram extends module {
                         }
                         // если нет кода, который надо выполнить, то передаем дальше на обработку
                     } else
-					{
                         $this->log("Command not found");
-                        say(htmlspecialchars($text), 0, $user['MEMBER_ID'], 'telegram' . $user['ID']);
-                    }
                 }
+                if ($user['PATTERNS'] == 1)
+                    say(htmlspecialchars($text), 0, $user['MEMBER_ID'], 'telegram' . $user['ID']);
             }
     }
 	
@@ -1363,6 +1359,7 @@ class telegram extends module {
  tlg_user: HISTORY int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: HISTORY_LEVEL int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: CMD int(3) unsigned NOT NULL DEFAULT '0' 
+ tlg_user: PATTERNS int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: DOWNLOAD int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: PLAY int(3) unsigned NOT NULL DEFAULT '0' 
  

@@ -33,7 +33,8 @@
   
   // SEARCH RESULTS  
   $res=SQLSelect("SELECT * FROM tlg_user ORDER BY ".$sortby_user);
-  if ($res[0]['ID']) {   
+  if ($res[0]['ID']) {  
+    paging($res, 20, $out); // search result paging
     colorizeArray($res);
     $total=count($res);
     for($i=0;$i<$total;$i++) {

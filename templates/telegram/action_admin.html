@@ -7,30 +7,34 @@
 
  <!-- table node edit -->
  [#if VIEW_MODE="user_edit"#]
+    <a class="btn btn-defaul btn-primary" href="?">&lt;&lt;&lt; <#LANG_BACK#></a>
     <p align=center>
-        <a href="?">&lt;&lt;&lt; <#LANG_BACK#></a>
-    </p>  
     [#if ID!=""#]
-    [#if NAME!=""#]<h4>[#NAME#]</h4>[#endif NAME#]
+	[#if USER_ID!=""#]
+	<img src="../cached/telegram/[#USER_ID#].jpg" height="50px" onerror="this.src='../templates/telegram/img/none.jpg'">
+	<br>
+	[#endif USER_ID#]
+    [#if NAME!=""#]<#LANG_USER#>: <strong>[#NAME#]</strong>[#endif NAME#]
     [#endif ID#]   
-	[#inc user_edit.html#]
+	</p>  
+    [#inc user_edit.html#]
 [#endif VIEW_MODE#]
 [#if VIEW_MODE="cmd_edit"#]
+    <a class="btn btn-defaul btn-primary" href="?tab=cmd">&lt;&lt;&lt; <#LANG_BACK#></a>
     <p align=center>
-        <a href="?tab=cmd">&lt;&lt;&lt; <#LANG_BACK#></a>
-    </p>  
     [#if ID!=""#]
-        [#if TITLE!=""#]<h4>[#TITLE#]</h4>[#endif TITLE#]
+        [#if TITLE!=""#]<#LANG_TLG_COMMAND#>: <strong>[#TITLE#]</strong>[#endif TITLE#]
     [#endif ID#]   
+	</p>  
     [#inc cmd_edit.html#]
 [#endif VIEW_MODE#]
 [#if VIEW_MODE="event_edit"#]
+    <a class="btn btn-defaul btn-primary" href="?tab=events">&lt;&lt;&lt; <#LANG_BACK#></a>
     <p align=center>
-        <a href="?tab=events">&lt;&lt;&lt; <#LANG_BACK#></a>
-    </p>  
     [#if ID!=""#]
-        [#if TITLE!=""#]<h4>[#TITLE#]</h4>[#endif TITLE#]
+        [#if TITLE!=""#]<#LANG_TLG_EVENT#>:<strong>[#TITLE#]</strong>[#endif TITLE#]
     [#endif ID#]   
+    </p>  
     [#inc event_edit.html#]
 [#endif VIEW_MODE#]
 [#endif DATA_SOURCE#]

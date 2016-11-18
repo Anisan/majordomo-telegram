@@ -14,6 +14,8 @@ $dictionary=array(
 'TLG_HISTORY'=>'История',
 'TLG_HISTORY_LEVEL'=>'Приоритет истории',
 'TLG_COMMANDS'=>'Команды',
+'TLG_COMMAND'=>'Команда',
+'TLG_PATTERNS'=>'Шаблоны',
 'TLG_DOWNLOAD'=>'Загрузка',
 'TLG_PLAY_VOICE'=>'Играть голос',
 'TLG_DISABLE'=>'Запретить',
@@ -35,6 +37,13 @@ $dictionary=array(
 'TLG_EVENT_STICKER'=>'Стикер',
 'TLG_EVENT_LOCATION'=>'Местоположение',
 'TLG_COUNT_ROW'=>'Команд в строке',
+'TLG_UPDATE_USER_INFO'=>'Обновить информацию пользователей',
+'TLG_USE_WEBHOOK'=>'Использовать webhook',
+'TLG_WEBHOOK_URL'=>'Webhook URL',
+'TLG_PATH_CERT'=>'Путь к сертификату',
+'TLG_WEBHOOK_SET'=>'Установить webhook',
+'TLG_WEBHOOK_CLEAN'=>'Удалить webhook',
+'TLG_WEBHOOK_INFO'=>'Статус webhook',
 /* about */
 
 /* help */
@@ -47,6 +56,7 @@ $dictionary=array(
 'HELP_HISTORY'=>'Отправка системной истории пользователю',
 'HELP_HISTORY_LEVEL'=>'Уровень важности для отправки (0 - отправка всей истории)',
 'HELP_COMMANDS'=>'Обработка команд полученных от пользователя',
+'HELP_PATTERNS'=>'Обработка сообщения пользователя как шаблона поведения',
 'HELP_DOWNLOAD'=>'Сохранение файлов отправляемых пользователем',
 'HELP_PLAY_VOICE'=>'Проигрывать голосовые сообщения от пользователя',
 'HELP_TITLE'=>'Имя команды (отображается на клавиатуре в Telegram клиенте)',

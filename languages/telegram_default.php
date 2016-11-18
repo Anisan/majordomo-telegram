@@ -13,6 +13,8 @@ $dictionary=array(
 'TLG_HISTORY'=>'History',
 'TLG_HISTORY_LEVEL'=>'History level',
 'TLG_COMMANDS'=>'Commands',
+'TLG_COMMAND'=>'Command',
+'TLG_PATTERNS'=>'Patterns',
 'TLG_DOWNLOAD'=>'Download',
 'TLG_PLAY_VOICE'=>'Play',
 'TLG_DISABLE'=>'Disable',
@@ -34,6 +36,13 @@ $dictionary=array(
 'TLG_EVENT_STICKER'=>'Sticker',
 'TLG_EVENT_LOCATION'=>'Location',
 'TLG_COUNT_ROW'=>'Count commands on row',
+'TLG_UPDATE_USER_INFO'=>'Update user info',
+'TLG_USE_WEBHOOK'=>'Use webhook',
+'TLG_WEBHOOK_URL'=>'Webhook URL',
+'TLG_PATH_CERT'=>'Path to certificate',
+'TLG_WEBHOOK_SET'=>'Set webhook',
+'TLG_WEBHOOK_CLEAN'=>'Clean webhook',
+'TLG_WEBHOOK_INFO'=>'Status webhook',
 /* about */
 
 /* help */
@@ -46,6 +55,7 @@ $dictionary=array(
 'HELP_HISTORY'=>'Send history to user',
 'HELP_HISTORY_LEVEL'=>'Level history to send(0 - send all history message)',
 'HELP_COMMANDS'=>'Process command from user',
+'HELP_PATTERNS'=>'Process patterns from user',
 'HELP_DOWNLOAD'=>'Download files to storage from user',
 'HELP_PLAY_VOICE'=>'Play voice from user',
 'HELP_TITLE'=>'Title command (view in keyboard telegram client)',
