@@ -521,7 +521,7 @@ class telegram extends module {
         }
         // Get the keyboard
         $telegramBot = new TelegramBot("");
-        $keyb = $telegramBot->buildKeyBoard($option, $resize = true, $selective = $visible);
+        $keyb = $telegramBot->buildKeyBoard($option, false, true, $selective = $visible);
         //print_r($keyb);
         return $keyb;
     }
@@ -617,7 +617,8 @@ class telegram extends module {
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, $resize = true);
+                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
+            $this->debug($keyboard);
             $content = array(
                 'chat_id' => $user_id,
                 'text' => $message,
@@ -664,7 +665,7 @@ class telegram extends module {
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, $resize = true);
+                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
             $content = array(
                 'chat_id' => $user_id,
                 'photo' => $img,
@@ -709,7 +710,7 @@ class telegram extends module {
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, $resize = true);
+                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
             $content = array(
                 'chat_id' => $user_id,
                 'document' => $file,
@@ -751,7 +752,7 @@ class telegram extends module {
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, $resize = true);
+                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
             $content = array(
                 'chat_id' => $user_id,
                 'sticker' => $sticker,
@@ -794,7 +795,7 @@ class telegram extends module {
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, $resize = true);
+                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
             $content = array(
                 'chat_id' => $user_id,
                 'latitude' => $lat,
@@ -840,7 +841,7 @@ class telegram extends module {
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, $resize = true);
+                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
             $content = array(
                 'chat_id' => $user_id,
                 'latitude' => $lat,
@@ -889,7 +890,7 @@ class telegram extends module {
 			if($key == NULL)
 				$keyboard = $this->getKeyb($user);
 			else
-				$keyboard = $telegramBot->buildKeyBoard($key, $resize = true);
+				$keyboard = $telegramBot->buildKeyBoard($key, false, true);
 			$content = array(
 				'chat_id' => $user_id,
 				'voice' => $file,
@@ -978,55 +979,83 @@ class telegram extends module {
     function processMessage($telegramBot) {
         $skip = false;
         $bot_name = $this->config['TLG_BOTNAME'];
+        $text = $telegramBot->Text();
+        $chat_id = $telegramBot->ChatID();
+        $username = $telegramBot->Username();
+                    
+        // поиск в базе пользователя
+        $user = SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '" . DBSafe($chat_id) . "';");
+        if($chat_id < 0 && substr($text, 0, strlen('@' . $bot_name)) === '@' . $bot_name) {
+            $this->debug("Direct message to bot: ".$bot_name. " ($text)");
+            $text = str_replace('@' . $bot_name, '', $text);
+            $source_user = SQLSelectOne("SELECT * FROM tlg_user WHERE TRIM(NAME) LIKE '" . DBSafe(trim($username)) . "'");
+            if($source_user['ID']) {
+                $user = $source_user;
+                $this->debug("New user check: ".serialize($user));
+            } else {
+                $this->debug("Cannot find user: ".$username);
+            }
+        } else {
+            $this->debug("Chatid: ".$chat_id."; Bot-name: ".$bot_name."; Message: ".$text);
+        }
         
-            $data = $telegramBot->getData();
-            $this->debug($data);
-            $callback = $telegramBot->Callback_Data();
-            if($callback) {
-                $chat_id = $telegramBot->Callback_ChatID();
-                $cbm = $telegramBot->Callback_Message();
-                $message_id = $cbm["message_id"];
-                // get events for callback
-                $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=9 and ENABLE=1;");
-                foreach($events as $event) {
-                    if($event['CODE']) {
-                        $this->log("Execute code event " . $event['TITLE']);
-                        try {
-                            eval($event['CODE']);
-                        }
-                        catch(Exception $e) {
-                            registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
-                        }
+        if($text == "/start" || $text == "/start@" . $bot_name) {
+            // если нет добавляем
+            if(!$user['ID']) {
+                $user['USER_ID'] = $chat_id;
+                $user['CREATED'] = date('Y/m/d H:i:s');
+                $user['ID'] = SQLInsert('tlg_user', $user);
+                $this->log("Added new user: " . $username . " - " . $chat_id);
+            }
+            $reply = "Вы зарегистрированы! Обратитесь к администратору для получения доступа к функциям.";
+            $content = array(
+                'chat_id' => $chat_id,
+                'text' => $reply
+            );
+            $this->sendContent($content);
+            $this->updateInfo($telegramBot, $user);
+            return;
+        }
+        
+        // пользователь не найден
+        if(!$user['ID']) 
+        {
+            $this->debug("Unknow user: ".$chat_id."; Message: ".$text);
+            return;
+        }
+        
+        $document = $telegramBot->Document();
+        $audio = $telegramBot->Audio();
+        $video = $telegramBot->Video();
+        $voice = $telegramBot->Voice();
+        $sticker = $telegramBot->Sticker();
+        $photo_id = $telegramBot->PhotoIdBigSize();
+        $username = $telegramBot->Username();
+        $fullname = $telegramBot->FirstName() . ' ' . $telegramBot->LastName();
+        $location = $telegramBot->Location();
+        $data = $telegramBot->getData();
+        $this->debug($data);
+        $callback = $telegramBot->Callback_Data();
+        if($callback) {
+            $chat_id = $telegramBot->Callback_ChatID();
+            $cbm = $telegramBot->Callback_Message();
+            $message_id = $cbm["message_id"];
+            // get events for callback
+            $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=9 and ENABLE=1;");
+            foreach($events as $event) {
+                if($event['CODE']) {
+                    $this->log("Execute code event " . $event['TITLE']);
+                    try {
+                        eval($event['CODE']);
+                    }
+                    catch(Exception $e) {
+                        registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
                     }
                 }
-                return;
             }
-            $text = $telegramBot->Text();
-            $chat_id = $telegramBot->ChatID();
-            $document = $telegramBot->Document();
-            $audio = $telegramBot->Audio();
-            $video = $telegramBot->Video();
-            $voice = $telegramBot->Voice();
-            $sticker = $telegramBot->Sticker();
-            $photo_id = $telegramBot->PhotoIdBigSize();
-            $username = $telegramBot->Username();
-            $fullname = $telegramBot->FirstName() . ' ' . $telegramBot->LastName();
-            $location = $telegramBot->Location();
-            // найти в базе пользователя
-            $user = SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '" . DBSafe($chat_id) . "';");
-            if($chat_id < 0 && substr($text, 0, strlen('@' . $bot_name)) === '@' . $bot_name) {
-                //DebMes("Direct message to bot: ".$bot_name. " ($text)");
-                $text = str_replace('@' . $bot_name, '', $text);
-                $source_user = SQLSelectOne("SELECT * FROM tlg_user WHERE TRIM(NAME) LIKE '" . DBSafe(trim($username)) . "'");
-                if($source_user['ID']) {
-                    $user = $source_user;
-                    //DebMes("New user check: ".serialize($user));
-                } else {
-                    //DebMes("Cannot find user: ".$username);
-                }
-            } else {
-                //DebMes("Chatid: ".$chat_id."; Bot-name: ".$bot_name."; Message: ".$text);
-            }
+            return;
+        }
+            
             if($location) {
                 $latitude = $location["latitude"];
                 $longitude = $location["longitude"];
@@ -1168,25 +1197,7 @@ class telegram extends module {
                 $this->log("Skip next processing message");
                 return;
             }
-            if($text == "/start" || $text == "/start@" . $bot_name) {
-                // найти в базе пользователя
-                // если нет добавляем
-                $user = SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '" . DBSafe($chat_id) . "';");
-                if(!$user['ID']) {
-                    $user['USER_ID'] = $chat_id;
-                    $user['CREATED'] = date('Y/m/d H:i:s');
-                    $user['ID'] = SQLInsert('tlg_user', $user);
-                    $this->log("Added - " . $name . "-" . $chat_id);
-                }
-                $reply = "Вы зарегистрированы! Обратитесь к администратору для получения доступа к функциям.";
-                $content = array(
-                    'chat_id' => $chat_id,
-                    'text' => $reply
-                );
-                $this->sendContent($content);
-                $this->updateInfo($telegramBot, $user);
-                return;
-            }
+            
             if($user['ID']) {
                 //смотрим разрешения на обработку команд
                 if($user['CMD'] == 1) {
