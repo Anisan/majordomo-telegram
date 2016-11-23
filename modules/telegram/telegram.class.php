@@ -978,10 +978,20 @@ class telegram extends module {
     }
     function processMessage($telegramBot) {
         $skip = false;
+        $data = $telegramBot->getData();
+        $this->debug($data);
         $bot_name = $this->config['TLG_BOTNAME'];
         $text = $telegramBot->Text();
-        $chat_id = $telegramBot->ChatID();
-        $username = $telegramBot->Username();
+        $callback = $telegramBot->Callback_Data();
+        if($callback) {
+            $chat_id = $data["callback_query"]["from"]["id"];
+            $username = $data["callback_query"]["message"]["chat"]["username"];
+            $fullname = $data["callback_query"]["from"]["first_name"].' '.$data["callback_query"]["from"]["last_name"];
+        }else{
+            $chat_id = $telegramBot->ChatID();
+            $username = $telegramBot->Username();
+            $fullname = $telegramBot->FirstName() . ' ' . $telegramBot->LastName();
+        }
                     
         // поиск в базе пользователя
         $user = SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '" . DBSafe($chat_id) . "';");
@@ -1030,14 +1040,8 @@ class telegram extends module {
         $voice = $telegramBot->Voice();
         $sticker = $telegramBot->Sticker();
         $photo_id = $telegramBot->PhotoIdBigSize();
-        $username = $telegramBot->Username();
-        $fullname = $telegramBot->FirstName() . ' ' . $telegramBot->LastName();
         $location = $telegramBot->Location();
-        $data = $telegramBot->getData();
-        $this->debug($data);
-        $callback = $telegramBot->Callback_Data();
         if($callback) {
-            $chat_id = $telegramBot->Callback_ChatID();
             $cbm = $telegramBot->Callback_Message();
             $message_id = $cbm["message_id"];
             // get events for callback
