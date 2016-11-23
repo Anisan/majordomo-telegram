@@ -1056,11 +1056,15 @@ class telegram extends module {
                         registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
                     }
                 }
+                if($skip) {
+                    $this->log("Skip next processing events callback");
+                    break;
+                }
             }
             return;
         }
             
-            if($location) {
+        if($location) {
                 $latitude = $location["latitude"];
                 $longitude = $location["longitude"];
                 $this->log("Get location from " . $chat_id . " - " . $latitude . "," . $longitude);
@@ -1086,9 +1090,13 @@ class telegram extends module {
                             registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
                         }
                     }
+                    if($skip) {
+                        $this->log("Skip next processing events location");
+                        break;
+                    }
                 }
                 return;
-            }
+        }
             //permission download file
             if($user['DOWNLOAD'] == 1) {
                 $type = 0;
@@ -1175,6 +1183,10 @@ class telegram extends module {
                                 registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
                             }
                         }
+                        if($skip) {
+                            $this->log("Skip next processing events type = ".$type);
+                            break;
+                        }
                     }
                 }
                 $file_path = "";
@@ -1194,6 +1206,10 @@ class telegram extends module {
                     catch(Exception $e) {
                         registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
                     }
+                }
+                if($skip) {
+                    $this->log("Skip next processing events message");
+                    break;
                 }
             }
             // пропуск дальнейшей обработки если с обработчике событий установили $skip
