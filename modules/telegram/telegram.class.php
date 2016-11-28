@@ -17,7 +17,7 @@ class telegram extends module {
      *
      * @access private
      */
-    function telegram() {
+    function __construct() {
         $this->name = "telegram";
         $this->title = "Telegram";
         $this->module_category = "<#LANG_SECTION_APPLICATIONS#>";
@@ -315,7 +315,7 @@ class telegram extends module {
 		if ($update_user_info) {
 			$this->log("Update user info");
 			$users = $this->getUsers("");
-			require("./modules/telegram/Telegram.php");
+			require_once("./modules/telegram/Telegram.php");
 			$telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
 			foreach($users as $user) {
 				$this->updateInfo($telegramBot, $user);
@@ -520,16 +520,19 @@ class telegram extends module {
             }
         }
         // Get the keyboard
+        include_once("./modules/telegram/Telegram.php");
         $telegramBot = new TelegramBot("");
         $keyb = $telegramBot->buildKeyBoard($option, false, true, $selective = $visible);
         //print_r($keyb);
         return $keyb;
     }
     function buildInlineKeyboardButton($text, $url = "", $callback_data = "", $switch_inline_query = "") {
+        include_once("./modules/telegram/Telegram.php");
         $telegramBot = new TelegramBot("");
         return $telegramBot->buildInlineKeyboardButton($text, $url, $callback_data, $switch_inline_query);
     }
     function buildInlineKeyBoard(array $option) {
+        include_once("./modules/telegram/Telegram.php");
         $telegramBot = new TelegramBot("");
         return $telegramBot->buildInlineKeyBoard($option);
     }
