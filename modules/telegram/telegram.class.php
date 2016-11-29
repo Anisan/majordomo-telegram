@@ -9,6 +9,8 @@
  */
 //
 //
+require_once("./modules/telegram/Telegram.php");
+            
 class telegram extends module {
     /**
      * blank
@@ -17,11 +19,16 @@ class telegram extends module {
      *
      * @access private
      */
+    private $telegramBot;
+     
     function __construct() {
         $this->name = "telegram";
         $this->title = "Telegram";
         $this->module_category = "<#LANG_SECTION_APPLICATIONS#>";
         $this->checkInstalled();
+        
+        $this->getConfig();
+        $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
     }
     /**
      * saveParams
@@ -131,6 +138,7 @@ class telegram extends module {
      * @access public
      */
     function admin(&$out) {
+        $this->getConfig();
         global $ajax;
         global $filter;
         global $atype;
@@ -171,15 +179,12 @@ class telegram extends module {
             echo implode("<br/>", $res_lines);
             exit;
         }
-        $this->getConfig();
         global $webhookinfo;
         if ($webhookinfo)
         {
             header("HTTP/1.0: 200 OK\n");
             header('Content-Type: text/html; charset=utf-8');
-            require_once("./modules/telegram/Telegram.php");
-            $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-            $webhookInfo = $telegramBot->getWebhookInfo();
+            $webhookInfo = $this->telegramBot->getWebhookInfo();
             $this->debug($webhookInfo);
             $info = "<b>Url:</b> ".$webhookInfo["result"]["url"];
             if ($info["result"]["has_custom_certificate"] == 1)
@@ -205,9 +210,7 @@ class telegram extends module {
             $this->saveConfig();
             header("HTTP/1.0: 200 OK\n");
             header('Content-Type: text/html; charset=utf-8');
-            require_once("./modules/telegram/Telegram.php");
-            $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-            $webhookRes = $telegramBot->setWebhook($this->config['TLG_WEBHOOK_URL']."/webhook_telegram.php",$this->config['TLG_WEBHOOK_CERT']);
+            $webhookRes = $this->telegramBot->setWebhook($this->config['TLG_WEBHOOK_URL']."/webhook_telegram.php",$this->config['TLG_WEBHOOK_CERT']);
             $this->debug($webhookRes);
             echo $webhookRes[description];
             exit;
@@ -217,9 +220,7 @@ class telegram extends module {
         {
             header("HTTP/1.0: 200 OK\n");
             header('Content-Type: text/html; charset=utf-8');
-            require_once("./modules/telegram/Telegram.php");
-            $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-            $webhookRes = $telegramBot->setWebhook("");
+            $webhookRes = $this->telegramBot->setWebhook("");
             $this->debug($webhookRes);
             echo $webhookRes[description];
             exit;
@@ -315,10 +316,8 @@ class telegram extends module {
 		if ($update_user_info) {
 			$this->log("Update user info");
 			$users = $this->getUsers("");
-			require_once("./modules/telegram/Telegram.php");
-			$telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
 			foreach($users as $user) {
-				$this->updateInfo($telegramBot, $user);
+				$this->updateInfo($user);
 			}
 			$this->redirect("?");
 		} 
@@ -520,28 +519,19 @@ class telegram extends module {
             }
         }
         // Get the keyboard
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot("");
-        $keyb = $telegramBot->buildKeyBoard($option, false, true, $selective = $visible);
+        $keyb = $this->telegramBot->buildKeyBoard($option, false, true, $selective = $visible);
         //print_r($keyb);
         return $keyb;
     }
     function buildInlineKeyboardButton($text, $url = "", $callback_data = "", $switch_inline_query = "") {
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot("");
-        return $telegramBot->buildInlineKeyboardButton($text, $url, $callback_data, $switch_inline_query);
+        return $this->telegramBot->buildInlineKeyboardButton($text, $url, $callback_data, $switch_inline_query);
     }
     function buildInlineKeyBoard(array $option) {
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot("");
-        return $telegramBot->buildInlineKeyBoard($option);
+        return $this->telegramBot->buildInlineKeyBoard($option);
     }
     function sendContent($content, $endpoint = "sendMessage") {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $this->debug($content);
-        $res = $telegramBot->endpoint($endpoint, $content);
+        $res = $this->telegramBot->endpoint($endpoint, $content);
         $this->debug($res);
     return $res;
     }
@@ -562,16 +552,13 @@ class telegram extends module {
     }
 	
     function editMessage($user_id, $message_id, $message, $keyboard = '') {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $content = array(
             'chat_id' => $user_id,
             'message_id' => $message_id,
             'text' => $message,
             'reply_markup' => $keyboard
         );
-        $res = $telegramBot->editMessageText($content);
+        $res = $this->telegramBot->editMessageText($content);
         $this->debug($res);
     return $res;
     }
@@ -583,44 +570,35 @@ class telegram extends module {
     //upload_document for general files
     //find_location for location data
     function sendAction($user_id, $action = 'typing') {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $content = array(
             'chat_id' => $user_id,
             'action' => $action
         );
-        $res = $telegramBot->sendChatAction($content);
+        $res = $this->telegramBot->sendChatAction($content);
         $this->debug($res);
     return $res;
     }
     
     // send message
     function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML') {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $content = array(
             'chat_id' => $user_id,
             'text' => $message,
             'reply_markup' => $keyboard,
             'parse_mode' => $parse_mode
         );
-        $res = $telegramBot->sendMessage($content);
+        $res = $this->telegramBot->sendMessage($content);
         $this->debug($res);
     return $res;
     }
     function sendMessageTo($where, $message, array $key = NULL) {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
+                $keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
             $this->debug($keyboard);
             $content = array(
                 'chat_id' => $user_id,
@@ -628,7 +606,7 @@ class telegram extends module {
                 'reply_markup' => $keyboard,
                 'parse_mode' => 'HTML'
             );
-            $res = $telegramBot->sendMessage($content);
+            $res = $this->telegramBot->sendMessage($content);
             $this->debug($res);
         }
     }
@@ -643,9 +621,6 @@ class telegram extends module {
     }
     ///send image
     function sendImage($user_id, $image_path, $message = '', $keyboard = '') {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $img = curl_file_create($image_path, 'image/png');
         $content = array(
             'chat_id' => $user_id,
@@ -653,14 +628,11 @@ class telegram extends module {
             'caption' => $message,
             'reply_markup' => $keyboard
         );
-        $res = $telegramBot->sendPhoto($content);
+        $res = $this->telegramBot->sendPhoto($content);
         $this->debug($res);
     return $res;
     }
     function sendImageTo($where, $image_path, $message = '', array $key = NULL) {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $img = curl_file_create($image_path, 'image/png');
         $users = $this->getUsers($where);
         foreach($users as $user) {
@@ -668,14 +640,14 @@ class telegram extends module {
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
+                $keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
             $content = array(
                 'chat_id' => $user_id,
                 'photo' => $img,
                 'caption' => $message,
                 'reply_markup' => $keyboard
             );
-            $res = $telegramBot->sendPhoto($content);
+            $res = $this->telegramBot->sendPhoto($content);
             $this->debug($res);
         }
     }
@@ -689,23 +661,17 @@ class telegram extends module {
         $this->sendImageTo("", $image_path, $message, $key);
     }
     function sendFile($user_id, $file_path, $keyboard = '') {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $file = curl_file_create($file_path);
         $content = array(
             'chat_id' => $user_id,
             'document' => $file,
             'reply_markup' => $keyboard
         );
-        $res = $telegramBot->sendDocument($content);
+        $res = $this->telegramBot->sendDocument($content);
         $this->debug($res);
     return $res;
     }
     function sendFileTo($where, $file_path, array $key = NULL) {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $file = curl_file_create($file_path);
         $users = $this->getUsers($where);
         foreach($users as $user) {
@@ -713,13 +679,13 @@ class telegram extends module {
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
+                $keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
             $content = array(
                 'chat_id' => $user_id,
                 'document' => $file,
                 'reply_markup' => $keyboard
             );
-            $res = $telegramBot->sendDocument($content);
+            $res = $this->telegramBot->sendDocument($content);
             $this->debug($res);
         }
     }
@@ -733,35 +699,29 @@ class telegram extends module {
         $this->sendFileTo("", $file_path, $key);
     }
     function sendSticker($user_id, $sticker, $keyboard = '') {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $content = array(
             'chat_id' => $user_id,
             'sticker' => $sticker,
             'reply_markup' => $keyboard
         );
-        $res = $telegramBot->sendSticker($content);
+        $res = $this->telegramBot->sendSticker($content);
         $this->debug($res);
     return $res;
     }
     function sendStickerTo($where, $sticker, array $key = NULL) {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
+                $keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
             $content = array(
                 'chat_id' => $user_id,
                 'sticker' => $sticker,
                 'reply_markup' => $keyboard
             );
-            $res = $telegramBot->sendSticker($content);
+            $res = $this->telegramBot->sendSticker($content);
             $this->debug($res);
         }
     }
@@ -775,37 +735,31 @@ class telegram extends module {
         $this->sendStickerTo("", $sticker, $key);
     }
     function sendLocation($user_id, $lat, $lon, $keyboard = '') {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $content = array(
             'chat_id' => $user_id,
             'latitude' => $lat,
             'longitude' => $lon,
             'reply_markup' => $keyboard
         );
-        $res = $telegramBot->sendLocation($content);
+        $res = $this->telegramBot->sendLocation($content);
         $this->debug($res);
     return $res;
     }
     function sendLocationTo($where, $lat, $lon, array $key = NULL) {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
+                $keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
             $content = array(
                 'chat_id' => $user_id,
                 'latitude' => $lat,
                 'longitude' => $lon,
                 'reply_markup' => $keyboard
             );
-            $res = $telegramBot->sendLocation($content);
+            $res = $this->telegramBot->sendLocation($content);
             $this->debug($res);
         }
     }
@@ -819,9 +773,6 @@ class telegram extends module {
         $this->sendLocationTo("", $lat, $lon, $key);
     }
     function sendVenue($user_id, $lat, $lon, $title, $address, $keyboard = '') {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $content = array(
             'chat_id' => $user_id,
             'latitude' => $lat,
@@ -830,21 +781,18 @@ class telegram extends module {
             'address' => $address,
             'reply_markup' => $keyboard
         );
-        $res = $telegramBot->sendVenue($content);
+        $res = $this->telegramBot->sendVenue($content);
         $this->debug($res);
     return $res;
     }
     function sendVenueTo($where, $lat, $lon, $title, $address, array $key = NULL) {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $telegramBot->buildKeyBoard($key, false, true);
+                $keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
             $content = array(
                 'chat_id' => $user_id,
                 'latitude' => $lat,
@@ -853,7 +801,7 @@ class telegram extends module {
                 'address' => $address,
                 'reply_markup' => $keyboard
             );
-            $res = $telegramBot->sendVenue($content);
+            $res = $this->telegramBot->sendVenue($content);
             $this->debug($res);
         }
     }
@@ -868,9 +816,6 @@ class telegram extends module {
     }
     
     function sendVoice($user_id, $file_path, $caption='', $keyboard = '') {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $file = curl_file_create($file_path);
 		$content = array(
 			'chat_id' => $user_id,
@@ -878,14 +823,11 @@ class telegram extends module {
 			'caption' => $caption,
 			'reply_markup' => $keyboard
 		);
-		$res = $telegramBot->sendVoice($content);
+		$res = $this->telegramBot->sendVoice($content);
 		$this->debug($res);
 		return $res;
     }
     function sendVoiceTo($where, $file_path, $caption='', array $key = NULL) {
-        $this->getConfig();
-        include_once("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         $file = curl_file_create($file_path);
 		$users = $this->getUsers($where);
         foreach($users as $user) {
@@ -893,14 +835,14 @@ class telegram extends module {
 			if($key == NULL)
 				$keyboard = $this->getKeyb($user);
 			else
-				$keyboard = $telegramBot->buildKeyBoard($key, false, true);
+				$keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
 			$content = array(
 				'chat_id' => $user_id,
 				'voice' => $file,
 				'caption' => $caption,
 				'reply_markup' => $keyboard
 			);
-			$res = $telegramBot->sendVoice($content);
+			$res = $this->telegramBot->sendVoice($content);
 			$this->debug($res);
 		}
     }
@@ -915,12 +857,9 @@ class telegram extends module {
     }
     
     function init() {
-        $this->getConfig();
         $this->log("Token bot - " . $this->config['TLG_TOKEN']);
         // create bot
-        require("./modules/telegram/Telegram.php");
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-        $me = $telegramBot->getMe();
+        $me = $this->telegramBot->getMe();
         if($me)
         {
             $this->log("Me: @" . $me["result"]["username"] . " (" . $me["result"]["id"] . ")");
@@ -934,11 +873,11 @@ class telegram extends module {
         $this->log("Update user info");
         $users = $this->getUsers("");
         foreach($users as $user) {
-           $this->updateInfo($telegramBot, $user);
+           $this->updateInfo($user);
         }
     }
-    function updateInfo($telegramBot, $user) {
-        $chat = $telegramBot->getChat($user['USER_ID']);
+    function updateInfo($user) {
+        $chat = $this->telegramBot->getChat($user['USER_ID']);
         $this->debug($chat);
         // set name
         if($chat["result"]["type"] == "private")
@@ -950,17 +889,17 @@ class telegram extends module {
             $content = array(
                 'user_id' => $user['USER_ID']
             );
-            $image = $telegramBot->getUserProfilePhotos($content);
+            $image = $this->telegramBot->getUserProfilePhotos($content);
             $this->debug($image);
             if ($image["result"]["total_count"] > 0)
             {
-                $file = $telegramBot->getFile($image["result"]["photos"][0][0]["file_id"]);
+                $file = $this->telegramBot->getFile($image["result"]["photos"][0][0]["file_id"]);
                 $this->debug($file);
                 $file_path = ROOT . "cached" . DIRECTORY_SEPARATOR . "telegram" . DIRECTORY_SEPARATOR . $user['USER_ID'] . ".jpg";
                 $path_parts = pathinfo($file_path);
                 if(!is_dir($path_parts['dirname']))
                     mkdir($path_parts['dirname'], 0777, true);
-                $telegramBot->downloadFile($file["result"]["file_path"], $file_path);
+                $this->telegramBot->downloadFile($file["result"]["file_path"], $file_path);
             }
         }
     }
@@ -969,31 +908,29 @@ class telegram extends module {
         $this->getConfig();
         if ($this->config['TLG_WEBHOOK'])
             return;
-        $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-        
         // Get all the new updates and set the new correct update_id
-        $req = $telegramBot->getUpdates($timeout = 5);
-        for($i = 0; $i < $telegramBot->UpdateCount(); $i++) {
+        $req = $this->telegramBot->getUpdates($timeout = 5);
+        for($i = 0; $i < $this->telegramBot->UpdateCount(); $i++) {
             // You NEED to call serveUpdate before accessing the values of message in Telegram Class
-            $telegramBot->serveUpdate($i);
-            $this->processMessage($telegramBot);
+            $this->telegramBot->serveUpdate($i);
+            $this->processMessage();
         }
     }
-    function processMessage($telegramBot) {
+    function processMessage() {
         $skip = false;
-        $data = $telegramBot->getData();
+        $data = $this->telegramBot->getData();
         $this->debug($data);
         $bot_name = $this->config['TLG_BOTNAME'];
-        $text = $telegramBot->Text();
-        $callback = $telegramBot->Callback_Data();
+        $text = $this->telegramBot->Text();
+        $callback = $this->telegramBot->Callback_Data();
         if($callback) {
             $chat_id = $data["callback_query"]["from"]["id"];
             $username = $data["callback_query"]["message"]["chat"]["username"];
             $fullname = $data["callback_query"]["from"]["first_name"].' '.$data["callback_query"]["from"]["last_name"];
         }else{
-            $chat_id = $telegramBot->ChatID();
-            $username = $telegramBot->Username();
-            $fullname = $telegramBot->FirstName() . ' ' . $telegramBot->LastName();
+            $chat_id = $this->telegramBot->ChatID();
+            $username = $this->telegramBot->Username();
+            $fullname = $this->telegramBot->FirstName() . ' ' . $this->telegramBot->LastName();
         }
                     
         // поиск в базе пользователя
@@ -1026,7 +963,7 @@ class telegram extends module {
                 'text' => $reply
             );
             $this->sendContent($content);
-            $this->updateInfo($telegramBot, $user);
+            $this->updateInfo($user);
             return;
         }
         
@@ -1037,15 +974,15 @@ class telegram extends module {
             return;
         }
         
-        $document = $telegramBot->Document();
-        $audio = $telegramBot->Audio();
-        $video = $telegramBot->Video();
-        $voice = $telegramBot->Voice();
-        $sticker = $telegramBot->Sticker();
-        $photo_id = $telegramBot->PhotoIdBigSize();
-        $location = $telegramBot->Location();
+        $document = $this->telegramBot->Document();
+        $audio = $this->telegramBot->Audio();
+        $video = $this->telegramBot->Video();
+        $voice = $this->telegramBot->Voice();
+        $sticker = $this->telegramBot->Sticker();
+        $photo_id = $this->telegramBot->PhotoIdBigSize();
+        $location = $this->telegramBot->Location();
         if($callback) {
-            $cbm = $telegramBot->Callback_Message();
+            $cbm = $this->telegramBot->Callback_Message();
             $message_id = $cbm["message_id"];
             // get events for callback
             $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=9 and ENABLE=1;");
@@ -1106,19 +1043,19 @@ class telegram extends module {
                 //папку с файлами в настройках
                 $storage = $this->config['TLG_STORAGE'] . DIRECTORY_SEPARATOR;
                 if($photo_id) {
-                    $file = $telegramBot->getFile($photo_id);
+                    $file = $this->telegramBot->getFile($photo_id);
                     $this->log("Get photo from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . $file["result"]["file_path"];
                     $type = 2;
                 }
                 if($document) {
-                    $file = $telegramBot->getFile($document["file_id"]);
+                    $file = $this->telegramBot->getFile($document["file_id"]);
                     $this->log("Get document from " . $chat_id . " - " . $document["file_name"]);
                     //print_r($file);
                     if(!isset($file['error_code'])) {
                         $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . "document" . DIRECTORY_SEPARATOR . $document["file_name"];
                         if(file_exists($file_path))
-                            $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . "document" . DIRECTORY_SEPARATOR . $telegramBot->UpdateID() . "_" . $document["file_name"];
+                            $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . "document" . DIRECTORY_SEPARATOR . $this->telegramBot->UpdateID() . "_" . $document["file_name"];
                     } else {
                         $file_path = "";
                         $this->log($file['description']);
@@ -1126,7 +1063,7 @@ class telegram extends module {
                     $type = 6;
                 }
                 if($audio) {
-                    $file = $telegramBot->getFile($audio["file_id"]);
+                    $file = $this->telegramBot->getFile($audio["file_id"]);
                     //print_r($file);
                     $this->log("Get audio from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $path_parts = pathinfo($file["result"]["file_path"]);
@@ -1140,21 +1077,21 @@ class telegram extends module {
                     $type = 4;
                 }
                 if($voice) {
-                    $file = $telegramBot->getFile($voice["file_id"]);
+                    $file = $this->telegramBot->getFile($voice["file_id"]);
                     //print_r($file);
                     $this->log("Get voice from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . $file["result"]["file_path"];
                     $type = 3;
                 }
                 if($video) {
-                    $file = $telegramBot->getFile($video["file_id"]);
+                    $file = $this->telegramBot->getFile($video["file_id"]);
                     //print_r($file);
                     $this->log("Get video from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . $file["result"]["file_path"];
                     $type = 5;
                 }
                 if($sticker) {
-                    $file = $telegramBot->getFile($sticker["file_id"]);
+                    $file = $this->telegramBot->getFile($sticker["file_id"]);
                     $this->log("Get sticker from " . $chat_id . " - " . $sticker["file_id"]);
                     $file_path = $storage.'stickers'.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
                     $sticker_id = $sticker["file_id"];
@@ -1165,7 +1102,7 @@ class telegram extends module {
                     $path_parts = pathinfo($file_path);
                     if(!is_dir($path_parts['dirname']))
                         mkdir($path_parts['dirname'], 0777, true);
-                    $telegramBot->downloadFile($file["result"]["file_path"], $file_path);
+                    $this->telegramBot->downloadFile($file["result"]["file_path"], $file_path);
                 }
                 if($voice && $user['PLAY'] == 1) {
                     //проиграть голосовое сообщение
@@ -1237,7 +1174,7 @@ class telegram extends module {
                                 if($success == false) {
                                     //нет в выполняемом куске кода return
                                     //$content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Ошибка выполнения кода команды ".$text);
-                                    //$telegramBot->sendMessage($content);
+                                    //$this->telegramBot->sendMessage($content);
                                 } else {
                                     $content = array(
                                         'chat_id' => $chat_id,
@@ -1320,10 +1257,7 @@ class telegram extends module {
             } elseif($details['source']) {
                 $destination = $details['source'];
             }
-            $this->getConfig();
-            include_once("./modules/telegram/Telegram.php");
-            $telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
-            $me = $telegramBot->getMe();
+            $me = $this->telegramBot->getMe();
             $bot_name = $me["result"]["username"];
             $users = SQLSelect("SELECT * FROM tlg_user WHERE HISTORY=1;");
             $c_users = count($users);

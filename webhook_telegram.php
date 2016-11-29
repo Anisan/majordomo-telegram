@@ -20,9 +20,7 @@ include_once(DIR_MODULES . 'telegram/telegram.class.php');
 
 $telegram_module = new telegram();
 $telegram_module->getConfig();
-require(DIR_MODULES . "telegram/Telegram.php");
-$telegramBot = new TelegramBot($telegram_module->config['TLG_TOKEN']);
-$telegram_module->processMessage($telegramBot);
+$telegram_module->processMessage();
 
 $db->Disconnect();
 ?>
