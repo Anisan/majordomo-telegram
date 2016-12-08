@@ -21,6 +21,7 @@ $dictionary=array(
 'TLG_DISABLE'=>'Запретить',
 'TLG_ONLY_ADMIN'=>'Только для администраторов',
 'TLG_ALL'=>'Для всех',
+'TLG_ALL_NO_LIMIT' => 'Для всех (без ограничений)',
 'TLG_SHOW_COMMAND'=>'Отображение команды',
 'TLG_SHOW'=>'Показать',
 'TLG_HIDE'=>'Скрыть',

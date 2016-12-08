@@ -492,7 +492,9 @@ class telegram extends module {
         } else {
             //$option = array( array("A", "B"), array("C", "D") );
             $option = array();
-            $rec = SQLSelect("SELECT *,(select VALUE from pvalues where Property_name=`LINKED_OBJECT`+'.'+`LINKED_PROPERTY` ORDER BY updated DESC limit 1) as pvalue" . " FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=" . $user['ID'] . " and ACCESS>0 order by tlg_cmd.PRIORITY desc, tlg_cmd.TITLE;");
+            $sql = "SELECT *,(select VALUE from pvalues where Property_name=`LINKED_OBJECT`+'.'+`LINKED_PROPERTY` ORDER BY updated DESC limit 1) as pvalue" . " FROM tlg_cmd where ACCESS=3 or ((select count(*) from tlg_user_cmd where tlg_cmd.ID=tlg_user_cmd.CMD_ID and tlg_user_cmd.USER_ID=" . $user['ID'] . ")>0 and ACCESS>0) order by tlg_cmd.PRIORITY desc, tlg_cmd.TITLE;";
+            //$this->debug($sql);
+            $rec = SQLSelect($sql);
             $total = count($rec);
             if($total) {
                 for($i = 0; $i < $total; $i++) {
@@ -1161,8 +1163,9 @@ class telegram extends module {
             if($user['ID']) {
                 //смотрим разрешения на обработку команд
                 if($user['CMD'] == 1) {
-                    $keyb = $this->getKeyb($user);
-                    $cmd = SQLSelectOne("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=" . $user['ID'] . " and ACCESS>0 and '" . DBSafe($text) . "' LIKE CONCAT(TITLE,'%');");
+                    $sql = "SELECT * FROM tlg_cmd where '" . DBSafe($text) . "' LIKE CONCAT(tlg_cmd.TITLE,'%') and (ACCESS=3  OR ((select count(*) from tlg_user_cmd where tlg_user_cmd.USER_ID=" . $user['ID'] . " and tlg_cmd.ID=tlg_user_cmd.CMD_ID)>0 and ACCESS>0))";
+                    //$this->debug($sql);
+                    $cmd = SQLSelectOne($sql);
                     if($cmd['ID']) {
                         $this->log("Find command");
                         //нашли команду
@@ -1176,6 +1179,7 @@ class telegram extends module {
                                     //$content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Ошибка выполнения кода команды ".$text);
                                     //$this->telegramBot->sendMessage($content);
                                 } else {
+                                    $keyb = $this->getKeyb($user);
                                     $content = array(
                                         'chat_id' => $chat_id,
                                         'reply_markup' => $keyb,
@@ -1188,6 +1192,7 @@ class telegram extends module {
                             }
                             catch(Exception $e) {
                                 registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
+                                $keyb = $this->getKeyb($user);
                                 $content = array(
                                     'chat_id' => $chat_id,
                                     'reply_markup' => $keyb,
