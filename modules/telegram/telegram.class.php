@@ -662,18 +662,19 @@ class telegram extends module {
     function sendImageToAll($image_path, $message = '', $key = NULL) {
         $this->sendImageTo("", $image_path, $message, $key);
     }
-    function sendFile($user_id, $file_path, $keyboard = '') {
+    function sendFile($user_id, $file_path, $message = '', $keyboard = '') {
         $file = curl_file_create($file_path);
         $content = array(
             'chat_id' => $user_id,
             'document' => $file,
+            'caption' => $message,
             'reply_markup' => $keyboard
         );
         $res = $this->telegramBot->sendDocument($content);
         $this->debug($res);
     return $res;
     }
-    function sendFileTo($where, $file_path, array $key = NULL) {
+    function sendFileTo($where, $file_path, $message = '', array $key = NULL) {
         $file = curl_file_create($file_path);
         $users = $this->getUsers($where);
         foreach($users as $user) {
@@ -685,20 +686,21 @@ class telegram extends module {
             $content = array(
                 'chat_id' => $user_id,
                 'document' => $file,
+                'caption' => $message,
                 'reply_markup' => $keyboard
             );
             $res = $this->telegramBot->sendDocument($content);
             $this->debug($res);
         }
     }
-    function sendFileToUser($user_id, $file_path, $key = NULL) {
-        $this->sendFileTo("USER_ID=" . $user_id, $file_path, $key);
+    function sendFileToUser($user_id, $file_path, $message = '', $key = NULL) {
+        $this->sendFileTo("USER_ID=" . $user_id, $file_path, $message, $key);
     }
-    function sendFileToAdmin($file_path, $key = NULL) {
-        $this->sendFileTo("ADMIN=1", $file_path, $key);
+    function sendFileToAdmin($file_path, $message = '', $key = NULL) {
+        $this->sendFileTo("ADMIN=1", $file_path, $message, $key);
     }
-    function sendFileToAll($file_path, $key = NULL) {
-        $this->sendFileTo("", $file_path, $key);
+    function sendFileToAll($file_path, $message = '', $key = NULL) {
+        $this->sendFileTo("", $file_path, $message, $key);
     }
     function sendSticker($user_id, $sticker, $keyboard = '') {
         $content = array(
