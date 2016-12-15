@@ -265,6 +265,11 @@ class telegram extends module {
                 global $tlg_webhook_cert;
                 $this->config['TLG_WEBHOOK_CERT'] = $tlg_webhook_cert;
                 $this->saveConfig();
+                if (!$this->config['TLG_WEBHOOK'])
+                {
+                    setGlobal('cycle_telegram','restart');
+                    $this->log("Init cycle restart");
+                }
                 $this->redirect("?");
             }
             if($this->view_mode == 'user_edit') {
