@@ -1221,7 +1221,7 @@ class telegram extends module {
 	function execCommand($chat_id, $command)
 	{
 		$user = SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '" . DBSafe($chat_id) . "';");
-		$cmd = SQLSelectOne("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where tlg_user_cmd.USER_ID=" . $user['ID'] . " and ACCESS>0 and '" . DBSafe($command) . "' LIKE CONCAT(TITLE,'%');");
+		$cmd = SQLSelectOne("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where (ACCESS=3  OR (tlg_user_cmd.USER_ID=" . $user['ID'] . " and ACCESS>0)) and '" . DBSafe($command) . "' LIKE CONCAT(TITLE,'%');");
         if($cmd['ID']) {
 			$this->log("execCommand => Find command");
             if($cmd['CODE']) {
