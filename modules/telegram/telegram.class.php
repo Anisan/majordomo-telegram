@@ -1319,6 +1319,10 @@ class telegram extends module {
         SQLExec('DROP TABLE IF EXISTS tlg_user_cmd');
         SQLExec('DROP TABLE IF EXISTS tlg_user');
         SQLExec('DROP TABLE IF EXISTS tlg_cmd');
+        SQLExec('DROP TABLE IF EXISTS tlg_event');
+        unsubscribeFromEvent($this->name, 'SAY'); 
+        unsubscribeFromEvent($this->name, 'SAYTO'); 
+        unsubscribeFromEvent($this->name, 'SAYREPLY'); 
         parent::uninstall();
     }
     /**
@@ -1332,7 +1336,7 @@ class telegram extends module {
         $data = <<<EOD
  tlg_user: ID int(10) unsigned NOT NULL auto_increment
  tlg_user: NAME varchar(255) NOT NULL DEFAULT ''
- tlg_user: USER_ID int(10) NOT NULL DEFAULT '0'
+ tlg_user: USER_ID varchar(25) NOT NULL DEFAULT '0'
  tlg_user: MEMBER_ID int(10) NOT NULL DEFAULT '1'
  tlg_user: CREATED datetime
  tlg_user: ADMIN int(3) unsigned NOT NULL DEFAULT '0' 
