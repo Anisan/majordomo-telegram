@@ -220,7 +220,7 @@ class telegram extends module {
         {
             header("HTTP/1.0: 200 OK\n");
             header('Content-Type: text/html; charset=utf-8');
-            $webhookRes = $this->telegramBot->setWebhook("");
+            $webhookRes = $this->telegramBot->deleteWebhook();
             $this->debug($webhookRes);
             echo $webhookRes[description];
             exit;
@@ -549,15 +549,15 @@ class telegram extends module {
         $users = SQLSelect($query);
         return $users;
     }
-	
-	function getUserName($chat_id) {
+    
+    function getUserName($chat_id) {
         $query = "SELECT * FROM tlg_user WHERE USER_ID=" . $chat_id;
         $user = SQLSelectOne($query);
         if($user)
             return $user['NAME'];
         return "Unknow";
     }
-	
+    
     function editMessage($user_id, $message_id, $message, $keyboard = '') {
         $content = array(
             'chat_id' => $user_id,
@@ -569,6 +569,17 @@ class telegram extends module {
         $this->debug($res);
     return $res;
     }
+    
+    function deleteMessage($user_id, $message_id) {
+        $content = array(
+            'chat_id' => $user_id,
+            'message_id' => $message_id
+        );
+        $res = $this->telegramBot->deleteMessage($content);
+        $this->debug($res);
+    return $res;
+    }
+    
     // Chat Action
     //typing for text messages
     //upload_photo for photos
@@ -1053,14 +1064,15 @@ class telegram extends module {
                 $storage = $this->config['TLG_STORAGE'] . DIRECTORY_SEPARATOR;
                 if($photo_id) {
                     $file = $this->telegramBot->getFile($photo_id);
+                    $this->debug($file);
                     $this->log("Get photo from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . $file["result"]["file_path"];
                     $type = 2;
                 }
                 if($document) {
                     $file = $this->telegramBot->getFile($document["file_id"]);
+                    $this->debug($file);
                     $this->log("Get document from " . $chat_id . " - " . $document["file_name"]);
-                    //print_r($file);
                     if(!isset($file['error_code'])) {
                         $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . "document" . DIRECTORY_SEPARATOR . $document["file_name"];
                         if(file_exists($file_path))
@@ -1073,7 +1085,7 @@ class telegram extends module {
                 }
                 if($audio) {
                     $file = $this->telegramBot->getFile($audio["file_id"]);
-                    //print_r($file);
+                    $this->debug($file);
                     $this->log("Get audio from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $path_parts = pathinfo($file["result"]["file_path"]);
                     $filename = $path_parts["basename"];
@@ -1087,20 +1099,21 @@ class telegram extends module {
                 }
                 if($voice) {
                     $file = $this->telegramBot->getFile($voice["file_id"]);
-                    //print_r($file);
+                    $this->debug($file);
                     $this->log("Get voice from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . $file["result"]["file_path"];
                     $type = 3;
                 }
                 if($video) {
                     $file = $this->telegramBot->getFile($video["file_id"]);
-                    //print_r($file);
+                    $this->debug($file);
                     $this->log("Get video from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . $file["result"]["file_path"];
                     $type = 5;
                 }
                 if($sticker) {
                     $file = $this->telegramBot->getFile($sticker["file_id"]);
+                    $this->debug($file);
                     $this->log("Get sticker from " . $chat_id . " - " . $sticker["file_id"]);
                     $file_path = $storage.'stickers'.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
                     $sticker_id = $sticker["file_id"];
