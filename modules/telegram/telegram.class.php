@@ -613,6 +613,7 @@ class telegram extends module {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
+            if ($user_id === '0') $user_id = $user['NAME'];
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
@@ -629,7 +630,7 @@ class telegram extends module {
         }
     }
     function sendMessageToUser($user_id, $message, $key = NULL) {
-        $this->sendMessageTo("USER_ID=" . $user_id, $message, $key);
+        $this->sendMessageTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key);
     }
     function sendMessageToAdmin($message, $key = NULL) {
         $this->sendMessageTo("ADMIN=1", $message, $key);
@@ -655,6 +656,7 @@ class telegram extends module {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
+            if ($user_id === '0') $user_id = $user['NAME'];
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
@@ -670,7 +672,7 @@ class telegram extends module {
         }
     }
     function sendImageToUser($user_id, $image_path, $message = '', $key = NULL) {
-        $this->sendImageTo("USER_ID=" . $user_id, $image_path, $message, $key);
+        $this->sendImageTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $image_path, $message, $key);
     }
     function sendImageToAdmin($image_path, $message = '', $key = NULL) {
         $this->sendImageTo("ADMIN=1", $image_path, $message, $key);
@@ -695,6 +697,7 @@ class telegram extends module {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
+            if ($user_id === '0') $user_id = $user['NAME'];
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
@@ -710,7 +713,7 @@ class telegram extends module {
         }
     }
     function sendFileToUser($user_id, $file_path, $message = '', $key = NULL) {
-        $this->sendFileTo("USER_ID=" . $user_id, $file_path, $message, $key);
+        $this->sendFileTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $message, $key);
     }
     function sendFileToAdmin($file_path, $message = '', $key = NULL) {
         $this->sendFileTo("ADMIN=1", $file_path, $message, $key);
@@ -732,6 +735,7 @@ class telegram extends module {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
+            if ($user_id === '0') $user_id = $user['NAME'];
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
@@ -746,7 +750,7 @@ class telegram extends module {
         }
     }
     function sendStickerToUser($user_id, $sticker, $key = NULL) {
-        $this->sendStickerTo("USER_ID=" . $user_id, $sticker, $key);
+        $this->sendStickerTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $sticker, $key);
     }
     function sendStickerToAdmin($sticker, $key = NULL) {
         $this->sendStickerTo("ADMIN=1", $sticker, $key);
@@ -769,6 +773,7 @@ class telegram extends module {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
+            if ($user_id === '0') $user_id = $user['NAME'];
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
@@ -784,7 +789,7 @@ class telegram extends module {
         }
     }
     function sendLocationToUser($user_id, $lat, $lon, $key = NULL) {
-        $this->sendLocationTo("USER_ID=" . $user_id, $lat, $lon, $key);
+        $this->sendLocationTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $key);
     }
     function sendLocationToAdmin($lat, $lon, $key = NULL) {
         $this->sendLocationTo("ADMIN=1", $lat, $lon, $key);
@@ -809,6 +814,7 @@ class telegram extends module {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
+            if ($user_id === '0') $user_id = $user['NAME'];
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
@@ -826,7 +832,7 @@ class telegram extends module {
         }
     }
     function sendVenueToUser($user_id, $lat, $lon, $title, $address, $key = NULL) {
-        $this->sendVenueTo("USER_ID=" . $user_id, $lat, $lon, $title, $address, $key);
+        $this->sendVenueTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $title, $address, $key);
     }
     function sendVenueToAdmin($lat, $lon, $title, $address, $key = NULL) {
         $this->sendVenueTo("ADMIN=1", $lat, $lon, $title, $address, $key);
@@ -852,6 +858,7 @@ class telegram extends module {
 		$users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
+            if ($user_id === '0') $user_id = $user['NAME'];
 			if($key == NULL)
 				$keyboard = $this->getKeyb($user);
 			else
@@ -867,7 +874,7 @@ class telegram extends module {
 		}
     }
 	function sendVoiceToUser($user_id, $file_path, $caption='', $key = NULL) {
-        $this->sendVoiceTo("USER_ID=" . $user_id, $file_path, $caption, $key);
+        $this->sendVoiceTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $caption, $key);
     }
     function sendVoiceToAdmin($file_path, $caption='', $key = NULL) {
         $this->sendVoiceTo("ADMIN=1", $file_path, $caption, $key);
