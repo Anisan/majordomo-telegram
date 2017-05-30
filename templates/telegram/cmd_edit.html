@@ -37,6 +37,7 @@
             <option value="0"[#if ACCESS="0"#] selected[#endif#]><#LANG_TLG_DISABLE#></option>
             <option value="1"[#if ACCESS="1"#] selected[#endif#]><#LANG_TLG_ONLY_ADMIN#></option>
             <option value="2"[#if ACCESS="2"#] selected[#endif#]><#LANG_TLG_ALL#></option>
+            <option value="3"[#if ACCESS="3"#] selected[#endif#]><#LANG_TLG_ALL_NO_LIMIT#></option>
         </select>
 	</div>
 </div>	
@@ -58,7 +59,10 @@
             x[i].style.display = (user==1) ? 'block' : 'none';
         }
         var fDivLevel = document.getElementById('list_users');
-        fDivLevel.style.display = (select.value!=0) ? 'block' : 'none';
+        if (select.value==0 || select.value==3)
+        fDivLevel.style.display = 'none';
+        else
+        fDivLevel.style.display = 'block';
     }
 </script> 
 
@@ -174,4 +178,5 @@
 </div>
 </fieldset>
 </form>
+<a href="?view_mode=export_command&id=[#ID#]" class="btn btn-default" title="<#LANG_EXPORT#>"><i class="glyphicon glyphicon-export"></i><#LANG_EXPORT#></a>
 <hr/>

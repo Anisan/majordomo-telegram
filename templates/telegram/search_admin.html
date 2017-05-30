@@ -13,10 +13,15 @@
 				<h4 class="modal-title">Telegram bot</h4>
 			</div>
 			<div class="modal-body">
-				<p> Модуль Telegram бота.<br>
+				<div class="float-right">
+				<a href="https://telegram.org/">
+					<img src="../templates/telegram/image.png"  width="48" height="48">
+				</a>  
+				</div>
+                <p class="float-left"> Модуль Telegram бота.<br>
 				Обсуждение модуля <a href="http://majordomo.smartliving.ru/forum/viewtopic.php?f=5&t=2768" target="_blank">здесь</a>.<br>
 				</p>
-                <hr size="1">
+				<hr size="1">
 				<div class="float-right">
                 <div class="ewm-widget-donate" data-guid="076ef900-156a-40cc-a7c8-c48f9f6ca64d" data-type="compact"></div>
                 <script type="text/javascript">//<!--
@@ -54,12 +59,13 @@
 </div>
 
 <div>
- Telegram  <a class="btn btn-default" href="#" onClick="$('#api_settings').toggle();return false;"><#LANG_SETUP#></a>   
- &nbsp;
+ <a href="https://telegram.org/">
+	<img src="../templates/telegram/image.png"  width="24" height="24">Telegram
+ </a>&nbsp;
+ <a class="btn btn-default" href="#api_settings" data-toggle="collapse"><i class="glyphicon glyphicon-cog"></i> <#LANG_SETUP#></a>   
 </div>
 
-<div style="display:none" id='api_settings'>
-&nbsp;
+<div class="collapse" id='api_settings'>&nbsp;
 <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
 <fieldset>
 <div class="form-group">
@@ -68,22 +74,88 @@
  <i class="glyphicon glyphicon-info-sign"></i>
  </span>
 </label>
- <div class="col-lg-4"><input class="form-control" type="text" name="tlg_token" value="<#TLG_TOKEN#>" class="input"></div>
+ <div class="col-lg-6"><input class="form-control" type="text" name="tlg_token" value="<#TLG_TOKEN#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_STORAGE_PATH#>
  <span class='support' tabindex="1" data-title="<#LANG_HELP_STORAGE#>">
  <i class="glyphicon glyphicon-info-sign"></i>
  </label>
- <div class="col-lg-4"><input class="form-control" type="text" name="tlg_storage" value="<#TLG_STORAGE#>" class="input"></div>
+ <div class="col-lg-6"><input class="form-control" type="text" name="tlg_storage" value="<#TLG_STORAGE#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_COUNT_ROW#>
  <span class='support' tabindex="1" data-title="<#LANG_HELP_COUNTROW#>">
  <i class="glyphicon glyphicon-info-sign"></i>
  </label>
- <div class="col-lg-4"><input class="form-control" type="text" name="tlg_count_row" value="<#TLG_COUNT_ROW#>" class="input"></div>
+ <div class="col-lg-6"><input class="form-control" type="text" name="tlg_count_row" value="<#TLG_COUNT_ROW#>" class="input"></div>
 </div>
+<script type="text/javascript">
+	function showInfo(){  
+	    var url="?webhookinfo=1";
+		$.ajax({  
+			url: url,  
+			cache: false,  
+			success: function(html){  
+				$("#info").html(html);  
+			}  
+		});  
+	}  
+	function setWebHook(){  
+		var webhook_url = document.getElementsByName('tlg_webhook_url')[0].value;
+		webhook_url = encodeURIComponent(webhook_url);
+	    var webhook_cert = document.getElementsByName('tlg_webhook_cert')[0].value;
+		webhook_cert = encodeURIComponent(webhook_cert);
+	    var url="?setwebhook=1&tlg_webhook_url="+webhook_url+"&tlg_webhook_cert="+webhook_cert;
+		$.ajax({  
+			url: url,  
+			cache: false,  
+			success: function(html){  
+				$("#info").html(html);  
+			}  
+		});  
+	}  
+	function cleanWebHook(){  
+	    var url="?cleanwebhook=1";
+		$.ajax({  
+			url: url,  
+			cache: false,  
+			success: function(html){  
+				$("#info").html(html);  
+			}  
+		});  
+	}  
+</script> 
+<div class="form-group">
+ <label class="control-label"><#LANG_TLG_USE_WEBHOOK#></label>
+ <div class="controls"><input type="checkbox" id="tlg_webhook" name="tlg_webhook" data-toggle="collapse" data-target="#webhook_settings" value="1"[#if TLG_WEBHOOK="1"#] checked[#endif#]></div>
+</div>
+<div class='collapse [#if TLG_WEBHOOK="1"#] in[#endif#]' id='webhook_settings'>
+<div class="form-group">
+ <label class="col-lg-4 control-label"><#LANG_TLG_WEBHOOK_URL#></label>
+  <div class="col-lg-6">
+	<input class="form-control" type="text" name="tlg_webhook_url" value="<#TLG_WEBHOOK_URL#>" class="input">
+ </div>
+ </label>
+	<small class="text-muted">/webhook_telegram.php</small>
+</div>
+<div class="form-group">
+ <label class="col-lg-4 control-label"><#LANG_TLG_PATH_CERT#></label>
+ <div class="col-lg-6">
+	<input class="form-control" type="text" name="tlg_webhook_cert" value="<#TLG_WEBHOOK_CERT#>" class="input"></br>
+	 <button onclick="setWebHook();return false;" class="btn btn-default">
+		<i class="glyphicon glyphicon-plus-sign"></i> <#LANG_TLG_WEBHOOK_SET#></button>
+	 <button onclick="cleanWebHook();return false;" class="btn btn-default">
+		<i class="glyphicon glyphicon-remove-sign"></i> <#LANG_TLG_WEBHOOK_CLEAN#></button>
+	 <button onclick="showInfo();return false;" class="btn btn-default">
+		<i class="glyphicon glyphicon-info-sign"></i> <#LANG_TLG_WEBHOOK_INFO#></button></br>
+    <div id="info"></div>
+ </div>
+</div>
+</div>
+<script type="text/javascript">  
+OnChangeWebHook(document.getElementById('tlg_webhook'));
+</script> 
 <div class="form-group">
  <label class="control-label">Debug</label>
  <div class="controls"><input type="checkbox" name="tlg_debug" value="1"[#if TLG_DEBUG="1"#] checked[#endif#]></div>

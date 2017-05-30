@@ -45,6 +45,8 @@ if ($this->mode=='update') {
     $rec['HISTORY_LEVEL']=$history_level;
     global $cmd;
     $rec['CMD']=$cmd;
+    global $patterns;
+    $rec['PATTERNS']=$patterns;
     global $download;
     $rec['DOWNLOAD']=$download;
     global $play;

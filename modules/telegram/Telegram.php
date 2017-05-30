@@ -107,9 +107,14 @@ class TelegramBot {
         return $this->endpoint("sendMessage", $content);
     }
 
-	public function editMessageText(array $content) {
+    public function editMessageText(array $content) {
         return $this->endpoint("editMessageText", $content);
     }
+    
+    public function deleteMessage(array $content) {
+        return $this->endpoint("deleteMessage", $content);
+    }
+    
     /// Answer a callback Query
     /**
      * Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to the user as a notification at the top of the chat screen or as an alert. On success, <em>True</em> is returned.<br/>Values inside $content:<br/>
@@ -647,6 +652,14 @@ class TelegramBot {
         }
         return $this->endpoint("setWebhook", $content);
     }
+    
+    public function getWebhookInfo() {
+        return $this->endpoint("getWebhookInfo", array(), false);
+    }
+    
+    public function deleteWebhook() {
+        return $this->endpoint("deleteWebhook", array(), false);
+    }
 
     /// Get the data of the current message
     /** Get the POST request of a user in a Webhook or the message actually processed in a getUpdates() enviroment.
@@ -981,18 +994,25 @@ class TelegramBot {
             $url = $url . "?chat_id=" . $content['chat_id'];
             unset($content['chat_id']);
         }
+        //echo $url;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         //curl_setopt($ch, CURLOPT_VERBOSE, true);
         if ($post) {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
         }
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        //curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+
+        
         $result = curl_exec($ch);
         curl_close($ch);
+
         return $result;
     }
 
