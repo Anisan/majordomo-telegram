@@ -907,10 +907,12 @@ class telegram extends module {
         $chat = $this->telegramBot->getChat($user['USER_ID']);
         $this->debug($chat);
         // set name
+        $old_user_name = $user["NAME"];
         if($chat["result"]["type"] == "private")
             $user["NAME"] = $chat["result"]["first_name"] . " " . $chat["result"]["last_name"];
         else
             $user["NAME"] = $chat["result"]["title"];
+        if ($user["NAME"] == '' && $old_user_name!='') $user['NAME'] = $old_user_name;
         SQLUpdate("tlg_user", $user);
         if($chat["result"]["type"] == "private") {
             $content = array(
@@ -1297,6 +1299,9 @@ class telegram extends module {
                 $reply = $message;
                 for($j = 0; $j < $c_users; $j++) {
                     $user_id = $users[$j]['USER_ID'];
+                    if ($user_id === '0') {
+                        $user_id = $users[$j]['NAME'];
+                    }
                     if($destination == 'telegram' . $users[$j]['ID'] || (!$destination && ($level >= $users[$j]['HISTORY_LEVEL']))) {
                         $this->log(" Send to " . $user_id . " - " . $reply);
                         $keyb = $this->getKeyb($users[$j]);
