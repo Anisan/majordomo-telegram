@@ -630,7 +630,7 @@ class telegram extends module {
         }
     }
     function sendMessageToUser($user_id, $message, $key = NULL) {
-        $this->sendMessageTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key);
+        $this->sendMessageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key);
     }
     function sendMessageToAdmin($message, $key = NULL) {
         $this->sendMessageTo("ADMIN=1", $message, $key);
@@ -672,7 +672,7 @@ class telegram extends module {
         }
     }
     function sendImageToUser($user_id, $image_path, $message = '', $key = NULL) {
-        $this->sendImageTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $image_path, $message, $key);
+        $this->sendImageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $image_path, $message, $key);
     }
     function sendImageToAdmin($image_path, $message = '', $key = NULL) {
         $this->sendImageTo("ADMIN=1", $image_path, $message, $key);
@@ -713,7 +713,7 @@ class telegram extends module {
         }
     }
     function sendFileToUser($user_id, $file_path, $message = '', $key = NULL) {
-        $this->sendFileTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $message, $key);
+        $this->sendFileTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $message, $key);
     }
     function sendFileToAdmin($file_path, $message = '', $key = NULL) {
         $this->sendFileTo("ADMIN=1", $file_path, $message, $key);
@@ -750,7 +750,7 @@ class telegram extends module {
         }
     }
     function sendStickerToUser($user_id, $sticker, $key = NULL) {
-        $this->sendStickerTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $sticker, $key);
+        $this->sendStickerTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $sticker, $key);
     }
     function sendStickerToAdmin($sticker, $key = NULL) {
         $this->sendStickerTo("ADMIN=1", $sticker, $key);
@@ -789,7 +789,7 @@ class telegram extends module {
         }
     }
     function sendLocationToUser($user_id, $lat, $lon, $key = NULL) {
-        $this->sendLocationTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $key);
+        $this->sendLocationTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $key);
     }
     function sendLocationToAdmin($lat, $lon, $key = NULL) {
         $this->sendLocationTo("ADMIN=1", $lat, $lon, $key);
@@ -832,7 +832,7 @@ class telegram extends module {
         }
     }
     function sendVenueToUser($user_id, $lat, $lon, $title, $address, $key = NULL) {
-        $this->sendVenueTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $title, $address, $key);
+        $this->sendVenueTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $title, $address, $key);
     }
     function sendVenueToAdmin($lat, $lon, $title, $address, $key = NULL) {
         $this->sendVenueTo("ADMIN=1", $lat, $lon, $title, $address, $key);
@@ -874,7 +874,7 @@ class telegram extends module {
 		}
     }
 	function sendVoiceToUser($user_id, $file_path, $caption='', $key = NULL) {
-        $this->sendVoiceTo('(USER_ID=' . (int)$user_id . ' OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $caption, $key);
+        $this->sendVoiceTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $caption, $key);
     }
     function sendVoiceToAdmin($file_path, $caption='', $key = NULL) {
         $this->sendVoiceTo("ADMIN=1", $file_path, $caption, $key);
@@ -907,10 +907,12 @@ class telegram extends module {
         $chat = $this->telegramBot->getChat($user['USER_ID']);
         $this->debug($chat);
         // set name
+        $old_user_name = $user["NAME"];
         if($chat["result"]["type"] == "private")
             $user["NAME"] = $chat["result"]["first_name"] . " " . $chat["result"]["last_name"];
         else
             $user["NAME"] = $chat["result"]["title"];
+        if ($user["NAME"] == '' && $old_user_name!='') $user['NAME'] = $old_user_name;
         SQLUpdate("tlg_user", $user);
         if($chat["result"]["type"] == "private") {
             $content = array(
@@ -1297,6 +1299,9 @@ class telegram extends module {
                 $reply = $message;
                 for($j = 0; $j < $c_users; $j++) {
                     $user_id = $users[$j]['USER_ID'];
+                    if ($user_id === '0') {
+                        $user_id = $users[$j]['NAME'];
+                    }
                     if($destination == 'telegram' . $users[$j]['ID'] || (!$destination && ($level >= $users[$j]['HISTORY_LEVEL']))) {
                         $this->log(" Send to " . $user_id . " - " . $reply);
                         $keyb = $this->getKeyb($users[$j]);
