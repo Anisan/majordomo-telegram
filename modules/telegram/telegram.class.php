@@ -914,22 +914,16 @@ class telegram extends module {
             $user["NAME"] = $chat["result"]["title"];
         if ($user["NAME"] == '' && $old_user_name!='') $user['NAME'] = $old_user_name;
         SQLUpdate("tlg_user", $user);
-        if($chat["result"]["type"] == "private") {
-            $content = array(
-                'user_id' => $user['USER_ID']
-            );
-            $image = $this->telegramBot->getUserProfilePhotos($content);
+        if($chat["result"]["photo"]) {
+            $image = $chat["result"]["photo"]["big_file_id"];
             $this->debug($image);
-            if ($image["result"]["total_count"] > 0)
-            {
-                $file = $this->telegramBot->getFile($image["result"]["photos"][0][0]["file_id"]);
-                $this->debug($file);
-                $file_path = ROOT . "cached" . DIRECTORY_SEPARATOR . "telegram" . DIRECTORY_SEPARATOR . $user['USER_ID'] . ".jpg";
-                $path_parts = pathinfo($file_path);
-                if(!is_dir($path_parts['dirname']))
-                    mkdir($path_parts['dirname'], 0777, true);
-                $this->telegramBot->downloadFile($file["result"]["file_path"], $file_path);
-            }
+            $file = $this->telegramBot->getFile($image);
+            $this->debug($file);
+            $file_path = ROOT . "cached" . DIRECTORY_SEPARATOR . "telegram" . DIRECTORY_SEPARATOR . $user['USER_ID'] . ".jpg";
+            $path_parts = pathinfo($file_path);
+            if(!is_dir($path_parts['dirname']))
+                mkdir($path_parts['dirname'], 0777, true);
+            $this->telegramBot->downloadFile($file["result"]["file_path"], $file_path);
         }
     }
     
