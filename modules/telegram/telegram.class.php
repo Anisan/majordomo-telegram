@@ -184,7 +184,7 @@ class telegram extends module {
         {
             header("HTTP/1.0: 200 OK\n");
             header('Content-Type: text/html; charset=utf-8');
-            $webhookInfo = $this->telegramBot->getWebhookInfo();
+            $webhookInfo = $this->telegramBot->endpoint("getWebhookInfo", array(), false);;
             $this->debug($webhookInfo);
             $info = "<b>Url:</b> ".$webhookInfo["result"]["url"];
             if ($info["result"]["has_custom_certificate"] == 1)
@@ -883,10 +883,27 @@ class telegram extends module {
         $this->sendVoiceTo("", $file_path, $caption, $key);
     }
     
+    function photoIdBigSize($data) {
+        $photo_id="";
+        $photos = $data["message"]["photo"];
+        if ($photos){
+            $size = 0;
+            foreach ($photos as $photo) {
+                if ($size < $photo["file_size"])
+                {
+                    $size = $photo["file_size"];
+                    $photo_id=$photo["file_id"];
+                }
+            }
+        }
+        return $photo_id;
+    }
+    
     function init() {
         $this->log("Token bot - " . $this->config['TLG_TOKEN']);
         // create bot
         $me = $this->telegramBot->getMe();
+        $this->debug($me);
         if($me)
         {
             $this->log("Me: @" . $me["result"]["username"] . " (" . $me["result"]["id"] . ")");
@@ -894,7 +911,7 @@ class telegram extends module {
             $this->saveConfig();
         }
         else {
-            $this->log("Error connect, invalid token");
+            $this->log("Error connect or invalid token");
             return;
         }
         $this->log("Update user info");
@@ -904,8 +921,8 @@ class telegram extends module {
         }
     }
     function updateInfo($user) {
-        $chat = $this->telegramBot->getChat($user['USER_ID']);
-        $this->debug($chat);
+        $content = array('chat_id' => $user['USER_ID']);
+        $chat = $this->telegramBot->getChat($content);
         // set name
         $old_user_name = $user["NAME"];
         if($chat["result"]["type"] == "private")
@@ -933,6 +950,14 @@ class telegram extends module {
             return;
         // Get all the new updates and set the new correct update_id
         $req = $this->telegramBot->getUpdates($timeout = 5);
+        if(isset($req['error_code']))
+        {
+            if($this->config['TLG_DEBUG'])
+                $this->debug($req);
+            else
+                $this->log($req['description']);
+            return;
+        }
         for($i = 0; $i < $this->telegramBot->UpdateCount(); $i++) {
             // You NEED to call serveUpdate before accessing the values of message in Telegram Class
             $this->telegramBot->serveUpdate($i);
@@ -997,12 +1022,12 @@ class telegram extends module {
             return;
         }
         
-        $document = $this->telegramBot->Document();
-        $audio = $this->telegramBot->Audio();
-        $video = $this->telegramBot->Video();
-        $voice = $this->telegramBot->Voice();
-        $sticker = $this->telegramBot->Sticker();
-        $photo_id = $this->telegramBot->PhotoIdBigSize();
+        $document = $data["message"]["document"];
+        $audio = $data["message"]["audio"];
+        $video = $data["message"]["video"];
+        $voice = $data["message"]["voice"];
+        $sticker = $data["message"]["sticker"];
+        $photo_id = $this->PhotoIdBigSize($data);
         $location = $this->telegramBot->Location();
         if($callback) {
             $cbm = $this->telegramBot->Callback_Message();
