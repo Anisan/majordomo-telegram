@@ -542,6 +542,12 @@ class telegram extends module {
         $this->debug($res);
     return $res;
     }
+    
+    function sendAnswerCallbackQuery($callback_id, $text, $show_alert = false ) {
+        $content = array('text' => $text, 'callback_query_id'=>$callback_id, 'show_alert'=>$show_alert);
+        $this->sendContent($content,"answerCallbackQuery");
+    }
+    
     function getUsers($where) {
         $query = "SELECT * FROM tlg_user";
         if($where != "")
@@ -1032,6 +1038,7 @@ class telegram extends module {
         if($callback) {
             $cbm = $this->telegramBot->Callback_Message();
             $message_id = $cbm["message_id"];
+            $callback_id = $this->telegramBot->Callback_ID();
             // get events for callback
             $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=9 and ENABLE=1;");
             foreach($events as $event) {
