@@ -172,6 +172,14 @@
 		///<br>
 		$telegram_module->sendMessage($chat_id,$message); </code></p>
 		
+        <p><b>Поддержка всплывающих сообщений (answerCallbackQuery)</b><br>
+        Применяется для отображения ответа на callback запрос в виде всплывающего уведомления<br>
+        Параметры функции <b>sendAnswerCallbackQuery($callback_id, $text, $show_alert = false )</b></br>
+        <b>$callback_id</b> - идентификатор callback запроса</br>
+        <b>$text</b> - текст оповещения</br>
+        <b>$show_alert</b> : false - всплывающее уведомление (закрывается само); true - всплывающее уведомление требующее подтверждения (с кнопкой OK)
+		</p>
+		
 		<p><b>Получение имени пользователя по его chat_id (только для зарегистрированных пользователей в модуле)</b><br>
 		<code style="display:block">include(DIR_MODULES . 'telegram/telegram.class.php');<br>
 		$telegram_module = new telegram();<br>

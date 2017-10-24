@@ -37,6 +37,20 @@ if ($this->mode=='update') {
     global $type_event;
     $rec['TYPE_EVENT']=$type_event;
     
+    if ($rec['TITLE'] == "")
+    {
+        $out['ERR']=1;
+        $ok=0;
+    }
+    if ($rec['CODE']!='') {
+        $errors=php_syntax_error($rec['CODE']);
+        if ($errors) {
+            $out['ERR']=1;
+            $out['ERR_CODE']=1;
+            $out['ERRORS']=$errors;
+            $ok=0;
+        }
+    }
     //UPDATING RECORD
     if ($ok) {
       if ($rec['ID']) {

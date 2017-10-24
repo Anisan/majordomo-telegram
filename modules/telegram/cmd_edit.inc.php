@@ -17,6 +17,7 @@ if ($this->owner->name=='panel') {
   $out['CONTROLPANEL']=1;
 }
 
+
 $table_name='tlg_cmd';
 $rec=SQLSelectOne("SELECT * FROM $table_name WHERE ID='$id'");
     
@@ -51,7 +52,23 @@ if ($this->mode=='update') {
     
     global $users_id;
     
+    if ($rec['TITLE'] == "")
+    {
+        $out['ERR']=1;
+        $ok=0;
+    }
+
     //UPDATING RECORD
+    if ($rec['CODE']!='') {
+        $errors=php_syntax_error($rec['CODE']);
+        if ($errors) {
+            $out['ERR']=1;
+            $out['ERR_CODE']=1;
+            $out['ERRORS']=$errors;
+            $ok=0;
+        }
+    }
+    
     if ($ok) {
       if ($rec['ID']) {
         SQLUpdate($table_name, $rec); // update

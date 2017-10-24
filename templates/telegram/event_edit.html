@@ -5,7 +5,7 @@
 <div class="alert alert-success"><#LANG_DATA_SAVED#></div>
 [#endif OK#]
 [#if ERR#]
-<div class="alert alert-error"><#LANG_FILLOUT_REQURED#></div>
+<div class="alert alert-danger"><#LANG_FILLOUT_REQURED#></div>
 [#endif ERR#]
 <fieldset>
 <!-- Name -->
@@ -59,7 +59,7 @@
 <div class="controls"> 
 <div class="panel panel-info">
     <div class="panel-body">	
-	$text - текст полученного сообщения;
+	$text - текст полученного сообщения;<br>
     $chat_id - идентификатор отправителя
 	</div>
 </div>
@@ -69,7 +69,7 @@
 <div class="controls"> 
 <div class="panel panel-info">
     <div class="panel-body">	
-	$chat_id - идентификатор отправителя;
+	$chat_id - идентификатор отправителя;<br>
 	$file_path - путь к полученному файлу
 	</div>
 </div>
@@ -79,7 +79,7 @@
 <div class="controls"> 
 <div class="panel panel-info">
     <div class="panel-body">	
-	$chat_id - идентификатор отправителя;
+	$chat_id - идентификатор отправителя;<br>
 	$file_path - путь к полученному файлу
 	</div>
 </div>
@@ -89,7 +89,7 @@
 <div class="controls"> 
 <div class="panel panel-info">
     <div class="panel-body">	
-	$chat_id - идентификатор отправителя;
+	$chat_id - идентификатор отправителя;<br>
 	$file_path - путь к полученному файлу
 	</div>
 </div>
@@ -99,7 +99,7 @@
 <div class="controls"> 
 <div class="panel panel-info">
     <div class="panel-body">	
-	$chat_id - идентификатор отправителя;
+	$chat_id - идентификатор отправителя;<br>
 	$file_path - путь к полученному файлу
 	</div>
 </div>
@@ -109,7 +109,7 @@
 <div class="controls"> 
 <div class="panel panel-info">
     <div class="panel-body">	
-	$chat_id - идентификатор отправителя;
+	$chat_id - идентификатор отправителя;<br>
 	$file_path - путь к полученному файлу
 	</div>
 </div>
@@ -119,7 +119,7 @@
 <div class="controls"> 
 <div class="panel panel-info">
     <div class="panel-body">	
-	$chat_id - идентификатор отправителя;
+	$chat_id - идентификатор отправителя;<br>
 	$sticker_id - идентификатор стикера
 	</div>
 </div>
@@ -129,8 +129,8 @@
 <div class="controls"> 
 <div class="panel panel-info">
     <div class="panel-body">	
-	$chat_id - идентификатор отправителя;
-	$latitude - широта;
+	$chat_id - идентификатор отправителя;<br>
+	$latitude - широта;<br>
 	$longitude - долгота
 	</div>
 </div>
@@ -140,9 +140,10 @@
 <div class="controls"> 
 <div class="panel panel-info">
     <div class="panel-body">	
-	$chat_id - идентификатор отправителя;
-	$callback - ответ на запрос;
-	$message_id - message_id сообщения с запросом;
+	$chat_id - идентификатор отправителя;<br>
+	$callback - ответ на запрос;<br>
+	$message_id - message_id сообщения с запросом;<br>
+	$callback_id - идентификатор запроса (для sendAnswerCallbackQuery);
 	</div>
 </div>
 </div>
