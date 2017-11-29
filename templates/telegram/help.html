@@ -117,6 +117,14 @@
         $telegram_module->sendImageToAll('/var/www/images/htc_hero_wallpaper_01.jpg');</code>
 		К изображению можно добавить текстовое описание</p>
 	
+        <p><b>Для отправки видео</b><br>
+		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
+        $telegram_module = new telegram();<br>
+        $telegram_module->sendVideoToUser(139809588, '/var/www/files/file.mp4', 'Description');<br>
+        $telegram_module->sendVideoToAdmin('/var/www/files/file.mp4');<br>
+        $telegram_module->sendVideoToAll('/var/www/files/file.mp4');</code>
+		К видео можно добавить текстовое описание</p>
+	
 		<p><b>Для отправки файлов</b><br>
 		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
 		$telegram_module = new telegram();<br>

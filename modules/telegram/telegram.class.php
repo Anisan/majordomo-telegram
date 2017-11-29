@@ -686,6 +686,49 @@ class telegram extends module {
     function sendImageToAll($image_path, $message = '', $key = NULL) {
         $this->sendImageTo("", $image_path, $message, $key);
     }
+    ///send video
+    function sendVideo($user_id, $video_path, $message = '', $keyboard = '') {
+        $video = curl_file_create($video_path);
+        $content = array(
+            'chat_id' => $user_id,
+            'video' => $video,
+            'caption' => $message,
+            'reply_markup' => $keyboard
+        );
+        $res = $this->telegramBot->sendVideo($content);
+        $this->debug($res);
+    return $res;
+    }
+    function sendVideoTo($where, $video_path, $message = '', array $key = NULL) {
+        $video = curl_file_create($video_path);
+        $users = $this->getUsers($where);
+        foreach($users as $user) {
+            $user_id = $user['USER_ID'];
+            if ($user_id === '0') $user_id = $user['NAME'];
+            if($key == NULL)
+                $keyboard = $this->getKeyb($user);
+            else
+                $keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
+            $content = array(
+                'chat_id' => $user_id,
+                'video' => $video,
+                'caption' => $message,
+                'reply_markup' => $keyboard
+            );
+            $res = $this->telegramBot->sendVideo($content);
+            $this->debug($res);
+        }
+    }
+    function sendVideoToUser($user_id, $video_path, $message = '', $key = NULL) {
+        $this->sendVideoTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $video_path, $message, $key);
+    }
+    function sendVideoToAdmin($video_path, $message = '', $key = NULL) {
+        $this->sendVideoTo("ADMIN=1", $video_path, $message, $key);
+    }
+    function sendVideoToAll($video_path, $message = '', $key = NULL) {
+        $this->sendVideoTo("", $video_path, $message, $key);
+    }
+    
     function sendFile($user_id, $file_path, $message = '', $keyboard = '') {
         $file = curl_file_create($file_path);
         $content = array(
@@ -1149,7 +1192,8 @@ class telegram extends module {
                 if($sticker) {
                     $file = $this->telegramBot->getFile($sticker["file_id"]);
                     $this->debug($file);
-                    $this->log("Get sticker from " . $chat_id . " - " . $sticker["file_id"]);
+                    $sticker_set = $sticker["set_name"];
+                    $this->log("Get sticker from " . $chat_id . " === Id:" . $sticker["file_id"] ." Set:".$sticker_set);
                     $file_path = $storage.'stickers'.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
                     $sticker_id = $sticker["file_id"];
                     $type = 7;
