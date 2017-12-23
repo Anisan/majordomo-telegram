@@ -141,11 +141,12 @@ class telegram extends module {
         $this->getConfig();
         global $ajax;
         global $filter;
+        global $limit;
         global $atype;
         if($ajax) {
             header("HTTP/1.0: 200 OK\n");
             header('Content-Type: text/html; charset=utf-8');
-            $limit = 50;
+            //$limit = 50;
             // Find last midifed
             $filename = ROOT . 'debmes/log_*-telegram.php.txt';
             foreach(glob($filename) as $file) {
@@ -265,12 +266,13 @@ class telegram extends module {
                 global $tlg_webhook_cert;
                 $this->config['TLG_WEBHOOK_CERT'] = $tlg_webhook_cert;
                 $this->saveConfig();
+                $this->log("Save config");
                 if (!$this->config['TLG_WEBHOOK'])
                 {
                     setGlobal('cycle_telegram','restart');
                     $this->log("Init cycle restart");
                 }
-                $this->redirect("?");
+                $this->redirect("?tab=".$this->tab);
             }
             if($this->view_mode == 'user_edit') {
                 $this->edit_user($out, $this->id);

@@ -100,7 +100,7 @@
   [#if "<#ACTION#>"=="admin"#]
     <button onclick="sendMessage([#USER_ID#]);return false;" title="Send message" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-flash"></i></button>
     <a href="?view_mode=user_edit&id=[#ID#]" class="btn btn-default btn-sm" title="<#LANG_EDIT#>"><i class="glyphicon glyphicon-pencil"></i></a>
-    <a href="?view_mode=user_delete&id=[#ID#]" onClick="return confirm('<#ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="<#LANG_DELETE#>"><i class="glyphicon glyphicon-remove"></i></a>
+    <a href="?view_mode=user_delete&id=[#ID#]" onClick="return confirm('<#LANG_ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="<#LANG_DELETE#>"><i class="glyphicon glyphicon-remove"></i></a>
   [#endif ACTION#]
  </td>
 </tr>
