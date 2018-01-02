@@ -139,6 +139,13 @@ class telegram extends module {
      */
     function admin(&$out) {
         $this->getConfig();
+        
+        if ((time() - gg('cycle_telegramRun')) < 15 ) {
+			$out['CYCLERUN'] = 1;
+		} else {
+			$out['CYCLERUN'] = 0;
+		}
+        
         global $ajax;
         global $filter;
         global $limit;
@@ -1264,9 +1271,16 @@ class telegram extends module {
             if($user['ID']) {
                 //смотрим разрешения на обработку команд
                 if($user['CMD'] == 1) {
-                    $sql = "SELECT * FROM tlg_cmd where '" . DBSafe($text) . "' LIKE CONCAT(tlg_cmd.TITLE,'%') and (ACCESS=3  OR ((select count(*) from tlg_user_cmd where tlg_user_cmd.USER_ID=" . $user['ID'] . " and tlg_cmd.ID=tlg_user_cmd.CMD_ID)>0 and ACCESS>0))";
-                    //$this->debug($sql);
+                    // поиск полного соответствия команды
+                    $sql = "SELECT * FROM tlg_cmd where tlg_cmd.TITLE='" . DBSafe($text) . "' and (ACCESS=3  OR ((select count(*) from tlg_user_cmd where tlg_user_cmd.USER_ID=" . $user['ID'] . " and tlg_cmd.ID=tlg_user_cmd.CMD_ID)>0 and ACCESS>0))";
                     $cmd = SQLSelectOne($sql);
+                    if (count($cmd) == 0)
+                    {
+                        // поиск команд с параметрами
+                        $sql = "SELECT * FROM tlg_cmd where '" . DBSafe($text) . "' LIKE CONCAT(tlg_cmd.TITLE,'%') and (ACCESS=3  OR ((select count(*) from tlg_user_cmd where tlg_user_cmd.USER_ID=" . $user['ID'] . " and tlg_cmd.ID=tlg_user_cmd.CMD_ID)>0 and ACCESS>0))";
+                        //$this->debug($sql);
+                        $cmd = SQLSelectOne($sql);
+                    }
                     if($cmd['ID']) {
                         $this->log("Find command");
                         //нашли команду

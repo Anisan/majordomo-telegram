@@ -62,7 +62,13 @@
  <a href="https://telegram.org/">
 	<img src="../templates/telegram/image.png"  width="24" height="24">Telegram
  </a>&nbsp;
- <a class="btn btn-default" href="#api_settings" data-toggle="collapse"><i class="glyphicon glyphicon-cog"></i> <#LANG_SETUP#></a>   
+ <a class="btn btn-default" href="#api_settings" data-toggle="collapse"><i class="glyphicon glyphicon-cog"></i> <#LANG_SETUP#></a>
+    &nbsp;&nbsp;&nbsp;
+	[#if CYCLERUN==1#]
+		<span class="label label-success" title="Статус цикла">Цикл запущен</span>
+	[#else#]
+		<span class="label label-danger" title="Статус цикла">Цикл остановлен</span>
+	[#endif#]
 </div>
 
 <div class="collapse" id='api_settings'>&nbsp;
