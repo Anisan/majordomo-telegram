@@ -140,7 +140,7 @@ class telegram extends module {
     function admin(&$out) {
         $this->getConfig();
         
-        if ((time() - gg('cycle_telegramRun')) < 15 ) {
+        if ((time() - gg('cycle_telegramRun')) < 60 ) {
 			$out['CYCLERUN'] = 1;
 		} else {
 			$out['CYCLERUN'] = 0;
@@ -573,12 +573,13 @@ class telegram extends module {
         return "Unknow";
     }
     
-    function editMessage($user_id, $message_id, $message, $keyboard = '') {
+    function editMessage($user_id, $message_id, $message, $keyboard = '', $parse_mode = 'HTML') {
         $content = array(
             'chat_id' => $user_id,
             'message_id' => $message_id,
             'text' => $message,
-            'reply_markup' => $keyboard
+            'reply_markup' => $keyboard,
+            'parse_mode' => $parse_mode
         );
         $res = $this->telegramBot->editMessageText($content);
         $this->debug($res);
