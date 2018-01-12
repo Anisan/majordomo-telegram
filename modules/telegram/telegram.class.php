@@ -1081,6 +1081,24 @@ class telegram extends module {
             return;
         }
         
+        if ($user['ADMIN'] != 1 && 
+            $user['HISTORY'] != 1 && 
+            $user['CMD'] != 1 && 
+            $user['PATTERNS'] != 1 && 
+            $user['DOWNLOAD'] != 1 && 
+            $user['PLAY'] != 1)
+        {
+            $this->log("WARNING!!! Permission denied!! User: ".$chat_id."; Message: ".$text);
+            $reply = "Обратитесь к администратору для получения доступа к функциям!";
+            $content = array(
+                'chat_id' => $chat_id,
+                'text' => $reply
+            );
+            $this->sendContent($content);
+            return;
+        }
+        
+        
         $document = $data["message"]["document"];
         $audio = $data["message"]["audio"];
         $video = $data["message"]["video"];
@@ -1088,7 +1106,7 @@ class telegram extends module {
         $sticker = $data["message"]["sticker"];
         $photo_id = $this->PhotoIdBigSize($data);
         $location = $this->telegramBot->Location();
-        if($callback) {
+        if($callback && $user['CMD'] == 1) {
             $cbm = $this->telegramBot->Callback_Message();
             $message_id = $cbm["message_id"];
             $callback_id = $this->telegramBot->Callback_ID();
@@ -1145,8 +1163,8 @@ class telegram extends module {
                 }
                 return;
         }
-            //permission download file
-            if($user['DOWNLOAD'] == 1) {
+        //permission download file
+        if($user['DOWNLOAD'] == 1) {
                 $type = 0;
                 //папку с файлами в настройках
                 $storage = $this->config['TLG_STORAGE'] . DIRECTORY_SEPARATOR;
@@ -1241,12 +1259,14 @@ class telegram extends module {
                     }
                 }
                 $file_path = "";
-            }
-            if($text == "") {
-                return;
-            }
-            $this->log($chat_id . " (" . $username . ", " . $fullname . ")=" . $text);
-            // get events for text message
+        }
+        if($text == "") {
+            return;
+        }
+        $this->log($chat_id . " (" . $username . ", " . $fullname . ")=" . $text);
+
+        if($user['CMD'] == 1) {
+        // get events for text message
             $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=1 and ENABLE=1;");
             foreach($events as $event) {
                 if($event['CODE']) {
@@ -1268,10 +1288,11 @@ class telegram extends module {
                 $this->log("Skip next processing message");
                 return;
             }
+        }
             
-            if($user['ID']) {
-                //смотрим разрешения на обработку команд
-                if($user['CMD'] == 1) {
+        if($user['ID']) {
+            //смотрим разрешения на обработку команд
+            if($user['CMD'] == 1) {
                     // поиск полного соответствия команды
                     $sql = "SELECT * FROM tlg_cmd where tlg_cmd.TITLE='" . DBSafe($text) . "' and (ACCESS=3  OR ((select count(*) from tlg_user_cmd where tlg_user_cmd.USER_ID=" . $user['ID'] . " and tlg_cmd.ID=tlg_user_cmd.CMD_ID)>0 and ACCESS>0))";
                     $cmd = SQLSelectOne($sql);
