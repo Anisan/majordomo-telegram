@@ -506,8 +506,8 @@ class telegram extends module {
         } else {
             //$option = array( array("A", "B"), array("C", "D") );
             $option = array();
-            $sql = "SELECT *,(select VALUE from pvalues where Property_name=`LINKED_OBJECT`+'.'+`LINKED_PROPERTY` ORDER BY updated DESC limit 1) as pvalue" . " FROM tlg_cmd where ACCESS=3 or ((select count(*) from tlg_user_cmd where tlg_cmd.ID=tlg_user_cmd.CMD_ID and tlg_user_cmd.USER_ID=" . $user['ID'] . ")>0 and ACCESS>0) order by tlg_cmd.PRIORITY desc, tlg_cmd.TITLE;";
-            //$this->debug($sql);
+            $sql = "SELECT * FROM tlg_cmd where ACCESS=3 or ((select count(*) from tlg_user_cmd where tlg_cmd.ID=tlg_user_cmd.CMD_ID and tlg_user_cmd.USER_ID=" . $user['ID'] . ")>0 and ACCESS>0) order by tlg_cmd.PRIORITY desc, tlg_cmd.TITLE;";
+            //$this->log($sql);
             $rec = SQLSelect($sql);
             $total = count($rec);
             if($total) {
@@ -516,14 +516,22 @@ class telegram extends module {
                     if($rec[$i]["SHOW_MODE"] == 1)
                         $view = true;
                     elseif($rec[$i]["SHOW_MODE"] == 3) {
-                        if($rec[$i]["CONDITION"] == 1 && $rec[$i]["pvalue"] == $rec[$i]["CONDITION_VALUE"])
-                            $view = true;
-                        if($rec[$i]["CONDITION"] == 2 && $rec[$i]["pvalue"] > $rec[$i]["CONDITION_VALUE"])
-                            $view = true;
-                        if($rec[$i]["CONDITION"] == 3 && $rec[$i]["pvalue"] < $rec[$i]["CONDITION_VALUE"])
-                            $view = true;
-                        if($rec[$i]["CONDITION"] == 4 && $rec[$i]["pvalue"] <> $rec[$i]["CONDITION_VALUE"])
-                            $view = true;
+                        if ($rec[$i]["LINKED_OBJECT"] && $rec[$i]["LINKED_PROPERTY"])
+                        {
+                            $query = "select * from pvalues where pvalues.PROPERTY_ID = (SELECT properties.ID FROM `properties` where properties.TITLE='".$rec[$i]["LINKED_PROPERTY"]."' and `properties`.`OBJECT_ID`= (select objects.ID from objects where objects.TITLE='".$rec[$i]["LINKED_OBJECT"]."')) ORDER BY updated DESC limit 1";
+                            $val = SQLSelectOne($query);
+                            if($val)
+                            {
+                                if($rec[$i]["CONDITION"] == 1 && $val["VALUE"] == $rec[$i]["CONDITION_VALUE"])
+                                    $view = true;
+                                if($rec[$i]["CONDITION"] == 2 && $val["VALUE"] > $rec[$i]["CONDITION_VALUE"])
+                                    $view = true;
+                                if($rec[$i]["CONDITION"] == 3 && $val["VALUE"] < $rec[$i]["CONDITION_VALUE"])
+                                    $view = true;
+                                if($rec[$i]["CONDITION"] == 4 && $val["VALUE"] <> $rec[$i]["CONDITION_VALUE"])
+                                    $view = true;
+                            }
+                        }
                     }
                     if($view)
                         $option[] = $rec[$i]["TITLE"];
