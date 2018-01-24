@@ -519,7 +519,7 @@ class telegram extends module {
                         if ($rec[$i]["LINKED_OBJECT"] && $rec[$i]["LINKED_PROPERTY"])
                         {
                             $val = gg($rec[$i]["LINKED_OBJECT"].".".$rec[$i]["LINKED_PROPERTY"]);
-                            if($val)
+                            if($val!='')
                             {
                                 if($rec[$i]["CONDITION"] == 1 && $val == $rec[$i]["CONDITION_VALUE"])
                                     $view = true;
