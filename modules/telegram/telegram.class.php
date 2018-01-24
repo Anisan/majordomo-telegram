@@ -518,17 +518,16 @@ class telegram extends module {
                     elseif($rec[$i]["SHOW_MODE"] == 3) {
                         if ($rec[$i]["LINKED_OBJECT"] && $rec[$i]["LINKED_PROPERTY"])
                         {
-                            $query = "select * from pvalues where pvalues.PROPERTY_ID = (SELECT properties.ID FROM `properties` where properties.TITLE='".$rec[$i]["LINKED_PROPERTY"]."' and `properties`.`OBJECT_ID`= (select objects.ID from objects where objects.TITLE='".$rec[$i]["LINKED_OBJECT"]."')) ORDER BY updated DESC limit 1";
-                            $val = SQLSelectOne($query);
+                            $val = gg($rec[$i]["LINKED_OBJECT"].".".$rec[$i]["LINKED_PROPERTY"]);
                             if($val)
                             {
-                                if($rec[$i]["CONDITION"] == 1 && $val["VALUE"] == $rec[$i]["CONDITION_VALUE"])
+                                if($rec[$i]["CONDITION"] == 1 && $val == $rec[$i]["CONDITION_VALUE"])
                                     $view = true;
-                                if($rec[$i]["CONDITION"] == 2 && $val["VALUE"] > $rec[$i]["CONDITION_VALUE"])
+                                if($rec[$i]["CONDITION"] == 2 && $val > $rec[$i]["CONDITION_VALUE"])
                                     $view = true;
-                                if($rec[$i]["CONDITION"] == 3 && $val["VALUE"] < $rec[$i]["CONDITION_VALUE"])
+                                if($rec[$i]["CONDITION"] == 3 && $val < $rec[$i]["CONDITION_VALUE"])
                                     $view = true;
-                                if($rec[$i]["CONDITION"] == 4 && $val["VALUE"] <> $rec[$i]["CONDITION_VALUE"])
+                                if($rec[$i]["CONDITION"] == 4 && $val <> $rec[$i]["CONDITION_VALUE"])
                                     $view = true;
                             }
                         }
