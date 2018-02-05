@@ -37,6 +37,7 @@ $dictionary=array(
 'TLG_EVENT_STICKER'=>'Sticker',
 'TLG_EVENT_LOCATION'=>'Location',
 'TLG_COUNT_ROW'=>'Count commands on row',
+'TLG_TIMEOUT'=>'Timeout cycle (ms)',
 'TLG_UPDATE_USER_INFO'=>'Update user info',
 'TLG_USE_WEBHOOK'=>'Use webhook',
 'TLG_WEBHOOK_URL'=>'Webhook URL',
@@ -49,6 +50,7 @@ $dictionary=array(
 /* help */
 'HELP_TOKEN'=>'Token bot from @BotFather -> \'123456780:AAHeВ7UcDWvEovvcFaMfUrUVPupNORHWD_k\'',
 'HELP_STORAGE'=>'Path storage to save files from user',
+'HELP_TIMEOUT'=>'Timeout cycle in ms',
 'HELP_USERID'=>'Telegram User ID',
 'HELP_NAME'=>'Name user',
 'HELP_MEMBER'=>'Link to system user',

@@ -38,6 +38,7 @@ $dictionary=array(
 'TLG_EVENT_STICKER'=>'Стикер',
 'TLG_EVENT_LOCATION'=>'Местоположение',
 'TLG_COUNT_ROW'=>'Команд в строке',
+'TLG_TIMEOUT'=>'Период опроса (мс)',
 'TLG_UPDATE_USER_INFO'=>'Обновить информацию пользователей',
 'TLG_USE_WEBHOOK'=>'Использовать webhook',
 'TLG_WEBHOOK_URL'=>'Webhook URL',
@@ -50,6 +51,7 @@ $dictionary=array(
 /* help */
 'HELP_TOKEN'=>'Токен бота полученного от @BotFather вида \'123456780:AAHeВ7UcDWvEovvcFaMfUrUVPupNORHWD_k\'',
 'HELP_STORAGE'=>'Путь для сохранения файлов полученных от пользователя',
+'HELP_TIMEOUT'=>'Период опроса новых сообщений в миллисекундах',
 'HELP_USERID'=>'Telegram User ID',
 'HELP_NAME'=>'Имя пользователя',
 'HELP_MEMBER'=>'Связь с пользователем системы',

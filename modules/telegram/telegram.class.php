@@ -247,8 +247,11 @@ class telegram extends module {
         $out['TLG_TOKEN'] = $this->config['TLG_TOKEN'];
         $out['TLG_STORAGE'] = $this->config['TLG_STORAGE'];
         $out['TLG_COUNT_ROW'] = $this->config['TLG_COUNT_ROW'];
+        $out['TLG_TIMEOUT'] = $this->config['TLG_TIMEOUT'];
         if(!$out['TLG_COUNT_ROW'])
             $out['TLG_COUNT_ROW'] = 3;
+        if(!$out['TLG_TIMEOUT'])
+            $out['TLG_TIMEOUT'] = 3000;
         $out['TLG_DEBUG'] = $this->config['TLG_DEBUG'];
         $out['TLG_test'] = $this->data_source . "_" . $this->view_mode . "_" . $this->tab;
         // get webhook info
@@ -264,6 +267,8 @@ class telegram extends module {
                 $this->config['TLG_STORAGE'] = $tlg_storage;
                 global $tlg_count_row;
                 $this->config['TLG_COUNT_ROW'] = $tlg_count_row;
+                global $tlg_timeout;
+                $this->config['TLG_TIMEOUT'] = $tlg_timeout;
                 global $tlg_debug;
                 $this->config['TLG_DEBUG'] = $tlg_debug;
                 global $tlg_webhook;

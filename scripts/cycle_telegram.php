@@ -28,7 +28,10 @@ while (1)
       $db->Disconnect();
       exit;
    }
-   sleep(3);
+   $timeout = $telegram_module->config['TLG_TIMEOUT'];
+   if(!$timeout)
+        $timeout = 3000;
+   usleep($timeout * 1000);
 }
 DebMes("Unexpected close of cycle: " . basename(__FILE__));
  
