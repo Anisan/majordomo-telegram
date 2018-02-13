@@ -627,15 +627,18 @@ class telegram extends module {
     
     // send message
     function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML') {
-        $content = array(
-            'chat_id' => $user_id,
-            'text' => $message,
-            'reply_markup' => $keyboard,
-            'parse_mode' => $parse_mode
-        );
-        $res = $this->telegramBot->sendMessage($content);
-        $this->debug($res);
-    return $res;
+        $splited = str_split($message, 4096);
+        foreach ($splited as $mess) {
+            $content = array(
+                'chat_id' => $user_id,
+                'text' => $mess,
+                'reply_markup' => $keyboard,
+                'parse_mode' => $parse_mode
+            );
+            $res = $this->telegramBot->sendMessage($content);
+            $this->debug($res);
+        }
+        return $res;
     }
     function sendMessageTo($where, $message, array $key = NULL) {
         $users = $this->getUsers($where);
@@ -647,14 +650,7 @@ class telegram extends module {
             else
                 $keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
             $this->debug($keyboard);
-            $content = array(
-                'chat_id' => $user_id,
-                'text' => $message,
-                'reply_markup' => $keyboard,
-                'parse_mode' => 'HTML'
-            );
-            $res = $this->telegramBot->sendMessage($content);
-            $this->debug($res);
+            $this->sendMessage($user_id,$message,$keyboard,'HTML');
         }
     }
     function sendMessageToUser($user_id, $message, $key = NULL) {
