@@ -593,6 +593,7 @@ class telegram extends module {
             'reply_markup' => $keyboard,
             'parse_mode' => $parse_mode
         );
+        $this->debug($content);
         $res = $this->telegramBot->editMessageText($content);
         $this->debug($res);
     return $res;

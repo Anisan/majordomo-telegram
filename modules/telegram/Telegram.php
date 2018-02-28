@@ -1654,6 +1654,17 @@ class TelegramBot
     /// Get the location in the message
     public function Location()
     {
+        $type = $this->getUpdateType();
+        if ($type == self::CALLBACK_QUERY) {
+            return @$this->data['callback_query']['location'];
+        }
+        if ($type == self::CHANNEL_POST) {
+            return @$this->data['channel_post']['location'];
+        }
+        if ($type == self::EDITED_MESSAGE) {
+            return @$this->data['edited_message']['location'];
+        }
+
         return $this->data['message']['location'];
     }
 
