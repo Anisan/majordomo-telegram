@@ -46,6 +46,10 @@ $dictionary=array(
 'TLG_WEBHOOK_SET'=>'Установить webhook',
 'TLG_WEBHOOK_CLEAN'=>'Удалить webhook',
 'TLG_WEBHOOK_INFO'=>'Статус webhook',
+'TLG_USE_PROXY'=>'Использовать прокси',
+'TLG_PROXY_URL'=>'Адрес сервера прокси',
+'TLG_PROXY_LOGIN'=>'Логин прокси',
+'TLG_PROXY_PASSWORD'=>'Пароль прокси',
 /* about */
 
 /* help */

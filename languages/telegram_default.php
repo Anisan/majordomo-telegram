@@ -45,6 +45,10 @@ $dictionary=array(
 'TLG_WEBHOOK_SET'=>'Set webhook',
 'TLG_WEBHOOK_CLEAN'=>'Clean webhook',
 'TLG_WEBHOOK_INFO'=>'Status webhook',
+'TLG_USE_PROXY'=>'Use proxy',
+'TLG_PROXY_URL'=>'Server proxy',
+'TLG_PROXY_LOGIN'=>'Login proxy',
+'TLG_PROXY_PASSWORD'=>'Password proxy',
 /* about */
 
 /* help */

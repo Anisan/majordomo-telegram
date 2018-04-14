@@ -63,6 +63,8 @@ class TelegramBot
     private $bot_token = '';
     private $data = [];
     private $updates = [];
+    private $proxy = '';
+    private $proxypwd='';
 
     /// Class constructor
 
@@ -71,10 +73,12 @@ class TelegramBot
      * \param $bot_token the bot token
      * \return an instance of the class.
      */
-    public function __construct($bot_token)
+    public function __construct($bot_token, $proxyUrl = '', $proxyPwd = '')
     {
         $this->bot_token = $bot_token;
         $this->data = $this->getData();
+        $this->proxy = $proxyUrl;
+        $this->proxypwd = $proxyPwd;
     }
 
     /// Do requests to Telegram Bot API
@@ -2848,6 +2852,12 @@ class TelegramBot
         if ($post) {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
+        }
+        if ($this->proxy!= '')
+        {
+            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
+            curl_setopt($ch, CURLOPT_PROXYUSERPWD, $this->proxypwd);
         }
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $result = curl_exec($ch);

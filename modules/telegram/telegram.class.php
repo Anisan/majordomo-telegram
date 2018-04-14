@@ -28,7 +28,10 @@ class telegram extends module {
         $this->checkInstalled();
         
         $this->getConfig();
-        $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+        if (!$this->config['TLG_USEPROXY'])
+            $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+        else
+            $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN'],$this->config['TLG_PROXY_URL'],$this->config['TLG_PROXY_LOGIN'].':'.$this->config['TLG_PROXY_PASSWORD']);
     }
     /**
      * saveParams
@@ -259,6 +262,11 @@ class telegram extends module {
         $out['TLG_WEBHOOK_URL'] = $this->config['TLG_WEBHOOK_URL'];
         $out['TLG_WEBHOOK_CERT'] = $this->config['TLG_WEBHOOK_CERT'];
         
+        $out['TLG_USEPROXY'] = $this->config['TLG_USEPROXY'];
+        $out['TLG_PROXY_URL'] = $this->config['TLG_PROXY_URL'];
+        $out['TLG_PROXY_LOGIN'] = $this->config['TLG_PROXY_LOGIN'];
+        $out['TLG_PROXY_PASSWORD'] = $this->config['TLG_PROXY_PASSWORD'];
+        
         if($this->data_source == 'telegram' || $this->data_source == '') {
             if($this->view_mode == 'update_settings') {
                 global $tlg_token;
@@ -277,6 +285,14 @@ class telegram extends module {
                 $this->config['TLG_WEBHOOK_URL'] = $tlg_webhook_url;
                 global $tlg_webhook_cert;
                 $this->config['TLG_WEBHOOK_CERT'] = $tlg_webhook_cert;
+                global $tlg_useproxy;
+                $this->config['TLG_USEPROXY'] = $tlg_useproxy;
+                global $tlg_proxy_url;
+                $this->config['TLG_PROXY_URL'] = $tlg_proxy_url;
+                global $tlg_proxy_login;
+                $this->config['TLG_PROXY_LOGIN'] = $tlg_proxy_login;
+                global $tlg_proxy_password;
+                $this->config['TLG_PROXY_PASSWORD'] = $tlg_proxy_password;
                 $this->saveConfig();
                 $this->log("Save config");
                 if (!$this->config['TLG_WEBHOOK'])
