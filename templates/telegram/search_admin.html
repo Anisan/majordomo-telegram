@@ -113,6 +113,17 @@
 </div>
 <div class='collapse [#if TLG_USEPROXY="1"#] in[#endif#]' id='proxy_settings'>
 <div class="form-group">
+ <label class="col-lg-4 control-label"><#LANG_TLG_PROXY_TYPE#></label>
+  <div class="col-lg-6">
+	<select name="tlg_proxy_type" class="form-control" id="tlg_proxy_type">
+		<option value="1"[#if TLG_PROXY_TYPE=="1"#] selected[#endif#]>HTTP</option>
+		<option value="2"[#if TLG_PROXY_TYPE=="2"#] selected[#endif#]>SOCKS5</option>
+		<option value="3"[#if TLG_PROXY_TYPE=="3"#] selected[#endif#]>SOCKS5 HOSTNAME</option>
+		<option value="4"[#if TLG_PROXY_TYPE=="4"#] selected[#endif#]>HTTPS</option>
+	</select>
+ </div>
+</div>
+<div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_PROXY_URL#></label>
   <div class="col-lg-6">
 	<input class="form-control" type="text" name="tlg_proxy_url" value="<#TLG_PROXY_URL#>" class="input">

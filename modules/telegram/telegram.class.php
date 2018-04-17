@@ -31,7 +31,16 @@ class telegram extends module {
         if (!$this->config['TLG_USEPROXY'])
             $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
         else
-            $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN'],$this->config['TLG_PROXY_URL'],$this->config['TLG_PROXY_LOGIN'].':'.$this->config['TLG_PROXY_PASSWORD']);
+        {
+            $type_proxy = CURLPROXY_SOCKS5;
+            if ($this->config['TLG_PROXY_TYPE']==1)
+                $type_proxy = CURLPROXY_HTTP;
+            if ($this->config['TLG_PROXY_TYPE']==3)
+                $type_proxy = CURLPROXY_SOCKS5_HOSTNAME;
+            if ($this->config['TLG_PROXY_TYPE']==4)
+                $type_proxy = CURLPROXY_HTTPS;
+            $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN'],$this->config['TLG_PROXY_URL'],$this->config['TLG_PROXY_LOGIN'].':'.$this->config['TLG_PROXY_PASSWORD'], $type_proxy);
+        }
     }
     /**
      * saveParams
@@ -143,7 +152,7 @@ class telegram extends module {
     function admin(&$out) {
         $this->getConfig();
         
-        if ((time() - gg('cycle_telegramRun')) < 60 ) {
+        if ((time() - gg('cycle_telegramRun')) < $this->config['TLG_TIMEOUT']*2 ) {
 			$out['CYCLERUN'] = 1;
 		} else {
 			$out['CYCLERUN'] = 0;
@@ -254,7 +263,11 @@ class telegram extends module {
         if(!$out['TLG_COUNT_ROW'])
             $out['TLG_COUNT_ROW'] = 3;
         if(!$out['TLG_TIMEOUT'])
-            $out['TLG_TIMEOUT'] = 3000;
+            $out['TLG_TIMEOUT'] = 30;
+        if($out['TLG_TIMEOUT']>600)
+            $out['TLG_TIMEOUT'] = 30;
+        if(!$out['TLG_PROXY_TYPE'])
+            $out['TLG_PROXY_TYPE'] = 2;
         $out['TLG_DEBUG'] = $this->config['TLG_DEBUG'];
         $out['TLG_test'] = $this->data_source . "_" . $this->view_mode . "_" . $this->tab;
         // get webhook info
@@ -263,6 +276,7 @@ class telegram extends module {
         $out['TLG_WEBHOOK_CERT'] = $this->config['TLG_WEBHOOK_CERT'];
         
         $out['TLG_USEPROXY'] = $this->config['TLG_USEPROXY'];
+        $out['TLG_PROXY_TYPE'] = $this->config['TLG_PROXY_TYPE'];
         $out['TLG_PROXY_URL'] = $this->config['TLG_PROXY_URL'];
         $out['TLG_PROXY_LOGIN'] = $this->config['TLG_PROXY_LOGIN'];
         $out['TLG_PROXY_PASSWORD'] = $this->config['TLG_PROXY_PASSWORD'];
@@ -277,6 +291,8 @@ class telegram extends module {
                 $this->config['TLG_COUNT_ROW'] = $tlg_count_row;
                 global $tlg_timeout;
                 $this->config['TLG_TIMEOUT'] = $tlg_timeout;
+                if($this->config['TLG_TIMEOUT']>600)
+                    $this->config['TLG_TIMEOUT'] = 30;
                 global $tlg_debug;
                 $this->config['TLG_DEBUG'] = $tlg_debug;
                 global $tlg_webhook;
@@ -287,6 +303,8 @@ class telegram extends module {
                 $this->config['TLG_WEBHOOK_CERT'] = $tlg_webhook_cert;
                 global $tlg_useproxy;
                 $this->config['TLG_USEPROXY'] = $tlg_useproxy;
+                global $tlg_proxy_type;
+                $this->config['TLG_PROXY_TYPE'] = $tlg_proxy_type;
                 global $tlg_proxy_url;
                 $this->config['TLG_PROXY_URL'] = $tlg_proxy_url;
                 global $tlg_proxy_login;
@@ -1024,7 +1042,8 @@ class telegram extends module {
             $path_parts = pathinfo($file_path);
             if(!is_dir($path_parts['dirname']))
                 mkdir($path_parts['dirname'], 0777, true);
-            $this->telegramBot->downloadFile($file["result"]["file_path"], $file_path);
+            $res = $this->telegramBot->downloadFile($file["result"]["file_path"], $file_path);
+            $this->debug($res);
         }
     }
     
@@ -1033,7 +1052,18 @@ class telegram extends module {
         if ($this->config['TLG_WEBHOOK'])
             return;
         // Get all the new updates and set the new correct update_id
-        $req = $this->telegramBot->getUpdates($timeout = 5);
+        if ($this->config['TLG_USEPROXY'])
+        {
+            $type_proxy = CURLPROXY_SOCKS5;
+            if ($this->config['TLG_PROXY_TYPE']==1)
+                $type_proxy = CURLPROXY_HTTP;
+            if ($this->config['TLG_PROXY_TYPE']==3)
+                $type_proxy = CURLPROXY_SOCKS5_HOSTNAME;
+            if ($this->config['TLG_PROXY_TYPE']==4)
+                $type_proxy = CURLPROXY_HTTPS;
+            $this->telegramBot->setProxy($this->config['TLG_PROXY_URL'],$this->config['TLG_PROXY_LOGIN'].':'.$this->config['TLG_PROXY_PASSWORD'], $type_proxy);
+        }
+        $req = $this->telegramBot->getUpdates(0, 10, $this->config["TLG_TIMEOUT"]);
         if(isset($req['error_code']))
         {
             if($this->config['TLG_DEBUG'])
@@ -1045,12 +1075,28 @@ class telegram extends module {
         for($i = 0; $i < $this->telegramBot->UpdateCount(); $i++) {
             // You NEED to call serveUpdate before accessing the values of message in Telegram Class
             $this->telegramBot->serveUpdate($i);
-            $this->processMessage();
+            //$this->processMessage();
+            $data = $this->telegramBot->getData();
+            $url = BASE_URL . '/webhook_telegram.php';
+            $data_string = json_encode($data);
+            $ch=curl_init($url);
+            curl_setopt_array($ch, array(
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => $data_string,
+                CURLOPT_HEADER => true,
+                CURLOPT_HTTPHEADER => array('Content-Type:application/json', 'Content-Length: ' . strlen($data_string)))
+            );
+            curl_setopt($ch, CURLOPT_NOSIGNAL, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100);
+
+            $result = curl_exec($ch);
+            curl_close($ch);
         }
     }
     function processMessage() {
         $skip = false;
         $data = $this->telegramBot->getData();
+        echo $data;
         $this->debug($data);
         $bot_name = $this->config['TLG_BOTNAME'];
         $text = $this->telegramBot->Text();
@@ -1256,7 +1302,8 @@ class telegram extends module {
                     $path_parts = pathinfo($file_path);
                     if(!is_dir($path_parts['dirname']))
                         mkdir($path_parts['dirname'], 0777, true);
-                    $this->telegramBot->downloadFile($file["result"]["file_path"], $file_path);
+                    $res = $this->telegramBot->downloadFile($file["result"]["file_path"], $file_path);
+                    $this->debug($res);
                 }
                 if($voice && $user['PLAY'] == 1) {
                     //проиграть голосовое сообщение

@@ -65,6 +65,7 @@ class TelegramBot
     private $updates = [];
     private $proxy = '';
     private $proxypwd='';
+    private $proxytype=CURLPROXY_SOCKS5;
 
     /// Class constructor
 
@@ -73,12 +74,18 @@ class TelegramBot
      * \param $bot_token the bot token
      * \return an instance of the class.
      */
-    public function __construct($bot_token, $proxyUrl = '', $proxyPwd = '')
+    public function __construct($bot_token, $proxyUrl = '', $proxyPwd = '', $proxyType = CURLPROXY_SOCKS5)
     {
         $this->bot_token = $bot_token;
+        $this->setProxy($proxyUrl,$proxyPwd,$proxyType);
         $this->data = $this->getData();
+    }
+    
+    public function setProxy( $proxyUrl = '', $proxyPwd = '', $proxyType = CURLPROXY_SOCKS5)
+    {
         $this->proxy = $proxyUrl;
         $this->proxypwd = $proxyPwd;
+        $this->proxytype = $proxyType;
     }
 
     /// Do requests to Telegram Bot API
@@ -1380,14 +1387,37 @@ class TelegramBot
     public function downloadFile($telegram_file_path, $local_file_path)
     {
         $file_url = 'https://api.telegram.org/file/bot'.$this->bot_token.'/'.$telegram_file_path;
-        $in = fopen($file_url, 'rb');
-        $out = fopen($local_file_path, 'wb');
-
-        while ($chunk = fread($in, 8192)) {
-            fwrite($out, $chunk, 8192);
+        
+        $fp = fopen ($local_file_path, 'w+');
+         
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $file_url);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	
+        if ($this->proxy!= '')
+        {
+            curl_setopt($ch, CURLOPT_PROXYTYPE, $this->proxytype);
+            curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
+            curl_setopt($ch, CURLOPT_PROXYUSERPWD, $this->proxypwd);
         }
-        fclose($in);
-        fclose($out);
+                
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        $result = curl_exec($ch);
+        if ($result === false) {
+            $result = json_encode(['ok'=>false, 'curl_error_code' => curl_errno($ch), 'curl_error' => curl_error($ch)]);
+        }
+        curl_close($ch);
+        fclose($fp);
+        if (class_exists('TelegramErrorLogger')) {
+            $loggerArray = ($this->getData() == null) ? [$content] : [$this->getData(), $content];
+            TelegramErrorLogger::log(json_decode($result, true), $loggerArray);
+        }
+
+        return $result;
     }
 
     /// Set a WebHook for the bot
@@ -2855,11 +2885,13 @@ class TelegramBot
         }
         if ($this->proxy!= '')
         {
-            curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            curl_setopt($ch, CURLOPT_PROXYTYPE, $this->proxytype);
             curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
             curl_setopt($ch, CURLOPT_PROXYUSERPWD, $this->proxypwd);
         }
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
         $result = curl_exec($ch);
         if ($result === false) {
             $result = json_encode(['ok'=>false, 'curl_error_code' => curl_errno($ch), 'curl_error' => curl_error($ch)]);
