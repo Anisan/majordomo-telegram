@@ -20,6 +20,7 @@ class telegram extends module {
      * @access private
      */
     private $telegramBot;
+    private $last_update_id=0;
      
     function __construct() {
         $this->name = "telegram";
@@ -1063,7 +1064,7 @@ class telegram extends module {
                 $type_proxy = CURLPROXY_HTTPS;
             $this->telegramBot->setProxy($this->config['TLG_PROXY_URL'],$this->config['TLG_PROXY_LOGIN'].':'.$this->config['TLG_PROXY_PASSWORD'], $type_proxy);
         }
-        $req = $this->telegramBot->getUpdates(0, 10, $this->config["TLG_TIMEOUT"]);
+        $req = $this->telegramBot->getUpdates($this->last_update_id, 10, $this->config["TLG_TIMEOUT"], false);
         if(isset($req['error_code']))
         {
             if($this->config['TLG_DEBUG'])
@@ -1077,6 +1078,7 @@ class telegram extends module {
             $this->telegramBot->serveUpdate($i);
             //$this->processMessage();
             $data = $this->telegramBot->getData();
+            $this->last_update_id = $data['update_id']+1;
             $url = BASE_URL . '/webhook_telegram.php';
             $data_string = json_encode($data);
             $ch=curl_init($url);
