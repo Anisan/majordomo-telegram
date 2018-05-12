@@ -159,11 +159,11 @@ class telegram extends module {
 			$out['CYCLERUN'] = 0;
 		}
         
-        global $ajax;
+        global $getlog;
         global $filter;
         global $limit;
         global $atype;
-        if($ajax) {
+        if($getlog) {
             header("HTTP/1.0: 200 OK\n");
             header('Content-Type: text/html; charset=utf-8');
             //$limit = 50;
@@ -253,7 +253,7 @@ class telegram extends module {
             header('Content-Type: text/html; charset=utf-8');
             global $user;
             global $text;
-            $this->sendMessageToUser($user,$text);
+            $res = $this->sendMessageToUser($user,$text);
             echo "Ok";
             exit;
         }
@@ -1484,14 +1484,8 @@ class telegram extends module {
                     }
                     if($destination == 'telegram' . $users[$j]['ID'] || (!$destination && ($level >= $users[$j]['HISTORY_LEVEL']))) {
                         $this->log(" Send to " . $user_id . " - " . $reply);
-                        $keyb = $this->getKeyb($users[$j]);
-                        $content = array(
-                            'chat_id' => $user_id,
-                            'text' => $reply,
-                            'reply_markup' => $keyb,
-                            'parse_mode' => 'HTML'
-                        );
-                        $this->sendContent($content);
+                        $url=BASE_URL."/ajax/telegram.html?sendMessage=1&user=".$user_id."&text=".urlencode($reply);
+                        getURLBackground($url,0);
                     }
                 }
                 $this->debug("Sended - " . $reply);

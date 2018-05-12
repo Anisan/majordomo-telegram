@@ -49,7 +49,7 @@
         function checkAllStates() {
          playingXray=1;
          clearTimeout(checkTimer);
-         var url="?ajax=1&op=getcontent&view_mode=<#VIEW_MODE#>&filter="+encodeURIComponent($('#filter').val())+"&limit="+$('#limit').val();
+         var url="?getlog=1&view_mode=<#VIEW_MODE#>&filter="+encodeURIComponent($('#filter').val())+"&limit="+$('#limit').val();
          $.ajax({
           url: url,
           }).done(function(data) { 
