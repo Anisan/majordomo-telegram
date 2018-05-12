@@ -1039,7 +1039,7 @@ class telegram extends module {
             $this->debug($image);
             $file = $this->telegramBot->getFile($image);
             $this->debug($file);
-            $file_path = ROOT . "cached" . DIRECTORY_SEPARATOR . "telegram" . DIRECTORY_SEPARATOR . $user['USER_ID'] . ".jpg";
+            $file_path = ROOT . "cms/cached" . DIRECTORY_SEPARATOR . "telegram" . DIRECTORY_SEPARATOR . $user['USER_ID'] . ".jpg";
             $path_parts = pathinfo($file_path);
             if(!is_dir($path_parts['dirname']))
                 mkdir($path_parts['dirname'], 0777, true);
