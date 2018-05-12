@@ -105,7 +105,6 @@ class TelegramBot
         } else {
             $reply = $this->sendAPIRequest($url, [], false);
         }
-
         return json_decode($reply, true);
     }
 
@@ -2879,6 +2878,7 @@ class TelegramBot
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         if ($post) {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
@@ -2891,7 +2891,7 @@ class TelegramBot
         }
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
+        
         $result = curl_exec($ch);
         if ($result === false) {
             $result = json_encode(['ok'=>false, 'curl_error_code' => curl_errno($ch), 'curl_error' => curl_error($ch)]);

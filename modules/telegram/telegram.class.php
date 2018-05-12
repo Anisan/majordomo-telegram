@@ -139,7 +139,7 @@ class telegram extends module {
         if(!is_dir(ROOT . 'debmes')) {
             mkdir(ROOT . 'debmes', 0777);
         }
-        $today_file = ROOT . 'debmes/log_' . date('Y-m-d') . '-telegram.php.txt';
+        $today_file = ROOT . 'cms/debmes/log_' . date('Y-m-d') . '-telegram.php.txt';
         $data = date("H:i:s")." " . $message . "\n";
         file_put_contents($today_file, $data, FILE_APPEND | LOCK_EX);
     }
@@ -168,7 +168,7 @@ class telegram extends module {
             header('Content-Type: text/html; charset=utf-8');
             //$limit = 50;
             // Find last midifed
-            $filename = ROOT . 'debmes/log_*-telegram.php.txt';
+            $filename = ROOT . 'cms/debmes/log_*-telegram.php.txt';
             foreach(glob($filename) as $file) {
                 $LastModified[] = filemtime($file);
                 $FileName[] = $file;
@@ -596,7 +596,7 @@ class telegram extends module {
         $this->debug($content);
         $res = $this->telegramBot->endpoint($endpoint, $content);
         $this->debug($res);
-    return $res;
+        return $res;
     }
     
     function sendAnswerCallbackQuery($callback_id, $text, $show_alert = false ) {
@@ -1473,8 +1473,6 @@ class telegram extends module {
             } elseif($details['source']) {
                 $destination = $details['source'];
             }
-            $me = $this->telegramBot->getMe();
-            $bot_name = $me["result"]["username"];
             $users = SQLSelect("SELECT * FROM tlg_user WHERE HISTORY=1;");
             $c_users = count($users);
             if($c_users) {
