@@ -782,7 +782,64 @@ class telegram extends module {
     function sendVideoToAll($video_path, $message = '', $key = NULL) {
         $this->sendVideoTo("", $video_path, $message, $key);
     }
-    
+    ///send album
+    function sendAlbum($user_id, $image_paths, $message = '', $keyboard = '') {
+        if (count($image_paths) == 1)
+        {
+            $this->sendImage($user_id, $image_paths[0], $message, $keyboard);
+            return;
+        }
+        $photos = array();
+        $content = array(
+            'chat_id' => $user_id
+        );
+        foreach($image_paths as $image) {
+            $img = curl_file_create($image, 'image/png');
+            $photo = array();
+            $photo['caption'] = $message;
+            $photo['type'] = 'photo';
+            $photo['parse_mode'] = 'HTML';
+            $photo['media'] = 'attach://'.basename($image);//$img;
+            $photos[]=$photo;
+            $content[basename($image)]=$img;
+        }
+        $content['media'] = json_encode($photos,true);
+        $res = $this->telegramBot->sendMediaGroup($content);
+        $this->debug($res);
+        return $res;
+    }
+    function sendAlbumTo($where, $image_paths, $message = '', array $key = NULL) {
+        $photos = array();
+        $content = array();
+        foreach($image_paths as $image) {
+            $img = curl_file_create($image, 'image/png');
+            $photo = array();
+            $photo['caption'] = $message;
+            $photo['type'] = 'photo';
+            $photo['parse_mode'] = 'HTML';
+            $photo['media'] = 'attach://'.basename($image);
+            $photos[]=$photo;
+            $content[basename($image)]=$img;
+        }
+        $content['media'] = json_encode($photos,true);
+        $users = $this->getUsers($where);
+        foreach($users as $user) {
+            $user_id = $user['USER_ID'];
+            $content['chat_id'] = $user_id;
+            $res = $this->telegramBot->sendMediaGroup($content);
+            $this->debug($res);
+        }
+    }
+    function sendAlbumToUser($user_id, $image_paths, $message = '', $key = NULL) {
+        $this->sendAlbumTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $image_paths, $message, $key);
+    }
+    function sendAlbumToAdmin($image_paths, $message = '', $key = NULL) {
+        $this->sendAlbumTo("ADMIN=1", $image_paths, $message, $key);
+    }
+    function sendAlbumToAll($image_paths, $message = '', $key = NULL) {
+        $this->sendAlbumTo("", $image_paths, $message, $key);
+    }
+    //
     function sendFile($user_id, $file_path, $message = '', $keyboard = '') {
         $file = curl_file_create($file_path);
         $content = array(

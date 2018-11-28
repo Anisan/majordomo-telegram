@@ -648,7 +648,50 @@ class TelegramBot
     {
         return $this->endpoint('sendLocation', $content);
     }
-
+    
+    /// Send Media Group
+    /**
+     * Use this method to send a group of photos or videos as an album. On success, an array of the sent <a href="https://core.telegram.org/bots/api#message">Messages</a> is returned.<br/>Values inside $content:<br/>
+     * <table>
+     * <tr>
+     * <td><strong>Parameters</strong></td>
+     * <td><strong>Type</strong></td>
+     * <td><strong>Required</strong></td>
+     * <td><strong>Description</strong></td>
+     * </tr>
+     * <tr>
+     * <td>chat_id</td>
+     * <td>Integer or String</td>
+     * <td>Yes</td>
+     * <td>Unique identifier for the target chat or username of the target channel (in the format \c \@channelusername)</td>
+     * </tr>
+     * <tr>
+     * <td>media</td>
+     * <td>Array of <a href="https://core.telegram.org/bots/api#inputmedia">InputMedia</a></td>
+     * <td>Yes</td>
+     * <td>A JSON-serialized array describing photos and videos to be sent, must include 2–10 items</td>
+     * </tr>
+     * <tr>
+     * <td>disable_notification</td>
+     * <td>Boolean</td>
+     * <td>Optional</td>
+     * <td>Sends the messages <a href="https://telegram.org/blog/channels-2-0#silent-messages">silently</a>. Users will receive a notification with no sound.</td>
+     * </tr>
+     * <tr>
+     * <td>reply_to_message_id</td>
+     * <td>Integer</td>
+     * <td>Optional</td>
+     * <td>If the messages are a reply, ID of the original message</td>
+     * </tr>
+     * </table>
+     * \param $content the request parameters as array
+     * \return the JSON Telegram's reply.
+     */
+    public function sendMediaGroup(array $content)
+    {
+        return $this->endpoint('sendMediaGroup', $content);
+    }
+    
     /// Send Venue
 
     /**
