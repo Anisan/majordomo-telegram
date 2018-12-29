@@ -152,12 +152,15 @@ class telegram extends module {
      */
     function admin(&$out) {
         $this->getConfig();
-        
+        if (!gg('cycle_telegramRun')) {
+            setGlobal('cycle_telegramRun',1);
+        }
+
         if ((time() - gg('cycle_telegramRun')) < $this->config['TLG_TIMEOUT']*2 ) {
-			$out['CYCLERUN'] = 1;
-		} else {
-			$out['CYCLERUN'] = 0;
-		}
+            $out['CYCLERUN'] = 1;
+        } else {
+            $out['CYCLERUN'] = 0;
+        }
         
         global $getlog;
         global $filter;
@@ -316,7 +319,7 @@ class telegram extends module {
                 $this->log("Save config");
                 if (!$this->config['TLG_WEBHOOK'])
                 {
-                    setGlobal('cycle_telegram','restart');
+                    setGlobal('cycle_telegramControl','restart');
                     $this->log("Init cycle restart");
                 }
                 $this->redirect("?tab=".$this->tab);
