@@ -45,6 +45,10 @@
  </label>
  <div class="col-lg-6"><input class="form-control" type="text" name="tlg_timeout" value="<#TLG_TIMEOUT#>" class="input"></div>
 </div>
+<div class="form-group">
+ <label class="control-label"><#LANG_TLG_REG_USER#></label>
+ <div class="controls"><input type="checkbox" name="tlg_reg_user" value="1"[#if TLG_REG_USER="1"#] checked[#endif#]></div>
+</div>
 <script type="text/javascript">
 	function showInfo(){  
 	    var url="?webhookinfo=1";

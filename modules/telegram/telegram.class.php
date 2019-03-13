@@ -273,6 +273,7 @@ class telegram extends module {
         if(!$out['TLG_PROXY_TYPE'])
             $out['TLG_PROXY_TYPE'] = 2;
         $out['TLG_DEBUG'] = $this->config['TLG_DEBUG'];
+        $out['TLG_REG_USER'] = $this->config['TLG_REG_USER'];
         $out['TLG_test'] = $this->data_source . "_" . $this->view_mode . "_" . $this->tab;
         // get webhook info
         $out['TLG_WEBHOOK'] = $this->config['TLG_WEBHOOK'];
@@ -299,6 +300,8 @@ class telegram extends module {
                     $this->config['TLG_TIMEOUT'] = 30;
                 global $tlg_debug;
                 $this->config['TLG_DEBUG'] = $tlg_debug;
+                global $tlg_reg_user;
+                $this->config['TLG_REG_USER'] = $tlg_reg_user;
                 global $tlg_webhook;
                 $this->config['TLG_WEBHOOK'] = $tlg_webhook;
                 global $tlg_webhook_url;
@@ -1189,7 +1192,7 @@ class telegram extends module {
             $this->debug("Chatid: ".$chat_id."; Bot-name: ".$bot_name."; Message: ".$text);
         }
         
-        if($text == "/start" || $text == "/start@" . $bot_name) {
+        if($this->config['TLG_REG_USER'] && ($text == "/start" || $text == "/start@" . $bot_name)) {
             // если нет добавляем
             if(!$user['ID']) {
                 $user['USER_ID'] = $chat_id;
@@ -1210,7 +1213,7 @@ class telegram extends module {
         // пользователь не найден
         if(!$user['ID']) 
         {
-            $this->debug("Unknow user: ".$chat_id."; Message: ".$text);
+            $this->log("Unknow user: ".$chat_id."; Message: ".$text);
             return;
         }
         

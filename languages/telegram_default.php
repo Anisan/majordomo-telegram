@@ -50,6 +50,7 @@ $dictionary=array(
 'TLG_PROXY_URL'=>'Server proxy',
 'TLG_PROXY_LOGIN'=>'Login proxy',
 'TLG_PROXY_PASSWORD'=>'Password proxy',
+'TLG_REG_USER'=>'Auto registration users',
 /* about */
 
 /* help */

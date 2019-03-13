@@ -51,6 +51,7 @@ $dictionary=array(
 'TLG_PROXY_URL'=>'Адрес сервера прокси',
 'TLG_PROXY_LOGIN'=>'Логин прокси',
 'TLG_PROXY_PASSWORD'=>'Пароль прокси',
+'TLG_REG_USER'=>'Регистрация пользователей',
 /* about */
 
 /* help */
