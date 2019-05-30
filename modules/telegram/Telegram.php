@@ -1753,7 +1753,11 @@ class TelegramBot
     /// Get the number of updates
     public function UpdateCount()
     {
-        return count($this->updates['result']);
+        if (!$this->updates['result']) {
+            return 0;
+        } else {
+            return count($this->updates['result']);
+        }
     }
 
     /// Get user's id of current message
