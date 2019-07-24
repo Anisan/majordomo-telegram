@@ -103,7 +103,7 @@ if ($res[0]) {
 outHash($rec, $out);
 
 function updateAccess($cmd_id, $users_id) {
-    SQLSelect("DELETE from tlg_user_cmd where CMD_ID=".$cmd_id);
+    SQLExec("DELETE from tlg_user_cmd where CMD_ID=".$cmd_id);
     $users = explode(",", $users_id);
     foreach ( $users as $value ) {
         $recCU=array();
