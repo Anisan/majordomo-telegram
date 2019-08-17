@@ -49,6 +49,8 @@ if ($this->mode=='update') {
     
 	global $priority;
     $rec['PRIORITY']=$priority;
+    if ($rec['PRIORITY'] == "")
+        $rec['PRIORITY'] = 0;
     
     global $users_id;
     
@@ -106,6 +108,7 @@ function updateAccess($cmd_id, $users_id) {
     SQLExec("DELETE from tlg_user_cmd where CMD_ID=".$cmd_id);
     $users = explode(",", $users_id);
     foreach ( $users as $value ) {
+        if ($value == "") continue;
         $recCU=array();
         $recCU['CMD_ID']=$cmd_id;
         $recCU['USER_ID']=$value;
