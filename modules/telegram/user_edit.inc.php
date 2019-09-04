@@ -39,18 +39,25 @@ if ($this->mode=='update') {
     $rec['NAME']=$name;
     global $admin;
     $rec['ADMIN']=$admin;
+    if($rec['ADMIN']!=1) $rec['ADMIN']=0;
     global $history;
     $rec['HISTORY']=$history;
+    if($rec['HISTORY']!=1) $rec['HISTORY']=0;
     global $history_level;
     $rec['HISTORY_LEVEL']=$history_level;
+    if($rec['HISTORY_LEVEL']=='') $rec['HISTORY_LEVEL']=0;
     global $cmd;
     $rec['CMD']=$cmd;
+    if($rec['CMD']!=1) $rec['CMD']=0;
     global $patterns;
     $rec['PATTERNS']=$patterns;
+    if($rec['PATTERNS']!=1) $rec['PATTERNS']=0;
     global $download;
     $rec['DOWNLOAD']=$download;
+    if($rec['DOWNLOAD']!=1) $rec['DOWNLOAD']=0;
     global $play;
     $rec['PLAY']=$play;
+    if($rec['PLAY']!=1) $rec['PLAY']=0;
     global $select_member;
     $rec['MEMBER_ID']=$select_member;
     
