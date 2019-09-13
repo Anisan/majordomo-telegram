@@ -1167,9 +1167,12 @@ class telegram extends module {
         $text = $this->telegramBot->Text();
         $callback = $this->telegramBot->Callback_Data();
         if($callback) {
-            $chat_id = $data["callback_query"]["from"]["id"];
+            $chat_id = $data["callback_query"]["message"]["chat"]["id"];
             $username = $data["callback_query"]["message"]["chat"]["username"];
-            $fullname = $data["callback_query"]["from"]["first_name"].' '.$data["callback_query"]["from"]["last_name"];
+            $fullname = $data["callback_query"]["message"]["chat"]["first_name"].' '.$data["callback_query"]["message"]["chat"]["last_name"];
+            $callback_chat_id = $data["callback_query"]["from"]["id"];
+            $callback_username = $data["callback_query"]["from"]["username"];
+            $callback_fullname = $data["callback_query"]["from"]["first_name"].' '.$data["callback_query"]["from"]["last_name"];
         }else{
             $chat_id = $this->telegramBot->ChatID();
             $username = $this->telegramBot->Username();
