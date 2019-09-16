@@ -45,20 +45,20 @@
 <tr class="hover_btn2">
   <td width="1%" nowrap>
   [#if ACCESS==0#]
-   <img src="../templates/telegram/img/disable.png">
+   <span class="glyphicon glyphicon-remove-circle text-danger panel_icon"></span>
   [#else#]
-   <img src="../templates/telegram/img/enable.png">
+   <span class="glyphicon glyphicon-ok-circle text-success panel_icon"></span>
   [#endif#] 
  </td>
  <td width="1%" nowrap>
   [#if SHOW_MODE==1#]
-   <img src="../templates/telegram/img/eye1.png">
+   <span class="glyphicon glyphicon-eye-open text-success panel_icon"></span>
   [#endif#] 
   [#if SHOW_MODE==2#]
-   <img src="../templates/telegram/img/eye3.png">
+   <span class="glyphicon glyphicon-eye-close text-danger panel_icon"></span>
   [#endif#] 
   [#if SHOW_MODE==3#]
-   <img src="../templates/telegram/img/eye2.png">
+   <span class="glyphicon glyphicon-eye-open text-primary panel_icon"></span>
   [#endif#] 
  </td>
  <td>
