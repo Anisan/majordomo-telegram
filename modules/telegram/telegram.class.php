@@ -129,10 +129,21 @@ class telegram extends module {
         $p = new parser(DIR_TEMPLATES . $this->name . "/" . $this->name . ".html", $this->data, $this);
         $this->result = $p->result;
     }
-    function debug($content) {
-        if($this->config['TLG_DEBUG'])
+    
+    function info($content) {
+        if($this->config['TLG_DEBUG'] != 2)
             $this->log(print_r($content,true));
     }
+    
+    function debug($content) {
+        if($this->config['TLG_DEBUG'] == 1)
+            $this->log(print_r($content,true));
+    }
+    
+    function warning($content) {
+        $this->log(print_r($content,true));
+    }
+    
     function log($message) {
         //echo $message . "\n";
         // DEBUG MESSAGE LOG
@@ -319,11 +330,11 @@ class telegram extends module {
                 global $tlg_proxy_password;
                 $this->config['TLG_PROXY_PASSWORD'] = $tlg_proxy_password;
                 $this->saveConfig();
-                $this->log("Save config");
+                $this->info("Save config");
                 if (!$this->config['TLG_WEBHOOK'])
                 {
                     setGlobal('cycle_telegramControl','restart');
-                    $this->log("Init cycle restart");
+                    $this->info("Init cycle restart");
                 }
                 $this->redirect("?tab=".$this->tab);
             }
@@ -374,7 +385,7 @@ class telegram extends module {
         }
 		global $update_user_info;
 		if ($update_user_info) {
-			$this->log("Update user info");
+			$this->info("Update user info");
 			$users = $this->getUsers("");
 			foreach($users as $user) {
 				$this->updateInfo($user);
@@ -1066,21 +1077,21 @@ class telegram extends module {
     }
     
     function init() {
-        $this->log("Token bot - " . $this->config['TLG_TOKEN']);
+        $this->warning("Token bot - " . $this->config['TLG_TOKEN']);
         // create bot
         $me = $this->telegramBot->getMe();
         $this->debug($me);
         if($me)
         {
-            $this->log("Me: @" . $me["result"]["username"] . " (" . $me["result"]["id"] . ")");
+            $this->warning("Me: @" . $me["result"]["username"] . " (" . $me["result"]["id"] . ")");
             $this->config['TLG_BOTNAME'] = $me["result"]["username"];
             $this->saveConfig();
         }
         else {
-            $this->log("Error connect or invalid token");
+            $this->warning("Error connect or invalid token");
             return;
         }
-        $this->log("Update user info");
+        $this->info("Update user info");
         $users = $this->getUsers("");
         foreach($users as $user) {
            $this->updateInfo($user);
@@ -1133,7 +1144,7 @@ class telegram extends module {
             if($this->config['TLG_DEBUG'])
                 $this->debug($req);
             else
-                $this->log($req['description']);
+                $this->warning($req['description']);
             return;
         }
         for($i = 0; $i < $this->telegramBot->UpdateCount(); $i++) {
@@ -1201,7 +1212,7 @@ class telegram extends module {
                 $user['USER_ID'] = $chat_id;
                 $user['CREATED'] = date('Y/m/d H:i:s');
                 $user['ID'] = SQLInsert('tlg_user', $user);
-                $this->log("Added new user: " . $username . " - " . $chat_id);
+                $this->warning("Added new user: " . $username . " - " . $chat_id);
             }
             $reply = "Вы зарегистрированы! Обратитесь к администратору для получения доступа к функциям.";
             $content = array(
@@ -1216,7 +1227,7 @@ class telegram extends module {
         // пользователь не найден
         if(!$user['ID']) 
         {
-            $this->log("Unknow user: ".$chat_id."; Message: ".$text);
+            $this->warning("Unknow user: ".$chat_id."; Message: ".$text);
             return;
         }
         
@@ -1227,7 +1238,7 @@ class telegram extends module {
             $user['DOWNLOAD'] != 1 && 
             $user['PLAY'] != 1)
         {
-            $this->log("WARNING!!! Permission denied!! User: ".$chat_id."; Message: ".$text);
+            $this->warning("WARNING!!! Permission denied!! User: ".$chat_id."; Message: ".$text);
             $reply = "Обратитесь к администратору для получения доступа к функциям!";
             $content = array(
                 'chat_id' => $chat_id,
@@ -1253,7 +1264,7 @@ class telegram extends module {
             $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=9 and ENABLE=1;");
             foreach($events as $event) {
                 if($event['CODE']) {
-                    $this->log("Execute code event " . $event['TITLE']);
+                    $this->info("Execute code event " . $event['TITLE']);
                     try {
                         eval($event['CODE']);
                     }
@@ -1262,7 +1273,7 @@ class telegram extends module {
                     }
                 }
                 if($skip) {
-                    $this->log("Skip next processing events callback");
+                    $this->info("Skip next processing events callback");
                     break;
                 }
             }
@@ -1272,12 +1283,12 @@ class telegram extends module {
         if($location) {
                 $latitude = $location["latitude"];
                 $longitude = $location["longitude"];
-                $this->log("Get location from " . $chat_id . " - " . $latitude . "," . $longitude);
+                $this->info("Get location from " . $chat_id . " - " . $latitude . "," . $longitude);
                 if($user['MEMBER_ID']) {
                     $sqlQuery = "SELECT * FROM users WHERE ID = '" . $user['MEMBER_ID'] . "'";
                     $userObj = SQLSelectOne($sqlQuery);
                     if($userObj['LINKED_OBJECT']) {
-                        $this->log("Update location to user '" . $userObj['LINKED_OBJECT']."'");
+                        $this->info("Update location to user '" . $userObj['LINKED_OBJECT']."'");
                         setGlobal($userObj['LINKED_OBJECT'] . '.Coordinates', $latitude . ',' . $longitude);
                         setGlobal($userObj['LINKED_OBJECT'] . '.CoordinatesUpdated', date('H:i'));
                         setGlobal($userObj['LINKED_OBJECT'] . '.CoordinatesUpdatedTimestamp', time());
@@ -1287,7 +1298,7 @@ class telegram extends module {
                 $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=8 and ENABLE=1;");
                 foreach($events as $event) {
                     if($event['CODE']) {
-                        $this->log("Execute code event " . $event['TITLE']);
+                        $this->info("Execute code event " . $event['TITLE']);
                         try {
                             eval($event['CODE']);
                         }
@@ -1296,7 +1307,7 @@ class telegram extends module {
                         }
                     }
                     if($skip) {
-                        $this->log("Skip next processing events location");
+                        $this->info("Skip next processing events location");
                         break;
                     }
                 }
@@ -1310,28 +1321,28 @@ class telegram extends module {
                 if($photo_id) {
                     $file = $this->telegramBot->getFile($photo_id);
                     $this->debug($file);
-                    $this->log("Get photo from " . $chat_id . " - " . $file["result"]["file_path"]);
+                    $this->info("Get photo from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . $file["result"]["file_path"];
                     $type = 2;
                 }
                 if($document) {
                     $file = $this->telegramBot->getFile($document["file_id"]);
                     $this->debug($file);
-                    $this->log("Get document from " . $chat_id . " - " . $document["file_name"]);
+                    $this->info("Get document from " . $chat_id . " - " . $document["file_name"]);
                     if(!isset($file['error_code'])) {
                         $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . "document" . DIRECTORY_SEPARATOR . $document["file_name"];
                         if(file_exists($file_path))
                             $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . "document" . DIRECTORY_SEPARATOR . $this->telegramBot->UpdateID() . "_" . $document["file_name"];
                     } else {
                         $file_path = "";
-                        $this->log($file['description']);
+                        $this->info($file['description']);
                     }
                     $type = 6;
                 }
                 if($audio) {
                     $file = $this->telegramBot->getFile($audio["file_id"]);
                     $this->debug($file);
-                    $this->log("Get audio from " . $chat_id . " - " . $file["result"]["file_path"]);
+                    $this->info("Get audio from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $path_parts = pathinfo($file["result"]["file_path"]);
                     $filename = $path_parts["basename"];
                     //use title and performer
@@ -1345,14 +1356,14 @@ class telegram extends module {
                 if($voice) {
                     $file = $this->telegramBot->getFile($voice["file_id"]);
                     $this->debug($file);
-                    $this->log("Get voice from " . $chat_id . " - " . $file["result"]["file_path"]);
+                    $this->info("Get voice from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . $file["result"]["file_path"];
                     $type = 3;
                 }
                 if($video) {
                     $file = $this->telegramBot->getFile($video["file_id"]);
                     $this->debug($file);
-                    $this->log("Get video from " . $chat_id . " - " . $file["result"]["file_path"]);
+                    $this->info("Get video from " . $chat_id . " - " . $file["result"]["file_path"]);
                     $file_path = $storage . $chat_id . DIRECTORY_SEPARATOR . $file["result"]["file_path"];
                     $type = 5;
                 }
@@ -1360,7 +1371,7 @@ class telegram extends module {
                     $file = $this->telegramBot->getFile($sticker["file_id"]);
                     $this->debug($file);
                     $sticker_set = $sticker["set_name"];
-                    $this->log("Get sticker from " . $chat_id . " === Id:" . $sticker["file_id"] ." Set:".$sticker_set);
+                    $this->info("Get sticker from " . $chat_id . " === Id:" . $sticker["file_id"] ." Set:".$sticker_set);
                     $file_path = $storage.'stickers'.DIRECTORY_SEPARATOR.$file["result"]["file_path"];
                     $sticker_id = $sticker["file_id"];
                     $type = 7;
@@ -1375,7 +1386,7 @@ class telegram extends module {
                 }
                 if($voice && $user['PLAY'] == 1) {
                     //проиграть голосовое сообщение
-                    $this->log("Play voice from " . $chat_id . " - " . $file_path);
+                    $this->info("Play voice from " . $chat_id . " - " . $file_path);
                     @touch($file_path);
                     playSound($file_path, 1, $level);
                 }
@@ -1384,7 +1395,7 @@ class telegram extends module {
                     $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=" . $type . " and ENABLE=1;");
                     foreach($events as $event) {
                         if($event['CODE']) {
-                            $this->log("Execute code event " . $event['TITLE']);
+                            $this->info("Execute code event " . $event['TITLE']);
                             try {
                                 eval($event['CODE']);
                             }
@@ -1393,7 +1404,7 @@ class telegram extends module {
                             }
                         }
                         if($skip) {
-                            $this->log("Skip next processing events type = ".$type);
+                            $this->info("Skip next processing events type = ".$type);
                             break;
                         }
                     }
@@ -1403,14 +1414,14 @@ class telegram extends module {
         if($text == "") {
             return;
         }
-        $this->log($chat_id . " (" . $username . ", " . $fullname . ")=" . $text);
+        $this->info($chat_id . " (" . $username . ", " . $fullname . ")=" . $text);
 
         if($user['CMD'] == 1) {
         // get events for text message
             $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=1 and ENABLE=1;");
             foreach($events as $event) {
                 if($event['CODE']) {
-                    $this->log("Execute code event " . $event['TITLE']);
+                    $this->info("Execute code event " . $event['TITLE']);
                     try {
                         eval($event['CODE']);
                     }
@@ -1419,13 +1430,13 @@ class telegram extends module {
                     }
                 }
                 if($skip) {
-                    $this->log("Skip next processing events message");
+                    $this->info("Skip next processing events message");
                     break;
                 }
             }
             // пропуск дальнейшей обработки если с обработчике событий установили $skip
             if($skip) {
-                $this->log("Skip next processing message");
+                $this->info("Skip next processing message");
                 return;
             }
         }
@@ -1444,13 +1455,13 @@ class telegram extends module {
                         $cmd = SQLSelectOne($sql);
                     }
                     if($cmd['ID']) {
-                        $this->log("Find command");
+                        $this->info("Find command");
                         //нашли команду
                         if($cmd['CODE']) {
-                            $this->log("Execute user`s code command");
+                            $this->info("Execute user`s code command");
                             try {
                                 $success = eval($cmd['CODE']);
-                                $this->log("Command:" . $text . " Result:" . $success);
+                                $this->info("Command:" . $text . " Result:" . $success);
                                 if($success == false) {
                                     //нет в выполняемом куске кода return
                                     //$content = array('chat_id' => $chat_id, 'reply_markup' => $keyb, 'text' => "Ошибка выполнения кода команды ".$text);
@@ -1464,7 +1475,7 @@ class telegram extends module {
                                         'parse_mode' => 'HTML'
                                     );
                                     $this->sendContent($content);
-                                    $this->log("Send result to " . $chat_id . ". Command:" . $text . " Result:" . $success);
+                                    $this->info("Send result to " . $chat_id . ". Command:" . $text . " Result:" . $success);
                                 }
                             }
                             catch(Exception $e) {
@@ -1481,7 +1492,7 @@ class telegram extends module {
                         }
                         // если нет кода, который надо выполнить, то передаем дальше на обработку
                     } else
-                        $this->log("Command not found");
+                        $this->info("Command not found");
                 }
                 if ($user['PATTERNS'] == 1)
                     say(htmlspecialchars($text), 0, $user['MEMBER_ID'], 'telegram' . $user['ID']);
@@ -1493,13 +1504,13 @@ class telegram extends module {
 		$user = SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '" . DBSafe($chat_id) . "';");
 		$cmd = SQLSelectOne("SELECT * FROM tlg_cmd INNER JOIN tlg_user_cmd on tlg_cmd.ID=tlg_user_cmd.CMD_ID where (ACCESS=3  OR (tlg_user_cmd.USER_ID=" . $user['ID'] . " and ACCESS>0)) and '" . DBSafe($command) . "' LIKE CONCAT(TITLE,'%');");
         if($cmd['ID']) {
-			$this->log("execCommand => Find command");
+			$this->info("execCommand => Find command");
             if($cmd['CODE']) {
-                $this->log("execCommand => Execute user`s code command");
+                $this->info("execCommand => Execute user`s code command");
                 try {
 					$text = $command;
                     $success = eval($cmd['CODE']);
-                    $this->log("Command:" . $text . " Result:" . $success);
+                    $this->info("Command:" . $text . " Result:" . $success);
                     if($success == false) {
                         //нет в выполняемом куске кода return
                     } else {
@@ -1509,7 +1520,7 @@ class telegram extends module {
                         'parse_mode' => 'HTML'
                         );
                         $this->sendContent($content);
-                        $this->log("Send result to " . $chat_id . ". Command:" . $text . " Result:" . $success);
+                        $this->info("Send result to " . $chat_id . ". Command:" . $text . " Result:" . $success);
                     }
                 }
                 catch(Exception $e) {
@@ -1549,14 +1560,14 @@ class telegram extends module {
                         $user_id = $users[$j]['NAME'];
                     }
                     if($destination == 'telegram' . $users[$j]['ID'] || (!$destination && ($level >= $users[$j]['HISTORY_LEVEL']))) {
-                        $this->log(" Send to " . $user_id . " - " . $reply);
+                        $this->info(" Send to " . $user_id . " - " . $reply);
                         $url=BASE_URL."/ajax/telegram.html?sendMessage=1&user=".$user_id."&text=".urlencode($reply);
                         getURLBackground($url,0);
                     }
                 }
                 $this->debug("Sended - " . $reply);
             } else {
-                $this->log("No users to send data");
+                $this->info("No users to send data");
             }
         }
     }

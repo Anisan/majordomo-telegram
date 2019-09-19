@@ -14,6 +14,7 @@ $ctl = new control_modules();
 include_once(DIR_MODULES . 'telegram/telegram.class.php');
 echo date("H:i:s") . " Running " . basename(__FILE__) . PHP_EOL;
 $telegram_module = new telegram();
+setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
 echo date("H:i:s") . " Init module " . PHP_EOL;
 $telegram_module->init();
 $latest_check=0;

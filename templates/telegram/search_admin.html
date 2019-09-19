@@ -149,8 +149,14 @@
 </div>
 
 <div class="form-group">
- <label class="control-label">Debug</label>
- <div class="controls"><input type="checkbox" name="tlg_debug" value="1"[#if TLG_DEBUG="1"#] checked[#endif#]></div>
+ <label class="control-label">Log level</label>
+  <div class="col-lg-6">
+    <select name="tlg_debug" class="form-control" id="tlg_debug">
+		<option value="0"[#if TLG_DEBUG=="0"#] selected[#endif#]>Info</option>
+		<option value="1"[#if TLG_DEBUG=="1"#] selected[#endif#]>Debug</option>
+		<option value="2"[#if TLG_DEBUG=="2"#] selected[#endif#]>Warning</option>
+	</select>
+  </div>
 </div>
 <label class="control-label" style="visibility:hidden">"<#TLG_test#>"</label>
 <div class="form-actions">
