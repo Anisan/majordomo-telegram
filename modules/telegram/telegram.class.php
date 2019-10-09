@@ -603,8 +603,8 @@ class telegram extends module {
         //print_r($keyb);
         return $keyb;
     }
-    function buildInlineKeyboardButton($text, $url = "", $callback_data = "", $switch_inline_query = "") {
-        return $this->telegramBot->buildInlineKeyboardButton($text, $url, $callback_data, $switch_inline_query);
+    function buildInlineKeyboardButton($text, $url = "", $callback_data = "", $switch_inline_query = NULL ,$switch_inline_query_current_chat = NULL) {
+        return $this->telegramBot->buildInlineKeyboardButton($text, $url, $callback_data, $switch_inline_query, $switch_inline_query_current_chat);
     }
     function buildInlineKeyBoard(array $option) {
         return $this->telegramBot->buildInlineKeyBoard($option);
