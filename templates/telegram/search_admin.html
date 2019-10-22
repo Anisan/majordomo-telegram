@@ -18,7 +18,7 @@
 <fieldset>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_TOKEN#>
- <span class='support' tabindex="1" data-title="<#LANG_HELP_TOKEN#>">
+ <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_TOKEN#>">
  <i class="glyphicon glyphicon-info-sign"></i>
  </span>
 </label>
@@ -26,27 +26,30 @@
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_STORAGE_PATH#>
- <span class='support' tabindex="1" data-title="<#LANG_HELP_STORAGE#>">
+ <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_STORAGE#>">
  <i class="glyphicon glyphicon-info-sign"></i>
  </label>
  <div class="col-lg-6"><input class="form-control" type="text" name="tlg_storage" value="<#TLG_STORAGE#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_COUNT_ROW#>
- <span class='support' tabindex="1" data-title="<#LANG_HELP_COUNTROW#>">
+ <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_COUNTROW#>">
  <i class="glyphicon glyphicon-info-sign"></i>
  </label>
  <div class="col-lg-6"><input class="form-control" type="text" name="tlg_count_row" value="<#TLG_COUNT_ROW#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_TIMEOUT#>
- <span class='support' tabindex="1" data-title="<#LANG_HELP_TIMEOUT#>">
+ <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_TIMEOUT#>">
  <i class="glyphicon glyphicon-info-sign"></i>
  </label>
  <div class="col-lg-6"><input class="form-control" type="text" name="tlg_timeout" value="<#TLG_TIMEOUT#>" class="input"></div>
 </div>
 <div class="form-group">
- <label class="control-label"><#LANG_TLG_REG_USER#></label>
+ <label class="control-label"><#LANG_TLG_REG_USER#>
+ <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_REG_USER#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </label>
  <div class="controls"><input type="checkbox" name="tlg_reg_user" value="1"[#if TLG_REG_USER="1"#] checked[#endif#]></div>
 </div>
 <script type="text/javascript">
@@ -112,7 +115,10 @@
 </div>
 </div>
 <div class="form-group">
- <label class="control-label"><#LANG_TLG_USE_PROXY#></label>
+ <label class="control-label"><#LANG_TLG_USE_PROXY#>
+ <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_USE_PROXY#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </label>
  <div class="controls"><input type="checkbox" id="tlg_useproxy" name="tlg_useproxy" data-toggle="collapse" data-target="#proxy_settings" value="1"[#if TLG_USEPROXY="1"#] checked[#endif#]></div>
 </div>
 <div class='collapse [#if TLG_USEPROXY="1"#] in[#endif#]' id='proxy_settings'>
@@ -149,7 +155,10 @@
 </div>
 
 <div class="form-group">
- <label class="control-label">Log level</label>
+ <label class="control-label">Log level
+ <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_LOG_LEVEL#>">
+ <i class="glyphicon glyphicon-info-sign"></i>
+ </label>
   <div class="col-lg-6">
     <select name="tlg_debug" class="form-control" id="tlg_debug">
 		<option value="0"[#if TLG_DEBUG=="0"#] selected[#endif#]>Info</option>
