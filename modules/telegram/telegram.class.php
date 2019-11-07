@@ -275,6 +275,8 @@ class telegram extends module {
         $out['TLG_STORAGE'] = $this->config['TLG_STORAGE'];
         $out['TLG_COUNT_ROW'] = $this->config['TLG_COUNT_ROW'];
         $out['TLG_TIMEOUT'] = $this->config['TLG_TIMEOUT'];
+        $out['BOT_ID'] = $this->config['TLG_BOT_ID'];
+        $out['BOT_NAME'] = $this->config['TLG_BOT_NAME'];
         if(!$out['TLG_COUNT_ROW'])
             $out['TLG_COUNT_ROW'] = 3;
         if(!$out['TLG_TIMEOUT'])
@@ -1084,7 +1086,24 @@ class telegram extends module {
         if($me)
         {
             $this->warning("Me: @" . $me["result"]["username"] . " (" . $me["result"]["id"] . ")");
-            $this->config['TLG_BOTNAME'] = $me["result"]["username"];
+            $this->config['TLG_BOT_USERNAME'] = $me["result"]["username"];
+            $this->config['TLG_BOT_NAME'] = $me["result"]["first_name"];
+            $this->config['TLG_BOT_ID'] = $me["result"]["id"];
+            $content = array('chat_id' => $me["result"]["id"]);
+            $chat = $this->telegramBot->getChat($content);
+            $this->debug($chat);
+            if($chat["result"]["photo"]) {
+                $image = $chat["result"]["photo"]["big_file_id"];
+                $this->debug($image);
+                $file = $this->telegramBot->getFile($image);
+                $this->debug($file);
+                $file_path = ROOT . "cms/cached" . DIRECTORY_SEPARATOR . "telegram" . DIRECTORY_SEPARATOR . $me["result"]["id"] . ".jpg";
+                $path_parts = pathinfo($file_path);
+                if(!is_dir($path_parts['dirname']))
+                    mkdir($path_parts['dirname'], 0777, true);
+                $res = $this->telegramBot->downloadFile($file["result"]["file_path"], $file_path);
+                $this->debug($res);
+            }
             $this->saveConfig();
         }
         else {

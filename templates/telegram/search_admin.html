@@ -9,6 +9,9 @@
 	[#else#]
 		<span class="label label-danger" title="Статус цикла">Цикл остановлен</span>
 	[#endif#]
+    &nbsp;&nbsp;&nbsp;
+    <img src="../cms/cached/telegram/[#BOT_ID#].jpg" height="35px" style="border-radius: 0 50% 50%;" onerror="this.src='../templates/telegram/img/none.jpg'">
+    &nbsp;<b>[#BOT_NAME#]</b>
 	<button class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#about"><#LANG_ABOUT#>&nbsp;&nbsp;<span class="glyphicon glyphicon-info-sign icon-white"></span>
 	</button>
 </div>
@@ -180,11 +183,11 @@
 <br/>
 
 <ul class="nav nav-tabs">
- <li [#if TAB=="" || TAB=="users"#] class="active"[#endif#]><a href="?tab=users"><#LANG_MODULE_USERS#></a> </li>
- <li [#if TAB=="cmd"#] class="active"[#endif#]><a href="?tab=cmd"><#LANG_TLG_COMMANDS#></a> </li> 
- <li [#if TAB=="events"#] class="active"[#endif#]><a href="?tab=events"><#LANG_TLG_EVENTS#></a> </li> 
- <li [#if TAB=="log"#] class="active"[#endif#]><a href="?tab=log"><#LANG_GENERAL_EVENTS_LOG#></a> </li> 
- <li [#if TAB=="help"#] class="active"[#endif#]><a href="?tab=help"><#LANG_TLG_HELP#></a> </li> 
+ <li [#if TAB=="" || TAB=="users"#] class="active"[#endif#]><a href="?tab=users"><span class="glyphicon glyphicon-user"></span> <#LANG_MODULE_USERS#></a> </li>
+ <li [#if TAB=="cmd"#] class="active"[#endif#]><a href="?tab=cmd"><span class="glyphicon glyphicon-th"></span> <#LANG_TLG_COMMANDS#></a> </li> 
+ <li [#if TAB=="events"#] class="active"[#endif#]><a href="?tab=events"><span class="glyphicon glyphicon-tasks"></span> <#LANG_TLG_EVENTS#></a> </li> 
+ <li [#if TAB=="log"#] class="active"[#endif#]><a href="?tab=log"><span class="glyphicon glyphicon-list-alt"></span> <#LANG_GENERAL_EVENTS_LOG#></a> </li> 
+ <li [#if TAB=="help"#] class="active"[#endif#]><a href="?tab=help"><span class="glyphicon glyphicon-exclamation-sign"></span> <#LANG_TLG_HELP#></a> </li> 
 </ul> 
 
 [#if TAB="users" || TAB==""#]
