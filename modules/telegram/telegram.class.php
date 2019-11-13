@@ -681,7 +681,7 @@ class telegram extends module {
     }
     
     // send message
-    function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML') {
+    function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML', $inline = '') {
         $splited = str_split($message, 4096);
         foreach ($splited as $mess) {
             $content = array(
@@ -690,12 +690,14 @@ class telegram extends module {
                 'reply_markup' => $keyboard,
                 'parse_mode' => $parse_mode
             );
+            if ($inline != "")
+                 $content['reply_markup'] = $inline;
             $res = $this->telegramBot->sendMessage($content);
             $this->debug($res);
         }
         return $res;
     }
-    function sendMessageTo($where, $message, array $key = NULL) {
+    function sendMessageTo($where, $message, array $key = NULL, $inline = '') {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
@@ -705,20 +707,20 @@ class telegram extends module {
             else
                 $keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
             $this->debug($keyboard);
-            $this->sendMessage($user_id,$message,$keyboard,'HTML');
+            $this->sendMessage($user_id,$message, $keyboard, 'HTML', $inline);
         }
     }
-    function sendMessageToUser($user_id, $message, $key = NULL) {
-        $this->sendMessageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key);
+    function sendMessageToUser($user_id, $message, $key = NULL, $inline = '') {
+        $this->sendMessageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key, $inline);
     }
-    function sendMessageToAdmin($message, $key = NULL) {
-        $this->sendMessageTo("ADMIN=1", $message, $key);
+    function sendMessageToAdmin($message, $key = NULL, $inline = '') {
+        $this->sendMessageTo("ADMIN=1", $message, $key, $inline);
     }
-    function sendMessageToAll($message, $key = NULL) {
-        $this->sendMessageTo("", $message, $key);
+    function sendMessageToAll($message, $key = NULL, $inline = '') {
+        $this->sendMessageTo("", $message, $key, $inline);
     }
     ///send image
-    function sendImage($user_id, $image_path, $message = '', $keyboard = '') {
+    function sendImage($user_id, $image_path, $message = '', $keyboard = '', $inline = '') {
         $img = curl_file_create($image_path, 'image/png');
         $content = array(
             'chat_id' => $user_id,
@@ -726,11 +728,13 @@ class telegram extends module {
             'caption' => $message,
             'reply_markup' => $keyboard
         );
+        if ($inline != "")
+            $content['reply_markup'] = $inline;
         $res = $this->telegramBot->sendPhoto($content);
         $this->debug($res);
     return $res;
     }
-    function sendImageTo($where, $image_path, $message = '', array $key = NULL) {
+    function sendImageTo($where, $image_path, $message = '', array $key = NULL, $inline = '') {
         $img = curl_file_create($image_path, 'image/png');
         $users = $this->getUsers($where);
         foreach($users as $user) {
@@ -746,18 +750,20 @@ class telegram extends module {
                 'caption' => $message,
                 'reply_markup' => $keyboard
             );
+            if ($inline != "")
+                $content['reply_markup'] = $inline;
             $res = $this->telegramBot->sendPhoto($content);
             $this->debug($res);
         }
     }
-    function sendImageToUser($user_id, $image_path, $message = '', $key = NULL) {
-        $this->sendImageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $image_path, $message, $key);
+    function sendImageToUser($user_id, $image_path, $message = '', $key = NULL, $inline = '') {
+        $this->sendImageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $image_path, $message, $key, $inline);
     }
-    function sendImageToAdmin($image_path, $message = '', $key = NULL) {
-        $this->sendImageTo("ADMIN=1", $image_path, $message, $key);
+    function sendImageToAdmin($image_path, $message = '', $key = NULL, $inline = '') {
+        $this->sendImageTo("ADMIN=1", $image_path, $message, $key, $inline);
     }
-    function sendImageToAll($image_path, $message = '', $key = NULL) {
-        $this->sendImageTo("", $image_path, $message, $key);
+    function sendImageToAll($image_path, $message = '', $key = NULL, $inline = '') {
+        $this->sendImageTo("", $image_path, $message, $key, $inline);
     }
     ///send video
     function sendVideo($user_id, $video_path, $message = '', $keyboard = '') {
