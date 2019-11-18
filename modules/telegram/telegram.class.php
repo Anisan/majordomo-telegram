@@ -766,7 +766,7 @@ class telegram extends module {
         $this->sendImageTo("", $image_path, $message, $key, $inline);
     }
     ///send video
-    function sendVideo($user_id, $video_path, $message = '', $keyboard = '') {
+    function sendVideo($user_id, $video_path, $message = '', $keyboard = '', $inline = '') {
         $video = curl_file_create($video_path);
         $content = array(
             'chat_id' => $user_id,
@@ -774,11 +774,13 @@ class telegram extends module {
             'caption' => $message,
             'reply_markup' => $keyboard
         );
+        if ($inline != "")
+                $content['reply_markup'] = $inline;
         $res = $this->telegramBot->sendVideo($content);
         $this->debug($res);
     return $res;
     }
-    function sendVideoTo($where, $video_path, $message = '', array $key = NULL) {
+    function sendVideoTo($where, $video_path, $message = '', array $key = NULL, $inline = '') {
         $video = curl_file_create($video_path);
         $users = $this->getUsers($where);
         foreach($users as $user) {
@@ -794,18 +796,20 @@ class telegram extends module {
                 'caption' => $message,
                 'reply_markup' => $keyboard
             );
+            if ($inline != "")
+                $content['reply_markup'] = $inline;
             $res = $this->telegramBot->sendVideo($content);
             $this->debug($res);
         }
     }
-    function sendVideoToUser($user_id, $video_path, $message = '', $key = NULL) {
-        $this->sendVideoTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $video_path, $message, $key);
+    function sendVideoToUser($user_id, $video_path, $message = '', $key = NULL, $inline = '') {
+        $this->sendVideoTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $video_path, $message, $key, $inline);
     }
-    function sendVideoToAdmin($video_path, $message = '', $key = NULL) {
-        $this->sendVideoTo("ADMIN=1", $video_path, $message, $key);
+    function sendVideoToAdmin($video_path, $message = '', $key = NULL, $inline = '') {
+        $this->sendVideoTo("ADMIN=1", $video_path, $message, $key, $inline);
     }
-    function sendVideoToAll($video_path, $message = '', $key = NULL) {
-        $this->sendVideoTo("", $video_path, $message, $key);
+    function sendVideoToAll($video_path, $message = '', $key = NULL, $inline = '') {
+        $this->sendVideoTo("", $video_path, $message, $key, $inline);
     }
     ///send album
     function sendAlbum($user_id, $image_paths, $message = '', $keyboard = '') {
@@ -865,7 +869,7 @@ class telegram extends module {
         $this->sendAlbumTo("", $image_paths, $message, $key);
     }
     //
-    function sendFile($user_id, $file_path, $message = '', $keyboard = '') {
+    function sendFile($user_id, $file_path, $message = '', $keyboard = '', $inline='') {
         $file = curl_file_create($file_path);
         $content = array(
             'chat_id' => $user_id,
@@ -877,7 +881,7 @@ class telegram extends module {
         $this->debug($res);
     return $res;
     }
-    function sendFileTo($where, $file_path, $message = '', array $key = NULL) {
+    function sendFileTo($where, $file_path, $message = '', array $key = NULL, $inline='') {
         $file = curl_file_create($file_path);
         $users = $this->getUsers($where);
         foreach($users as $user) {
@@ -886,37 +890,41 @@ class telegram extends module {
             if($key == NULL)
                 $keyboard = $this->getKeyb($user);
             else
-                $keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
+                $keyboard = $this->telegramBot->buildKeyBoard($key, false, true, $inline='');
             $content = array(
                 'chat_id' => $user_id,
                 'document' => $file,
                 'caption' => $message,
                 'reply_markup' => $keyboard
             );
+            if ($inline != "")
+                $content['reply_markup'] = $inline;
             $res = $this->telegramBot->sendDocument($content);
             $this->debug($res);
         }
     }
-    function sendFileToUser($user_id, $file_path, $message = '', $key = NULL) {
-        $this->sendFileTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $message, $key);
+    function sendFileToUser($user_id, $file_path, $message = '', $key = NULL, $inline='') {
+        $this->sendFileTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $message, $key, $inline);
     }
-    function sendFileToAdmin($file_path, $message = '', $key = NULL) {
-        $this->sendFileTo("ADMIN=1", $file_path, $message, $key);
+    function sendFileToAdmin($file_path, $message = '', $key = NULL, $inline='') {
+        $this->sendFileTo("ADMIN=1", $file_path, $message, $key, $inline);
     }
-    function sendFileToAll($file_path, $message = '', $key = NULL) {
-        $this->sendFileTo("", $file_path, $message, $key);
+    function sendFileToAll($file_path, $message = '', $key = NULL, $inline='') {
+        $this->sendFileTo("", $file_path, $message, $key, $inline);
     }
-    function sendSticker($user_id, $sticker, $keyboard = '') {
+    function sendSticker($user_id, $sticker, $keyboard = '', $inline='') {
         $content = array(
             'chat_id' => $user_id,
             'sticker' => $sticker,
             'reply_markup' => $keyboard
         );
+        if ($inline != "")
+            $content['reply_markup'] = $inline;
         $res = $this->telegramBot->sendSticker($content);
         $this->debug($res);
     return $res;
     }
-    function sendStickerTo($where, $sticker, array $key = NULL) {
+    function sendStickerTo($where, $sticker, array $key = NULL, $inline='') {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
@@ -930,31 +938,35 @@ class telegram extends module {
                 'sticker' => $sticker,
                 'reply_markup' => $keyboard
             );
+            if ($inline != "")
+                $content['reply_markup'] = $inline;
             $res = $this->telegramBot->sendSticker($content);
             $this->debug($res);
         }
     }
-    function sendStickerToUser($user_id, $sticker, $key = NULL) {
-        $this->sendStickerTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $sticker, $key);
+    function sendStickerToUser($user_id, $sticker, $key = NULL, $inline='') {
+        $this->sendStickerTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $sticker, $key, $inline);
     }
-    function sendStickerToAdmin($sticker, $key = NULL) {
-        $this->sendStickerTo("ADMIN=1", $sticker, $key);
+    function sendStickerToAdmin($sticker, $key = NULL, $inline='') {
+        $this->sendStickerTo("ADMIN=1", $sticker, $key, $inline);
     }
-    function sendStickerToAll($sticker, $key = NULL) {
-        $this->sendStickerTo("", $sticker, $key);
+    function sendStickerToAll($sticker, $key = NULL, $inline='') {
+        $this->sendStickerTo("", $sticker, $key, $inline);
     }
-    function sendLocation($user_id, $lat, $lon, $keyboard = '') {
+    function sendLocation($user_id, $lat, $lon, $keyboard = '', $inline='') {
         $content = array(
             'chat_id' => $user_id,
             'latitude' => $lat,
             'longitude' => $lon,
             'reply_markup' => $keyboard
         );
+        if ($inline != "")
+            $content['reply_markup'] = $inline;
         $res = $this->telegramBot->sendLocation($content);
         $this->debug($res);
     return $res;
     }
-    function sendLocationTo($where, $lat, $lon, array $key = NULL) {
+    function sendLocationTo($where, $lat, $lon, array $key = NULL, $inline='') {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
@@ -969,20 +981,22 @@ class telegram extends module {
                 'longitude' => $lon,
                 'reply_markup' => $keyboard
             );
+            if ($inline != "")
+                $content['reply_markup'] = $inline;
             $res = $this->telegramBot->sendLocation($content);
             $this->debug($res);
         }
     }
-    function sendLocationToUser($user_id, $lat, $lon, $key = NULL) {
-        $this->sendLocationTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $key);
+    function sendLocationToUser($user_id, $lat, $lon, $key = NULL, $inline='') {
+        $this->sendLocationTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $key, $inline);
     }
-    function sendLocationToAdmin($lat, $lon, $key = NULL) {
-        $this->sendLocationTo("ADMIN=1", $lat, $lon, $key);
+    function sendLocationToAdmin($lat, $lon, $key = NULL, $inline='') {
+        $this->sendLocationTo("ADMIN=1", $lat, $lon, $key, $inline);
     }
-    function sendLocationToAll($lat, $lon, $key = NULL) {
-        $this->sendLocationTo("", $lat, $lon, $key);
+    function sendLocationToAll($lat, $lon, $key = NULL, $inline='') {
+        $this->sendLocationTo("", $lat, $lon, $key, $inline);
     }
-    function sendVenue($user_id, $lat, $lon, $title, $address, $keyboard = '') {
+    function sendVenue($user_id, $lat, $lon, $title, $address, $keyboard = '', $inline='') {
         $content = array(
             'chat_id' => $user_id,
             'latitude' => $lat,
@@ -991,11 +1005,13 @@ class telegram extends module {
             'address' => $address,
             'reply_markup' => $keyboard
         );
+        if ($inline != "")
+            $content['reply_markup'] = $inline;
         $res = $this->telegramBot->sendVenue($content);
         $this->debug($res);
     return $res;
     }
-    function sendVenueTo($where, $lat, $lon, $title, $address, array $key = NULL) {
+    function sendVenueTo($where, $lat, $lon, $title, $address, array $key = NULL, $inline='') {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
@@ -1012,21 +1028,23 @@ class telegram extends module {
                 'address' => $address,
                 'reply_markup' => $keyboard
             );
+            if ($inline != "")
+                $content['reply_markup'] = $inline;
             $res = $this->telegramBot->sendVenue($content);
             $this->debug($res);
         }
     }
-    function sendVenueToUser($user_id, $lat, $lon, $title, $address, $key = NULL) {
-        $this->sendVenueTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $title, $address, $key);
+    function sendVenueToUser($user_id, $lat, $lon, $title, $address, $key = NULL, $inline='') {
+        $this->sendVenueTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $title, $address, $key, $inline);
     }
-    function sendVenueToAdmin($lat, $lon, $title, $address, $key = NULL) {
-        $this->sendVenueTo("ADMIN=1", $lat, $lon, $title, $address, $key);
+    function sendVenueToAdmin($lat, $lon, $title, $address, $key = NULL, $inline='') {
+        $this->sendVenueTo("ADMIN=1", $lat, $lon, $title, $address, $key, $inline);
     }
-    function sendVenueToAll($lat, $lon, $title, $address, $key = NULL) {
-        $this->sendVenueTo("", $lat, $lon, $title, $address, $key);
+    function sendVenueToAll($lat, $lon, $title, $address, $key = NULL, $inline='') {
+        $this->sendVenueTo("", $lat, $lon, $title, $address, $key, $inline);
     }
     
-    function sendVoice($user_id, $file_path, $caption='', $keyboard = '') {
+    function sendVoice($user_id, $file_path, $caption='', $keyboard = '', $inline='') {
         $file = curl_file_create($file_path);
 		$content = array(
 			'chat_id' => $user_id,
@@ -1034,11 +1052,13 @@ class telegram extends module {
 			'caption' => $caption,
 			'reply_markup' => $keyboard
 		);
+        if ($inline != "")
+            $content['reply_markup'] = $inline;
 		$res = $this->telegramBot->sendVoice($content);
 		$this->debug($res);
 		return $res;
     }
-    function sendVoiceTo($where, $file_path, $caption='', array $key = NULL) {
+    function sendVoiceTo($where, $file_path, $caption='', array $key = NULL, $inline='') {
         $file = curl_file_create($file_path);
 		$users = $this->getUsers($where);
         foreach($users as $user) {
@@ -1054,18 +1074,20 @@ class telegram extends module {
 				'caption' => $caption,
 				'reply_markup' => $keyboard
 			);
+            if ($inline != "")
+                $content['reply_markup'] = $inline;
 			$res = $this->telegramBot->sendVoice($content);
 			$this->debug($res);
 		}
     }
-	function sendVoiceToUser($user_id, $file_path, $caption='', $key = NULL) {
-        $this->sendVoiceTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $caption, $key);
+	function sendVoiceToUser($user_id, $file_path, $caption='', $key = NULL, $inline='') {
+        $this->sendVoiceTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $caption, $key, $inline);
     }
-    function sendVoiceToAdmin($file_path, $caption='', $key = NULL) {
-        $this->sendVoiceTo("ADMIN=1", $file_path, $caption, $key);
+    function sendVoiceToAdmin($file_path, $caption='', $key = NULL, $inline='') {
+        $this->sendVoiceTo("ADMIN=1", $file_path, $caption, $key, $inline);
     }
-    function sendVoiceToAll($file_path, $caption='', $key = NULL) {
-        $this->sendVoiceTo("", $file_path, $caption, $key);
+    function sendVoiceToAll($file_path, $caption='', $key = NULL, $inline='') {
+        $this->sendVoiceTo("", $file_path, $caption, $key, $inline);
     }
     
     function photoIdBigSize($data) {
