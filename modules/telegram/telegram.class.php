@@ -1435,7 +1435,7 @@ class telegram extends module {
                     //проиграть голосовое сообщение
                     $this->info("Play voice from " . $chat_id . " - " . $file_path);
                     @touch($file_path);
-                    playSound($file_path, 1, $level);
+                    playMedia($file_path, 'localhost', true);
                 }
                 if($file_path || $sticker_id) {
                     // get events
