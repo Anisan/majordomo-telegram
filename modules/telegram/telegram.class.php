@@ -1589,6 +1589,7 @@ class telegram extends module {
     }
     function processSubscription($event, &$details) {
         $this->getConfig();
+        $this->debug("event=" . $event. " details=".json_encode($details));
         if($event == 'SAY') { // || $event=='SAYTO' || $event=='REPLYTO'
             $level = $details['level'];
             $message = $details['message'];
