@@ -650,7 +650,21 @@ class telegram extends module {
         $this->debug($content);
         $res = $this->telegramBot->editMessageText($content);
         $this->debug($res);
-    return $res;
+        return $res;
+    }
+    
+    function editMessageCaption($user_id, $message_id, $caption, $keyboard = '', $parse_mode = 'HTML') {
+        $content = array(
+            'chat_id' => $user_id,
+            'message_id' => $message_id,
+            'caption' => $caption,
+            'reply_markup' => $keyboard,
+            'parse_mode' => $parse_mode
+        );
+        $this->debug($content);
+        $res = $this->telegramBot->editMessageCaption($content);
+        $this->debug($res);
+        return $res;
     }
     
     function deleteMessage($user_id, $message_id) {
