@@ -721,17 +721,17 @@ class telegram extends module {
             else
                 $keyboard = $this->telegramBot->buildKeyBoard($key, false, true);
             $this->debug($keyboard);
-            $this->sendMessage($user_id,$message, $keyboard, 'HTML', $inline);
+            return $this->sendMessage($user_id,$message, $keyboard, 'HTML', $inline);
         }
     }
     function sendMessageToUser($user_id, $message, $key = NULL, $inline = '') {
-        $this->sendMessageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key, $inline);
+        return $this->sendMessageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key, $inline);
     }
     function sendMessageToAdmin($message, $key = NULL, $inline = '') {
-        $this->sendMessageTo("ADMIN=1", $message, $key, $inline);
+        return $this->sendMessageTo("ADMIN=1", $message, $key, $inline);
     }
     function sendMessageToAll($message, $key = NULL, $inline = '') {
-        $this->sendMessageTo("", $message, $key, $inline);
+        return $this->sendMessageTo("", $message, $key, $inline);
     }
     ///send image
     function sendImage($user_id, $image_path, $message = '', $keyboard = '', $inline = '') {
@@ -999,16 +999,17 @@ class telegram extends module {
                 $content['reply_markup'] = $inline;
             $res = $this->telegramBot->sendLocation($content);
             $this->debug($res);
+	    return $res;
         }
     }
     function sendLocationToUser($user_id, $lat, $lon, $key = NULL, $inline='') {
-        $this->sendLocationTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $key, $inline);
+        return $this->sendLocationTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $key, $inline);
     }
     function sendLocationToAdmin($lat, $lon, $key = NULL, $inline='') {
-        $this->sendLocationTo("ADMIN=1", $lat, $lon, $key, $inline);
+        return $this->sendLocationTo("ADMIN=1", $lat, $lon, $key, $inline);
     }
     function sendLocationToAll($lat, $lon, $key = NULL, $inline='') {
-        $this->sendLocationTo("", $lat, $lon, $key, $inline);
+        return $this->sendLocationTo("", $lat, $lon, $key, $inline);
     }
     function sendVenue($user_id, $lat, $lon, $title, $address, $keyboard = '', $inline='') {
         $content = array(
@@ -1046,16 +1047,17 @@ class telegram extends module {
                 $content['reply_markup'] = $inline;
             $res = $this->telegramBot->sendVenue($content);
             $this->debug($res);
+		return $res;
         }
     }
     function sendVenueToUser($user_id, $lat, $lon, $title, $address, $key = NULL, $inline='') {
-        $this->sendVenueTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $title, $address, $key, $inline);
+        return $this->sendVenueTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $lat, $lon, $title, $address, $key, $inline);
     }
     function sendVenueToAdmin($lat, $lon, $title, $address, $key = NULL, $inline='') {
-        $this->sendVenueTo("ADMIN=1", $lat, $lon, $title, $address, $key, $inline);
+        return $this->sendVenueTo("ADMIN=1", $lat, $lon, $title, $address, $key, $inline);
     }
     function sendVenueToAll($lat, $lon, $title, $address, $key = NULL, $inline='') {
-        $this->sendVenueTo("", $lat, $lon, $title, $address, $key, $inline);
+        return $this->sendVenueTo("", $lat, $lon, $title, $address, $key, $inline);
     }
     
     function sendVoice($user_id, $file_path, $caption='', $keyboard = '', $inline='') {
@@ -1092,16 +1094,17 @@ class telegram extends module {
                 $content['reply_markup'] = $inline;
 			$res = $this->telegramBot->sendVoice($content);
 			$this->debug($res);
+		return $res;
 		}
     }
 	function sendVoiceToUser($user_id, $file_path, $caption='', $key = NULL, $inline='') {
-        $this->sendVoiceTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $caption, $key, $inline);
+        return $this->sendVoiceTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $file_path, $caption, $key, $inline);
     }
     function sendVoiceToAdmin($file_path, $caption='', $key = NULL, $inline='') {
-        $this->sendVoiceTo("ADMIN=1", $file_path, $caption, $key, $inline);
+        return $this->sendVoiceTo("ADMIN=1", $file_path, $caption, $key, $inline);
     }
     function sendVoiceToAll($file_path, $caption='', $key = NULL, $inline='') {
-        $this->sendVoiceTo("", $file_path, $caption, $key, $inline);
+        return $this->sendVoiceTo("", $file_path, $caption, $key, $inline);
     }
     
     function photoIdBigSize($data) {
