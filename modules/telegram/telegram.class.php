@@ -618,9 +618,23 @@ class telegram extends module {
         return $res;
     }
     
+    function sendPoll($user_id, $question, $options, $is_anonymous = false, $type='regular',$allows_multiple_answers = false, $correct_option_id = 0)
+    {
+        $content = array(
+            'chat_id' => $user_id,
+            'question' => $question,
+            'options' => json_encode($options,true),
+            'is_anonymous' => $is_anonymous,
+            'type' => $type,
+            'allows_multiple_answers' => $allows_multiple_answers,
+            'correct_option_id' => $correct_option_id,
+        );
+        return $this->sendContent($content,"sendPoll");
+    }
+    
     function sendAnswerCallbackQuery($callback_id, $text, $show_alert = false ) {
         $content = array('text' => $text, 'callback_query_id'=>$callback_id, 'show_alert'=>$show_alert);
-        $this->sendContent($content,"answerCallbackQuery");
+        return $this->sendContent($content,"answerCallbackQuery");
     }
     
     function getUsers($where) {
@@ -1239,6 +1253,13 @@ class telegram extends module {
         echo $data;
         $this->debug($data);
         $bot_name = $this->config['TLG_BOTNAME'];
+        
+        $poll_answer = $data['poll_answer'];
+        if($poll_answer) {
+            $this->info("Pool answer - ID_poll:".$poll_answer['poll_id']."; User: ".$poll_answer['user']['username'].'('.$poll_answer['user']['id'].')');
+            return;
+        }
+        
         $text = $this->telegramBot->Text();
         $callback = $this->telegramBot->Callback_Data();
         if($callback) {
