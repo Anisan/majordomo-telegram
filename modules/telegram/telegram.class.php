@@ -19,7 +19,7 @@ class telegram extends module {
      *
      * @access private
      */
-    private $telegramBot;
+    public $telegramBot;
     private $last_update_id=0;
      
     function __construct() {
