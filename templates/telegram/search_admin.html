@@ -1,3 +1,31 @@
+<style>
+
+.tooltip.top .tooltip-arrow {
+  border-top-color: #EDEDED;
+}
+
+.tooltip.right .tooltip-arrow {
+  border-right-color: #EDEDED;
+}
+
+.tooltip.bottom .tooltip-arrow {
+  border-bottom-color: #EDEDED;
+}
+
+.tooltip.left .tooltip-arrow {
+  border-left-color: #EDEDED;
+}
+.tooltip-inner {
+    max-width: 900px;
+    min-width: 300px;
+    color: #000;
+    text-align: lseft;
+    background-color: #EDEDED;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    box-shadow: 5px 5px 0.5em -0.1em rgba(0,0,6,0.5);
+}
+</style>
 <div>
  <a href="https://telegram.org/">
 	<img src="/img/modules/telegram.png"  width="24" height="24">Telegram
@@ -10,7 +38,22 @@
 		<span class="label label-danger" title="Статус цикла">Цикл остановлен</span>
 	[#endif#]
     &nbsp;&nbsp;&nbsp;
-    <img src="../cms/cached/telegram/[#BOT_ID#].jpg" height="35px" style="border-radius: 0 50% 50%;" onerror="this.src='../templates/telegram/img/none.jpg'">
+    <span tabindex="0" data-toggle="tooltip" data-html="true" data-placement="right" 
+            data-title="
+            <div class='float-right'>
+            <img src='../cms/cached/telegram/[#BOT_ID#].jpg' height='80px' onerror='this.src='../templates/telegram/img/none.jpg''>
+            </div>
+            <p style='text-align:left'>Bot ID:<b>[#BOT_ID#]</b><br>
+                        Name:<b>[#BOT_NAME#]</b><br>
+                        Username:<b>[#BOT_USERNAME#]</b><br>
+                        Can join group:[#if BOT_JOIN_GROUP==1#]<span class='glyphicon glyphicon-ok-circle text-success'></span>
+                            [#else#]<span class='glyphicon glyphicon-remove-circle text-danger'></span>[#endif#]<br>
+                        Can read group:[#if BOT_READ_GROUP==1#]<span class='glyphicon glyphicon-ok-circle text-success'></span>
+                            [#else#]<span class='glyphicon glyphicon-remove-circle text-danger'></span>[#endif#]<br>
+                        Support inline:[#if BOT_SUPPORT_INLINE==1#]<span class='glyphicon glyphicon-ok-circle text-success'></span>
+                            [#else#]<span class='glyphicon glyphicon-remove-circle text-danger'></span>[#endif#]</p>">
+        <img src="../cms/cached/telegram/[#BOT_ID#].jpg" height="35px" style="border-radius: 0 50% 50%;" onerror="this.src='../templates/telegram/img/none.jpg'">
+    </span>
     &nbsp;<b>[#BOT_NAME#]</b>
 	<button class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#about"><#LANG_ABOUT#>&nbsp;&nbsp;<span class="glyphicon glyphicon-info-sign icon-white"></span>
 	</button>
@@ -21,37 +64,37 @@
 <fieldset>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_TOKEN#>
- <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_TOKEN#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_TOKEN#>">
+    <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span>
 </label>
  <div class="col-lg-6"><input class="form-control" type="text" name="tlg_token" value="<#TLG_TOKEN#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_STORAGE_PATH#>
- <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_STORAGE#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <span data-toggle="tooltip" data-placement="right" data-title="<#LANG_HELP_STORAGE#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </label>
  <div class="col-lg-6"><input class="form-control" type="text" name="tlg_storage" value="<#TLG_STORAGE#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_COUNT_ROW#>
- <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_COUNTROW#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <span data-toggle="tooltip" data-placement="right" data-title="<#LANG_HELP_COUNTROW#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </label>
  <div class="col-lg-6"><input class="form-control" type="text" name="tlg_count_row" value="<#TLG_COUNT_ROW#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_TIMEOUT#>
- <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_TIMEOUT#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <span data-toggle="tooltip" data-placement="right" data-title="<#LANG_HELP_TIMEOUT#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </label>
  <div class="col-lg-6"><input class="form-control" type="text" name="tlg_timeout" value="<#TLG_TIMEOUT#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="control-label"><#LANG_TLG_REG_USER#>
- <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_REG_USER#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <span data-toggle="tooltip" data-placement="right" data-title="<#LANG_HELP_REG_USER#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </label>
  <div class="controls"><input type="checkbox" name="tlg_reg_user" value="1"[#if TLG_REG_USER="1"#] checked[#endif#]></div>
 </div>
@@ -90,6 +133,12 @@
 			}  
 		});  
 	}  
+    $(function () {
+        // инициализация всплывающих подсказок
+        $('[data-toggle="tooltip"]').tooltip({
+            delay: { show: 0, hide: 100 }
+        });
+    });
 </script> 
 <div class="form-group">
  <label class="control-label"><#LANG_TLG_USE_WEBHOOK#></label>
@@ -112,15 +161,15 @@
 	 <button onclick="cleanWebHook();return false;" class="btn btn-default">
 		<i class="glyphicon glyphicon-remove-sign"></i> <#LANG_TLG_WEBHOOK_CLEAN#></button>
 	 <button onclick="showInfo();return false;" class="btn btn-default">
-		<i class="glyphicon glyphicon-info-sign"></i> <#LANG_TLG_WEBHOOK_INFO#></button></br>
+		<i class="glyphicon glyphicon-info-sign text-primary"></i> <#LANG_TLG_WEBHOOK_INFO#></button></br>
     <div id="info"></div>
  </div>
 </div>
 </div>
 <div class="form-group">
  <label class="control-label"><#LANG_TLG_USE_PROXY#>
- <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_USE_PROXY#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <span data-toggle="tooltip" data-placement="right" data-title="<#LANG_HELP_USE_PROXY#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </label>
  <div class="controls"><input type="checkbox" id="tlg_useproxy" name="tlg_useproxy" data-toggle="collapse" data-target="#proxy_settings" value="1"[#if TLG_USEPROXY="1"#] checked[#endif#]></div>
 </div>
@@ -161,8 +210,8 @@
 
 <div class="form-group">
  <label class="control-label">Log level
- <span class='support-hover' tabindex="1" data-title="<#LANG_HELP_LOG_LEVEL#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <span data-toggle="tooltip" data-placement="right" data-title="<#LANG_HELP_LOG_LEVEL#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </label>
   <div class="col-lg-6">
     <select name="tlg_debug" class="form-control" id="tlg_debug">

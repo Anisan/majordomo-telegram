@@ -277,6 +277,10 @@ class telegram extends module {
         $out['TLG_TIMEOUT'] = $this->config['TLG_TIMEOUT'];
         $out['BOT_ID'] = $this->config['TLG_BOT_ID'];
         $out['BOT_NAME'] = $this->config['TLG_BOT_NAME'];
+        $out['BOT_USERNAME'] = $this->config['TLG_BOT_USERNAME'];
+        $out['BOT_JOIN_GROUP'] = $this->config['TLG_BOT_JOIN_GROUP'];
+        $out['BOT_READ_GROUP'] = $this->config['TLG_BOT_READ_GROUP'];
+        $out['BOT_SUPPORT_INLINE'] = $this->config['TLG_BOT_SUPPORT_INLINE'];
         if(!$out['TLG_COUNT_ROW'])
             $out['TLG_COUNT_ROW'] = 3;
         if(!$out['TLG_TIMEOUT'])
@@ -1137,10 +1141,14 @@ class telegram extends module {
         return $photo_id;
     }
     
+    function getMe() {
+        return $this->telegramBot->getMe();
+    }
+    
     function init() {
         $this->warning("Token bot - " . $this->config['TLG_TOKEN']);
         // create bot
-        $me = $this->telegramBot->getMe();
+        $me = $this->getMe();
         $this->debug($me);
         if($me)
         {
@@ -1148,6 +1156,10 @@ class telegram extends module {
             $this->config['TLG_BOT_USERNAME'] = $me["result"]["username"];
             $this->config['TLG_BOT_NAME'] = $me["result"]["first_name"];
             $this->config['TLG_BOT_ID'] = $me["result"]["id"];
+            $this->config['TLG_BOT_JOIN_GROUP'] = $me["result"]["can_join_groups"];
+            $this->config['TLG_BOT_READ_GROUP'] = $me["result"]["can_read_all_group_messages"];
+            $this->config['TLG_BOT_SUPPORT_INLINE'] = $me["result"]["supports_inline_queries"];
+
             $content = array('chat_id' => $me["result"]["id"]);
             $chat = $this->telegramBot->getChat($content);
             $this->debug($chat);
@@ -1274,6 +1286,8 @@ class telegram extends module {
             $username = $this->telegramBot->Username();
             $fullname = $this->telegramBot->FirstName() . ' ' . $this->telegramBot->LastName();
         }
+        
+        
                     
         // поиск в базе пользователя
         $user = SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '" . DBSafe($chat_id) . "';");
