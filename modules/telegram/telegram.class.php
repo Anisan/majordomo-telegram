@@ -274,6 +274,7 @@ class telegram extends module {
         $out['TLG_TOKEN'] = $this->config['TLG_TOKEN'];
         $out['TLG_STORAGE'] = $this->config['TLG_STORAGE'];
         $out['TLG_COUNT_ROW'] = $this->config['TLG_COUNT_ROW'];
+        $out['TLG_PLAYER'] = $this->config['TLG_PLAYER'];
         $out['TLG_TIMEOUT'] = $this->config['TLG_TIMEOUT'];
         $out['BOT_ID'] = $this->config['TLG_BOT_ID'];
         $out['BOT_NAME'] = $this->config['TLG_BOT_NAME'];
@@ -311,6 +312,8 @@ class telegram extends module {
                 $this->config['TLG_STORAGE'] = $tlg_storage;
                 global $tlg_count_row;
                 $this->config['TLG_COUNT_ROW'] = $tlg_count_row;
+                global $tlg_player;
+                $this->config['TLG_PLAYER'] = $tlg_player;
                 global $tlg_timeout;
                 $this->config['TLG_TIMEOUT'] = $tlg_timeout;
                 if($this->config['TLG_TIMEOUT']>600)
@@ -1487,7 +1490,10 @@ class telegram extends module {
                     //проиграть голосовое сообщение
                     $this->info("Play voice from " . $chat_id . " - " . $file_path);
                     @touch($file_path);
-                    playMedia($file_path, 'localhost', true);
+                    if ($this->config['TLG_PLAYER'] == 2)
+                        playMedia($file_path, 'localhost', true);
+                    else
+                        playSound($file_path, 1, $level);
                 }
                 if($file_path || $sticker_id) {
                     // get events

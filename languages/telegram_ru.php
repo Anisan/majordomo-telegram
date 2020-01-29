@@ -38,6 +38,7 @@ $dictionary=array(
 'TLG_EVENT_STICKER'=>'Стикер',
 'TLG_EVENT_LOCATION'=>'Местоположение',
 'TLG_COUNT_ROW'=>'Команд в строке',
+'TLG_PLAYER'=>'Проигрыватель голоса',
 'TLG_TIMEOUT'=>'Период long polling (сек)',
 'TLG_UPDATE_USER_INFO'=>'Обновить информацию пользователей',
 'TLG_USE_WEBHOOK'=>'Использовать webhook',

@@ -43,7 +43,7 @@
             <div class='float-right'>
             <img src='../cms/cached/telegram/[#BOT_ID#].jpg' height='80px' onerror='this.src='../templates/telegram/img/none.jpg''>
             </div>
-            <p style='text-align:left'>Bot ID:<b>[#BOT_ID#]</b><br>
+            <p style='text-align:left'>ID:<b>[#BOT_ID#]</b><br>
                         Name:<b>[#BOT_NAME#]</b><br>
                         Username:<b>[#BOT_USERNAME#]</b><br>
                         Can join group:[#if BOT_JOIN_GROUP==1#]<span class='glyphicon glyphicon-ok-circle text-success'></span>
@@ -83,6 +83,15 @@
  <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </label>
  <div class="col-lg-6"><input class="form-control" type="text" name="tlg_count_row" value="<#TLG_COUNT_ROW#>" class="input"></div>
+</div>
+<div class="form-group">
+ <label class="col-lg-4 control-label"><#LANG_TLG_PLAYER#></label>
+ <div class="col-lg-6">
+    <select name="tlg_player" class="form-control" id="tlg_player">
+		<option value="1"[#if TLG_PLAYER=="1"#] selected[#endif#]>playSound</option>
+		<option value="2"[#if TLG_PLAYER=="2"#] selected[#endif#]>playMedia</option>
+	</select>
+ </div>
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_TIMEOUT#>

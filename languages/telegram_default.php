@@ -37,6 +37,7 @@ $dictionary=array(
 'TLG_EVENT_STICKER'=>'Sticker',
 'TLG_EVENT_LOCATION'=>'Location',
 'TLG_COUNT_ROW'=>'Count commands on row',
+'TLG_PLAYER'=>'Player for voice',
 'TLG_TIMEOUT'=>'Timeout long polling (sec)',
 'TLG_UPDATE_USER_INFO'=>'Update user info',
 'TLG_USE_WEBHOOK'=>'Use webhook',
