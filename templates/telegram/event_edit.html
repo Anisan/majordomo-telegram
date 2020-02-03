@@ -38,6 +38,7 @@
             <option value="7"[#if TYPE_EVENT="7"#] selected[#endif#]><#LANG_TLG_EVENT_STICKER#>
             <option value="8"[#if TYPE_EVENT="8"#] selected[#endif#]><#LANG_TLG_EVENT_LOCATION#>
             <option value="9"[#if TYPE_EVENT="9"#] selected[#endif#]>Callback
+            <option value="10"[#if TYPE_EVENT="10"#] selected[#endif#]>Poll answer
         </select>
         </div>
 </div>
@@ -143,7 +144,18 @@
 	$chat_id - идентификатор отправителя;<br>
 	$callback - ответ на запрос;<br>
 	$message_id - message_id сообщения с запросом;<br>
-	$callback_id - идентификатор запроса (для sendAnswerCallbackQuery);
+	$callback_id - идентификатор запроса (для sendAnswerCallbackQuery)
+	</div>
+</div>
+</div>
+</div>
+<div class="help" id="type_block_10" [#if TYPE_EVENT!="10"#] style="display:none"[#endif#]> 
+<div class="controls"> 
+<div class="panel panel-info">
+    <div class="panel-body">	
+	$chat_id - идентификатор отправителя;<br>
+	$poll_id - идентификатор голосования;<br>
+    $option_ids	- массив ответов
 	</div>
 </div>
 </div>

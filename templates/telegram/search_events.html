@@ -30,6 +30,7 @@
  [#if SORTBY="TITLE"#](+)[#endif#]
  [#if SORTBY="TITLE DESC"#](-)[#endif#]</nobr>
  </th>
+ <th><#LANG_TYPE#></th>
  <th><#LANG_DESCRIPTION#></th>
  <th>&nbsp;</th>
 </tr>
@@ -51,6 +52,22 @@
    &nbsp;
   [#endif#]
  </td>
+  <td>
+  [#if TYPE_EVENT!=""#]
+    [#if TYPE_EVENT == 1#] <#LANG_TLG_EVENT_TEXT#>[#endif#]
+    [#if TYPE_EVENT == 2#] <#LANG_TLG_EVENT_IMAGE#>[#endif#]
+    [#if TYPE_EVENT == 3#] <#LANG_TLG_EVENT_VOICE#>[#endif#]
+    [#if TYPE_EVENT == 4#] <#LANG_TLG_EVENT_AUDIO#>[#endif#]
+    [#if TYPE_EVENT == 5#] <#LANG_TLG_EVENT_VIDEO#>[#endif#]
+    [#if TYPE_EVENT == 6#] <#LANG_TLG_EVENT_DOCUMENT#>[#endif#]
+    [#if TYPE_EVENT == 7#] <#LANG_TLG_EVENT_STICKER#>[#endif#]
+    [#if TYPE_EVENT == 8#] <#LANG_TLG_EVENT_LOCATION#>[#endif#]
+    [#if TYPE_EVENT == 9#] Callback[#endif#]
+    [#if TYPE_EVENT == 10#] Pool answer[#endif#]
+  [#else#]
+   &nbsp;
+  [#endif#]
+ </td>  
  <td>
   [#if DESCRIPTION!=""#]
    [#DESCRIPTION#]

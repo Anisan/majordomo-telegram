@@ -1272,6 +1272,31 @@ class telegram extends module {
         $poll_answer = $data['poll_answer'];
         if($poll_answer) {
             $this->info("Pool answer - ID_poll:".$poll_answer['poll_id']."; User: ".$poll_answer['user']['username'].'('.$poll_answer['user']['id'].')');
+            
+            $chat_id = $poll_answer['user']['id'];
+            $chat_id = $poll_answer['user']['id'];
+            $username = $poll_answer['user']["username"];
+            $fullname = $poll_answer['user']["first_name"].' '.$poll_answer['user']["last_name"];
+            $poll_id = $poll_answer['poll_id'];
+            $option_ids = $poll_answer['option_ids'];
+            
+            // get events for callback
+            $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=10 and ENABLE=1;");
+            foreach($events as $event) {
+                if($event['CODE']) {
+                    $this->info("Execute code event " . $event['TITLE']);
+                    try {
+                        eval($event['CODE']);
+                    }
+                    catch(Exception $e) {
+                        registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
+                    }
+                }
+                if($skip) {
+                    $this->info("Skip next processing events pool");
+                    break;
+                }
+            }
             return;
         }
         
