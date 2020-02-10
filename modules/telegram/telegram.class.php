@@ -1272,8 +1272,6 @@ class telegram extends module {
         $poll_answer = $data['poll_answer'];
         if($poll_answer) {
             $this->info("Pool answer - ID_poll:".$poll_answer['poll_id']."; User: ".$poll_answer['user']['username'].'('.$poll_answer['user']['id'].')');
-            
-            $chat_id = $poll_answer['user']['id'];
             $chat_id = $poll_answer['user']['id'];
             $username = $poll_answer['user']["username"];
             $fullname = $poll_answer['user']["first_name"].' '.$poll_answer['user']["last_name"];
