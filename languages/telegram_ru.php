@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
 * Russian language file for Telegram module
 *
