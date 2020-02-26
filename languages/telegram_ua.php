@@ -1,6 +1,6 @@
-﻿<?php
+<?php
 /**
-* Russian language file for Telegram module
+* Ukrainian language file for Telegram module
 *
 */
 
