@@ -132,27 +132,24 @@ class telegram extends module {
     
     function info($content) {
         if($this->config['TLG_DEBUG'] != 2)
-            $this->log(print_r($content,true));
+            $this->log($content);
     }
     
     function debug($content) {
         if($this->config['TLG_DEBUG'] == 1)
-            $this->log(print_r($content,true));
+            $this->log($content);
     }
     
     function warning($content) {
-        $this->log(print_r($content,true));
+        $this->log($content);
     }
     
     function log($message) {
         //echo $message . "\n";
         // DEBUG MESSAGE LOG
-        if(!is_dir(ROOT . 'debmes')) {
-            mkdir(ROOT . 'debmes', 0777);
-        }
-        $today_file = ROOT . 'cms/debmes/log_' . date('Y-m-d') . '-telegram.php.txt';
-        $data = date("H:i:s")." " . $message . "\n";
-        file_put_contents($today_file, $data, FILE_APPEND | LOCK_EX);
+        if (is_array($message))
+            $message = json_encode($message, JSON_UNESCAPED_UNICODE);
+        DebMes($message,"telegram");
     }
     /**
      * BackEnd
@@ -181,16 +178,16 @@ class telegram extends module {
             header("HTTP/1.0: 200 OK\n");
             header('Content-Type: text/html; charset=utf-8');
             //$limit = 50;
-            // Find last midifed
-            $filename = ROOT . 'cms/debmes/log_*-telegram.php.txt';
-            foreach(glob($filename) as $file) {
-                $LastModified[] = filemtime($file);
-                $FileName[] = $file;
+            if (defined('SETTINGS_SYSTEM_DEBMES_PATH') && SETTINGS_SYSTEM_DEBMES_PATH!='') {
+                $path = SETTINGS_SYSTEM_DEBMES_PATH;
+            } elseif (defined('LOG_DIRECTORY') && LOG_DIRECTORY!='') {
+                $path = LOG_DIRECTORY;
+            } else {
+                $path = ROOT . 'cms/debmes';
             }
-            $files = array_multisort($LastModified, SORT_NUMERIC, SORT_ASC, $FileName);
-            $lastIndex = count($LastModified) - 1;
+            $filename=$path.'/'.date('Y-m-d').'_telegram.log';
             // Open file
-            $data = LoadFile($FileName[$lastIndex]);
+            $data = LoadFile($filename);
             $lines = explode("\n", $data);
             $lines = array_reverse($lines);
             $res_lines = array();
@@ -1272,6 +1269,7 @@ class telegram extends module {
         $poll_answer = $data['poll_answer'];
         if($poll_answer) {
             $this->info("Pool answer - ID_poll:".$poll_answer['poll_id']."; User: ".$poll_answer['user']['username'].'('.$poll_answer['user']['id'].')');
+            
             $chat_id = $poll_answer['user']['id'];
             $username = $poll_answer['user']["username"];
             $fullname = $poll_answer['user']["first_name"].' '.$poll_answer['user']["last_name"];
