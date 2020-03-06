@@ -186,6 +186,11 @@ class telegram extends module {
                 $path = ROOT . 'cms/debmes';
             }
             $filename=$path.'/'.date('Y-m-d').'_telegram.log';
+            if (!file_exists($filename))
+            {
+                echo "Empty log...";
+                exit;
+            }
             // Open file
             $data = LoadFile($filename);
             $lines = explode("\n", $data);
