@@ -19,7 +19,7 @@
     <p align=center>
     [#if ID!=""#]
 	[#if USER_ID!=""#]
-	<img src="../cms/cached/telegram/[#USER_ID#].jpg" height="50px" onerror="this.src='../templates/telegram/img/none.jpg'">
+	<img src="<#ROOTHTML#>cms/cached/telegram/[#USER_ID#].jpg" height="50px" onerror="this.src='<#ROOTHTML#>templates/telegram/img/none.jpg'">
 	<br>
 	[#endif USER_ID#]
     [#if NAME!=""#]<#LANG_USER#>: <strong>[#NAME#]</strong>[#endif NAME#]
