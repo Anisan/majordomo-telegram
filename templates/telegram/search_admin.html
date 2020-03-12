@@ -28,7 +28,7 @@
 </style>
 <div>
  <a href="https://telegram.org/">
-	<img src="/img/modules/telegram.png"  width="24" height="24">Telegram
+	<img src="<#ROOTHTML#>img/modules/telegram.png"  width="24" height="24">Telegram
  </a>&nbsp;
  <a class="btn btn-default" href="#api_settings" data-toggle="collapse"><i class="glyphicon glyphicon-cog"></i> <#LANG_SETUP#></a>
     &nbsp;&nbsp;&nbsp;
@@ -41,7 +41,7 @@
     <span tabindex="0" data-toggle="tooltip" data-html="true" data-placement="right" 
             data-title="
             <div class='float-right'>
-            <img src='../cms/cached/telegram/[#BOT_ID#].jpg' height='80px' onerror='this.src='../templates/telegram/img/none.jpg''>
+            <img src='<#ROOTHTML#>cms/cached/telegram/[#BOT_ID#].jpg' height='80px' onerror='this.src='<#ROOTHTML#>templates/telegram/img/none.jpg''>
             </div>
             <p style='text-align:left'>ID:<b>[#BOT_ID#]</b><br>
                         Name:<b>[#BOT_NAME#]</b><br>
@@ -52,7 +52,7 @@
                             [#else#]<span class='glyphicon glyphicon-remove-circle text-danger'></span>[#endif#]<br>
                         Support inline:[#if BOT_SUPPORT_INLINE==1#]<span class='glyphicon glyphicon-ok-circle text-success'></span>
                             [#else#]<span class='glyphicon glyphicon-remove-circle text-danger'></span>[#endif#]</p>">
-        <img src="../cms/cached/telegram/[#BOT_ID#].jpg" height="35px" style="border-radius: 0 50% 50%;" onerror="this.src='../templates/telegram/img/none.jpg'">
+        <img src="<#ROOTHTML#>cms/cached/telegram/[#BOT_ID#].jpg" height="35px" style="border-radius: 0 50% 50%;" onerror="this.src='<#ROOTHTML#>templates/telegram/img/none.jpg'">
     </span>
     &nbsp;<b>[#BOT_NAME#]</b>
 	<button class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#about"><#LANG_ABOUT#>&nbsp;&nbsp;<span class="glyphicon glyphicon-info-sign icon-white"></span>
@@ -277,7 +277,7 @@
 			<div class="modal-body">
 				<div class="float-right">
 				<a href="https://telegram.org/">
-					<img src="../templates/telegram/image.png"  width="48" height="48">
+					<img src="<#ROOTHTML#>templates/telegram/image.png"  width="48" height="48">
 				</a>  
 				</div>
                 <p class="float-left"> Модуль Telegram бота.<br>
