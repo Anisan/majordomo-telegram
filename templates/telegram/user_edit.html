@@ -10,8 +10,8 @@
 <fieldset>
 <!-- USER_ID -->
 <div class="form-group">
- <label class="col-lg-4 control-label"><#LANG_ID#> <span class='support' tabindex="1" data-title="<#LANG_HELP_USERID#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <label class="col-lg-4 control-label"><#LANG_ID#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_USERID#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span></label>
 [#if ID==""#]
   <div class="controls"><input  type="text" name="user_id" value="" class="form-control input"></div>
@@ -21,15 +21,15 @@
 </div>
 <!-- Name -->
 <div class="form-group">
- <label class="control-label"><#LANG_NAME#> <span class='support' tabindex="1" data-title="<#LANG_HELP_NAME#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <label class="control-label"><#LANG_NAME#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_NAME#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span></label>
  <div class="controls"><input  type="text" name="name" value="[#NAME#]" class="form-control input"></div>
 </div>
 <!-- MEMBER_ID -->
 <div class="form-group">
-        <label class="control-label"><#LANG_MEMBERS_MEMBER#> <span class='support' tabindex="1" data-title="<#LANG_HELP_MEMBER#>">
-        <i class="glyphicon glyphicon-info-sign"></i>
+        <label class="control-label"><#LANG_MEMBERS_MEMBER#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_MEMBER#>">
+        <i class="glyphicon glyphicon-info-sign text-primary"></i>
         </span></label>
         <div class="controls">
                 <select name="select_member" id="member" class="form-control" onchange="document.member_change.submit();">
@@ -42,60 +42,82 @@
 </div>          
 <!-- Admin -->
 <div class="form-group">
- <label class="control-label"><#LANG_TLG_ADMIN#> <span class='support' tabindex="1" data-title="<#LANG_HELP_ADMIN#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <label class="control-label"><#LANG_TLG_ADMIN#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_ADMIN#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span></label>
  <div class="controls"><input type="checkbox" name="admin" value="1"[#if ADMIN="1"#] checked[#endif#]></div>
 </div>
+<!-- Silent -->
+<div class="form-group">
+ <label class="control-label"><#LANG_TLG_SILENT#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_SILENT#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
+ </span></label>
+ <div class="controls"><input type="checkbox" name="silent" value="1"[#if SILENT="1"#] checked[#endif#]></div>
+</div>
 <!-- History -->
 <div class="form-group">
- <label class="control-label"><#LANG_TLG_HISTORY#> <span class='support' tabindex="1" data-title="<#LANG_HELP_HISTORY#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <label class="control-label"><#LANG_TLG_HISTORY#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_HISTORY#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span></label>
  <div class="controls"><input type="checkbox" id="history" name="history" value="1"[#if HISTORY="1"#] checked[#endif#] onchange="OnChangeHistory(this)"></div>
 </div>
 <script type="text/javascript">
-        function OnChangeHistory (select) {    
+    function OnChangeHistory (select) {    
     var fDivLevel = document.getElementById('hist_level');
         fDivLevel.style.display = (select.checked) ? 'block' : 'none';
-  }
+        fDivLevel = document.getElementById('hist_silent');
+        fDivLevel.style.display = (select.checked) ? 'block' : 'none';
+    }
+    $(function () {
+        // инициализация всплывающих подсказок
+        $('[data-toggle="tooltip"]').tooltip({
+            delay: { show: 0, hide: 100 }
+        });
+    });
+
 </script> 
 <!-- History level-->
 <div class="form-group" id="hist_level">
- <label class="control-label"><#LANG_TLG_HISTORY_LEVEL#> <span class='support' tabindex="1" data-title="<#LANG_HELP_HISTORY_LEVEL#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <label class="control-label"><#LANG_TLG_HISTORY_LEVEL#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_HISTORY_LEVEL#>">
+ <i class="glyphicon glyphicon-info-sign text-primary text-primary"></i>
  </span></label>
  <div class="controls"><input type="text" name="history_level" value="[#HISTORY_LEVEL#]" class="form-control input"></div>
+</div>
+<div class="form-group" id="hist_silent">
+ <label class="control-label"><#LANG_TLG_HISTORY_SILENT#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_HISTORY_SILENT#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
+ </span></label>
+ <div class="controls"><input type="text" name="history_silent" value="[#HISTORY_SILENT#]" class="form-control input"></div>
 </div>
 <script type="text/javascript">  
         OnChangeHistory ( document.getElementById('history') );
 </script> 
 <!-- CMD -->
 <div class="form-group">
- <label class="control-label"><#LANG_TLG_COMMANDS#> <span class='support' tabindex="1" data-title="<#LANG_HELP_COMMANDS#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <label class="control-label"><#LANG_TLG_COMMANDS#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_COMMANDS#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span></label>
  <div class="controls"><input type="checkbox" name="cmd" value="1"[#if CMD="1"#] checked[#endif#]></div>
 </div>
 <!-- PATTERNS -->
 <div class="form-group">
- <label class="control-label"><#LANG_TLG_PATTERNS#> <span class='support' tabindex="1" data-title="<#LANG_HELP_PATTERNS#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <label class="control-label"><#LANG_TLG_PATTERNS#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_PATTERNS#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span></label>
 
  <div class="controls"><input type="checkbox" name="patterns" value="1"[#if PATTERNS="1"#] checked[#endif#]></div>
 </div>
 <!-- DOWNLOAD -->
 <div class="form-group">
- <label class="control-label"><#LANG_TLG_DOWNLOAD#> <span class='support' tabindex="1" data-title="<#LANG_HELP_DOWNLOAD#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <label class="control-label"><#LANG_TLG_DOWNLOAD#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_DOWNLOAD#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span></label>
  <div class="controls"><input type="checkbox" name="download" value="1"[#if DOWNLOAD="1"#] checked[#endif#]></div>
 </div>
 <!-- PLAY -->
 <div class="form-group">
- <label class="control-label"><#LANG_TLG_PLAY_VOICE#> <span class='support' tabindex="1" data-title="<#LANG_HELP_PLAY_VOICE#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <label class="control-label"><#LANG_TLG_PLAY_VOICE#> <span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_PLAY_VOICE#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span></label>
  <div class="controls"><input type="checkbox" name="play" value="1"[#if PLAY="1"#] checked[#endif#]></div>
 </div>

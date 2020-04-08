@@ -269,7 +269,8 @@ class telegram extends module {
             header('Content-Type: text/html; charset=utf-8');
             global $user;
             global $text;
-            $res = $this->sendMessageToUser($user,$text);
+            global $silent;
+            $res = $this->sendMessageToUser($user,$text, null, "", $silent);
             echo "Ok";
             exit;
         }
@@ -727,14 +728,15 @@ class telegram extends module {
     }
     
     // send message
-    function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML', $inline = '') {
+    function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML', $inline = '', $silent = false) {
         $splited = str_split($message, 4096);
         foreach ($splited as $mess) {
             $content = array(
                 'chat_id' => $user_id,
                 'text' => $mess,
                 'reply_markup' => $keyboard,
-                'parse_mode' => $parse_mode
+                'parse_mode' => $parse_mode,
+                'disable_notification' => $silent
             );
             if ($inline != "")
                  $content['reply_markup'] = $inline;
@@ -743,25 +745,27 @@ class telegram extends module {
         }
         return $res;
     }
-    function sendMessageTo($where, $message, array $key = NULL, $inline = '') {
+    function sendMessageTo($where, $message, array $key = NULL, $inline = '', $silent = NULL) {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
             if ($user_id === '0') $user_id = $user['NAME'];
             $keyboard = $this->buildKeyboard($user, $key);
-            $res = $this->sendMessage($user_id,$message, $keyboard, 'HTML', $inline);
+            if ($silent == NULL)
+                $silent = $user['SILENT'];
+            $res = $this->sendMessage($user_id,$message, $keyboard, 'HTML', $inline, $silent);
             $this->debug($res);
         }
         return $res;
     }
-    function sendMessageToUser($user_id, $message, $key = NULL, $inline = '') {
-        return $this->sendMessageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key, $inline);
+    function sendMessageToUser($user_id, $message, $key = NULL, $inline = '', $silent = NULL) {
+        return $this->sendMessageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key, $inline, $silent);
     }
-    function sendMessageToAdmin($message, $key = NULL, $inline = '') {
-        return $this->sendMessageTo("ADMIN=1", $message, $key, $inline);
+    function sendMessageToAdmin($message, $key = NULL, $inline = '', $silent = NULL) {
+        return $this->sendMessageTo("ADMIN=1", $message, $key, $inline, $silent);
     }
-    function sendMessageToAll($message, $key = NULL, $inline = '') {
-        return $this->sendMessageTo("", $message, $key, $inline);
+    function sendMessageToAll($message, $key = NULL, $inline = '', $silent = NULL) {
+        return $this->sendMessageTo("", $message, $key, $inline, $silent);
     }
     ///send image
     function sendImage($user_id, $image_path, $message = '', $keyboard = '', $inline = '') {
@@ -1684,7 +1688,12 @@ class telegram extends module {
                     }
                     if($destination == 'telegram' . $users[$j]['ID'] || (!$destination && ($level >= $users[$j]['HISTORY_LEVEL']))) {
                         $this->info(" Send to " . $user_id . " - " . $reply);
-                        $url=BASE_URL."/ajax/telegram.html?sendMessage=1&user=".$user_id."&text=".urlencode($reply);
+                        $silent = $users[$j]['SILENT'];
+                        if ($level >= $users[$j]['HISTORY_SILENT'])
+                            $silent = false;
+                        else
+                            $silent = true;
+                        $url=BASE_URL."/ajax/telegram.html?sendMessage=1&user=".$user_id."&text=".urlencode($reply)."&silent=".$silent;
                         getURLBackground($url,0);
                     }
                 }
@@ -1739,8 +1748,10 @@ class telegram extends module {
  tlg_user: MEMBER_ID int(10) NOT NULL DEFAULT '1'
  tlg_user: CREATED datetime
  tlg_user: ADMIN int(3) unsigned NOT NULL DEFAULT '0' 
+ tlg_user: SILENT int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: HISTORY int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: HISTORY_LEVEL int(3) unsigned NOT NULL DEFAULT '0' 
+ tlg_user: HISTORY_SILENT int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: CMD int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: PATTERNS int(3) unsigned NOT NULL DEFAULT '0' 
  tlg_user: DOWNLOAD int(3) unsigned NOT NULL DEFAULT '0' 

@@ -10,15 +10,15 @@
 <fieldset>
 <!-- Name -->
 <div class="form-group">
- <label class="control-label"><#LANG_TITLE#><span class='support' tabindex="1" data-title="<#LANG_HELP_TITLE#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <label class="control-label"><#LANG_TITLE#><span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_TITLE#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span></label>
  <div class="controls"><input  type="text" name="title" value="[#TITLE#]" class="form-control input"></div>
 </div>
 <!-- DESCRIPTION -->
 <div class="form-group">
- <label class="control-label"><#LANG_DESCRIPTION#><span class='support' tabindex="1" data-title="<#LANG_HELP_DESCRIPTION#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+ <label class="control-label"><#LANG_DESCRIPTION#><span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_DESCRIPTION#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span></label>
  <div class="controls"><input  type="text" name="description" value="[#DESCRIPTION#]" class="form-control input"></div>
 </div>
@@ -29,8 +29,8 @@
 </div>
 <!-- ACCESS -->
 <div class="form-group">
-	<label class="control-label"><#LANG_ACCESS_CONTROL#><span class='support' tabindex="1" data-title="<#LANG_HELP_ACCESS_CONTROL#>">
- <i class="glyphicon glyphicon-info-sign"></i>
+	<label class="control-label"><#LANG_ACCESS_CONTROL#><span data-toggle="tooltip" data-html="true" data-placement="right" data-title="<#LANG_HELP_ACCESS_CONTROL#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </span></label>
 	<div class="controls">
 		<select name="select_access" id="access" class="form-control" onchange="OnChangeAccess(this);">
@@ -64,6 +64,12 @@
         else
         fDivLevel.style.display = 'block';
     }
+    $(function () {
+        // инициализация всплывающих подсказок
+        $('[data-toggle="tooltip"]').tooltip({
+            delay: { show: 0, hide: 100 }
+        });
+    });
 </script> 
 
 <div class="form-group" id="list_users">

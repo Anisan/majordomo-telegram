@@ -15,7 +15,7 @@
 				alert(html);  
 			}  
 		});  
-	}  
+	}
 </script> 
 <!-- search results (list) -->
 <form action="?" method="post" name="frmList_telegram" style="padding:0px" class="form">
@@ -34,6 +34,7 @@
  [#if SORTBY="NAME DESC"#](-)[#endif#]</nobr>
  </th>
  <th><#LANG_TLG_ADMIN#></th>
+ <th><#LANG_TLG_SILENT#></th>
  <th><#LANG_TLG_HISTORY#></th> 
  <th><#LANG_TLG_COMMANDS#></th>
  <th><#LANG_TLG_PATTERNS#></th>
@@ -59,6 +60,13 @@
    <span class="glyphicon glyphicon-ok-circle text-success panel_icon"></span>
   [#else#]
    <span class="glyphicon glyphicon-remove-circle text-danger panel_icon"></span>
+  [#endif#]
+ </td>  
+ <td>
+  [#if SILENT==1#]
+   <span class="glyphicon glyphicon-volume-off text-danger panel_icon"></span>
+  [#else#]
+   <span class="glyphicon glyphicon-volume-up text-success panel_icon"></span>
   [#endif#]
  </td>  
  <td>

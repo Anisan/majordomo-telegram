@@ -40,12 +40,18 @@ if ($this->mode=='update') {
     global $admin;
     $rec['ADMIN']=$admin;
     if($rec['ADMIN']!=1) $rec['ADMIN']=0;
+    global $silent;
+    $rec['SILENT']=$silent;
+    if($rec['SILENT']!=1) $rec['SILENT']=0;
     global $history;
     $rec['HISTORY']=$history;
     if($rec['HISTORY']!=1) $rec['HISTORY']=0;
     global $history_level;
     $rec['HISTORY_LEVEL']=$history_level;
     if($rec['HISTORY_LEVEL']=='') $rec['HISTORY_LEVEL']=0;
+    global $history_silent;
+    $rec['HISTORY_SILENT']=$history_silent;
+    if($rec['HISTORY_SILENT']=='') $rec['HISTORY_SILENT']=0;
     global $cmd;
     $rec['CMD']=$cmd;
     if($rec['CMD']!=1) $rec['CMD']=0;
