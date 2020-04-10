@@ -270,7 +270,10 @@ class telegram extends module {
             global $user;
             global $text;
             global $silent;
-            $res = $this->sendMessageToUser($user,$text, null, "", $silent);
+            if (!isset($silent)) {
+                $silent = NULL;
+            }
+            $res = $this->sendMessageToUser($user, $text, null, '', $silent);
             echo "Ok";
             exit;
         }
@@ -734,10 +737,11 @@ class telegram extends module {
             $content = array(
                 'chat_id' => $user_id,
                 'text' => $mess,
-                'reply_markup' => $keyboard,
                 'parse_mode' => $parse_mode,
                 'disable_notification' => $silent
             );
+            if ($keyboard != "")
+                 $content['reply_markup'] = $keyboard;
             if ($inline != "")
                  $content['reply_markup'] = $inline;
             $res = $this->telegramBot->sendMessage($content);
@@ -1123,6 +1127,14 @@ class telegram extends module {
     }
     function sendVoiceToAll($file_path, $caption='', $key = NULL, $inline='') {
         return $this->sendVoiceTo("", $file_path, $caption, $key, $inline);
+    }
+    
+    function sendDice($user_id) {
+        $content = array(
+			'chat_id' => $user_id
+		);
+		$res = $this->sendContent($content, "sendDice");
+		return $res;
     }
     
     function photoIdBigSize($data) {
@@ -1537,9 +1549,7 @@ class telegram extends module {
                 }
                 $file_path = "";
         }
-        if($text == "") {
-            return;
-        }
+        
         $this->info($chat_id . " (" . $username . ", " . $fullname . ")=" . $text);
 
         if($user['CMD'] == 1) {
@@ -1567,6 +1577,10 @@ class telegram extends module {
             }
         }
             
+        if($text == "") {
+            return;
+        }
+        
         if($user['ID']) {
             //смотрим разрешения на обработку команд
             if($user['CMD'] == 1) {
