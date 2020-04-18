@@ -1593,13 +1593,15 @@ class telegram extends module {
                     $cmd = SQLSelectOne($sql);
                     if (count($cmd) == 0)
                     {
+                        // команда - все что до пробела
+                        $command = explode(' ',$text)[0]; 
                         // поиск команд с параметрами
-                        $sql = "SELECT * FROM tlg_cmd where '" . DBSafe($text) . "' LIKE CONCAT(tlg_cmd.TITLE,'%') and (ACCESS=3  OR ((select count(*) from tlg_user_cmd where tlg_user_cmd.USER_ID=" . $user['ID'] . " and tlg_cmd.ID=tlg_user_cmd.CMD_ID)>0 and ACCESS>0))";
+                        $sql = "SELECT * FROM tlg_cmd where LOWER(tlg_cmd.TITLE) = '" . DBSafe(strtolower($command)) . "' and (ACCESS=3  OR ((select count(*) from tlg_user_cmd where tlg_user_cmd.USER_ID=" . $user['ID'] . " and tlg_cmd.ID=tlg_user_cmd.CMD_ID)>0 and ACCESS>0))";
                         //$this->debug($sql);
                         $cmd = SQLSelectOne($sql);
                     }
                     if($cmd['ID']) {
-                        $this->info("Find command");
+                        $this->info("Find command - ".$cmd['TITLE']);
                         //нашли команду
                         if($cmd['CODE']) {
                             $this->info("Execute user`s code command");
