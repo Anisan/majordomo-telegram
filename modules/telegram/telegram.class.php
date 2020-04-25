@@ -631,7 +631,7 @@ class telegram extends module {
         return $res;
     }
     
-    function sendPoll($user_id, $question, $options, $is_anonymous = false, $type='regular',$allows_multiple_answers = false, $correct_option_id = 0)
+    function sendPoll($user_id, $question, $options, $is_anonymous = false, $type='regular',$allows_multiple_answers = false, $correct_option_id = 0,$explanation = '',$open_period = 0,$close_date = 0)
     {
         $content = array(
             'chat_id' => $user_id,
@@ -642,6 +642,15 @@ class telegram extends module {
             'allows_multiple_answers' => $allows_multiple_answers,
             'correct_option_id' => $correct_option_id,
         );
+        if ($explanation != '')
+        {
+            $content["explanation"] = $explanation;
+            $content["explanation_parse_mode"] = 'HTML';
+        }
+        if ($open_period != 0)
+            $content["open_period"] = $open_period;
+        if ($close_date != 0)
+            $content["close_date"] = $close_date;
         return $this->sendContent($content,"sendPoll");
     }
     
@@ -1133,12 +1142,14 @@ class telegram extends module {
         return $this->sendVoiceTo("", $file_path, $caption, $key, $inline);
     }
     
-    function sendDice($user_id) {
+    function sendDice($user_id, $emoji=null) {
         $content = array(
-			'chat_id' => $user_id
-		);
-		$res = $this->sendContent($content, "sendDice");
-		return $res;
+            'chat_id' => $user_id
+        );
+        if ($emoji!=null)
+            $content["emoji"]=$emoji;
+        $res = $this->sendContent($content, "sendDice");
+        return $res;
     }
     
     function photoIdBigSize($data) {
