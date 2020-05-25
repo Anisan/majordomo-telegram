@@ -428,113 +428,91 @@ class telegram extends module {
      *
      * @access public
      */
-	function removeBOM($data) {
-		if (0 === strpos(bin2hex($data), 'efbbbf')) {
-			return substr($data, 3);
-		}
-	}
-	function export_command(&$out, $id) {
-		$command=SQLSelectOne("SELECT * FROM tlg_cmd WHERE ID='".(int)$id."'");
-		unset($command['ID']);
-		$data=json_encode($command);
-		$filename="Command_Telegram_".urlencode($command['TITLE']);
-		$ext = "txt";
-		$mime_type = (PMA_USR_BROWSER_AGENT == 'IE' || PMA_USR_BROWSER_AGENT == 'OPERA')
-			? 'application/octetstream' : 'application/octet-stream';
-		header('Content-Type: ' . $mime_type);
-		if (PMA_USR_BROWSER_AGENT == 'IE')
-		{
-			header('Content-Disposition: inline; filename="' . $filename . '.' . $ext . '"');
-			header("Content-Transfer-Encoding: binary");
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Pragma: public');
-			print $data;
-		} else {
-			header('Content-Disposition: attachment; filename="' . $filename . '.' . $ext . '"');
-			header("Content-Transfer-Encoding: binary");
-			header('Expires: 0');
-			header('Pragma: no-cache');
-			print $data;
-		}
-	exit;
-	}
-	function import_command(&$out) {
-		global $file;
-		global $overwrite;
-		$data=LoadFile($file);
-		$command=json_decode($this->removeBOM($data), true);
-		if (is_array($command)) {
-			$rec=SQLSelectOne("SELECT * FROM tlg_cmd WHERE TITLE='". DBSafe($command["TITLE"]) . "'");
-			if ($rec['ID'])
-			{
-				if ($overwrite)
-				{
-					$command{'ID'} = $rec['ID'];
-					SQLUpdate("tlg_cmd", $command); // update
-				}
-				else
-				{
-					$command["TITLE"] .= "_copy";
-					SQLInsert("tlg_cmd", $command); // adding new record
-				}
-			}	
-			else
-				SQLInsert("tlg_cmd", $command); // adding new record
-		}
-		$this->redirect("?tab=cmd");
- 	}
-	function export_event(&$out, $id) {
-		$event=SQLSelectOne("SELECT * FROM tlg_event WHERE ID='".(int)$id."'");
-		unset($event['ID']);
-		$data=json_encode($event);
-		$filename="Event_Telegram_".urlencode($event['TITLE']);
-		$ext = "txt";
-		$mime_type = (PMA_USR_BROWSER_AGENT == 'IE' || PMA_USR_BROWSER_AGENT == 'OPERA')
-			? 'application/octetstream' : 'application/octet-stream';
-		header('Content-Type: ' . $mime_type);
-		if (PMA_USR_BROWSER_AGENT == 'IE')
-		{
-			header('Content-Disposition: inline; filename="' . $filename . '.' . $ext . '"');
-			header("Content-Transfer-Encoding: binary");
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Pragma: public');
-			print $data;
-		} else {
-			header('Content-Disposition: attachment; filename="' . $filename . '.' . $ext . '"');
-			header("Content-Transfer-Encoding: binary");
-			header('Expires: 0');
-			header('Pragma: no-cache');
-			print $data;
-		}
-	exit;
-	}
-	function import_event(&$out) {
-		global $file;
-		global $overwrite;
-		$data=LoadFile($file);
-		$event=json_decode($this->removeBOM($data), true);
-		if (is_array($event)) {
-			$rec=SQLSelectOne("SELECT * FROM tlg_event WHERE TITLE='". DBSafe($event["TITLE"]) . "'");
-			if ($rec['ID'])
-			{
-				if ($overwrite)
-				{
-					$event{'ID'} = $rec['ID'];
-					SQLUpdate("tlg_event", $event); // update
-				}
-				else
-				{
-					$event["TITLE"] .= "_copy";
-					SQLInsert("tlg_event", $event); // adding new record
-				}
-			}	
-			else
-				SQLInsert("tlg_event", $event); // adding new record
-		}
-		$this->redirect("?tab=events");
- 	}
+    function removeBOM($data) {
+        return preg_replace("/^\xEF\xBB\xBF/", '', $data);
+    }
+    
+    function export_file($filename,$data)
+    {
+        $ie = false;
+        $ua = htmlentities($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, 'UTF-8');
+        if (preg_match('~MSIE|Internet Explorer~i', $ua) || (strpos($ua, 'Trident/7.0') !== false && strpos($ua, 'rv:11.0') !== false))
+            $ie = true;
+        if(!$ie)
+            $mime_type = 'application/octetstream';
+        else 
+            $mime_type = 'application/octet-stream';
+        header('Content-Type: ' . $mime_type);
+        if(!$ie)
+        {
+            header('Content-Disposition: inline; filename="' . $filename . '"');
+            header("Content-Transfer-Encoding: binary");
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+            print $data;
+        } else {
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            header("Content-Transfer-Encoding: binary");
+            header('Expires: 0');
+            header('Pragma: no-cache');
+            print $data;
+        }
+        exit;
+    }
+    
+    function export_rec($table,$data,$overwrite)
+    {   
+        $data=json_decode($this->removeBOM($data),true);
+        if (is_array($data)) 
+        {
+            $rec=SQLSelectOne("SELECT * FROM ".$table." WHERE TITLE='". DBSafe($data["TITLE"]) . "'");
+            if ($rec['ID'])
+            {
+                if ($overwrite)
+                {
+                    $data{'ID'} = $rec['ID'];
+                    SQLUpdate($table, $data); // update
+                }
+                else
+                {
+                    $data["TITLE"] .= "_copy";
+                    SQLInsert($table, $data); // adding new record
+                }
+            }
+            else
+                SQLInsert($table, $data); // adding new record
+        }
+    }
+    
+    function export_command(&$out, $id) {
+        $command=SQLSelectOne("SELECT * FROM tlg_cmd WHERE ID='".(int)$id."'");
+        unset($command['ID']);
+        $data=json_encode($command);
+        $filename="Command_Telegram_".urlencode($command['TITLE']).".txt";
+        $this->export_file($filename,$data);
+    }
+    function import_command(&$out) {
+        global $file;
+        global $overwrite;
+        $data=LoadFile($file);
+        $this->export_rec("tlg_cmd",$data,$overwrite);
+        $this->redirect("?tab=cmd");
+    }
+    function export_event(&$out, $id) {
+        $event=SQLSelectOne("SELECT * FROM tlg_event WHERE ID='".(int)$id."'");
+        unset($event['ID']);
+        $data=json_encode($event);
+        $filename="Event_Telegram_".urlencode($event['TITLE']).".txt";
+        $this->export_file($filename,$data);
+    }
+    function import_event(&$out) {
+        global $file;
+        global $overwrite;
+        $data=LoadFile($file);
+        $this->export_rec("tlg_event",$data,$overwrite);
+        $this->redirect("?tab=events");
+    }
     /**
      * Delete user
      *
