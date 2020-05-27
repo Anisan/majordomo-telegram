@@ -17,10 +17,14 @@ $telegram_module = new telegram();
 setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
 echo date("H:i:s") . " Init module " . PHP_EOL;
 $telegram_module->init();
-$latest_check=0;
+$latest_check=time();
 while (1)
 {
-   setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
+   if ($latest_check + $telegram_module->config["TLG_TIMEOUT"] > time())
+   {
+       $latest_check = time();
+       setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
+   }
    
    $telegram_module->processCycle();
    
