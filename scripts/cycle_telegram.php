@@ -20,7 +20,7 @@ $telegram_module->init();
 $latest_check=time();
 while (1)
 {
-   if ($latest_check + $telegram_module->config["TLG_TIMEOUT"] > time())
+   if ($latest_check + 30 < time())
    {
        $latest_check = time();
        setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
