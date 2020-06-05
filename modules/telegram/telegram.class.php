@@ -161,13 +161,14 @@ class telegram extends module {
     function admin(&$out) {
         $this->getConfig();
         if (!gg('cycle_telegramRun')) {
-            setGlobal('cycle_telegramRun',1);
-        }
-
-        if ((time() - gg('cycle_telegramRun')) < $this->config['TLG_TIMEOUT']*2 ) {
-            $out['CYCLERUN'] = 1;
-        } else {
             $out['CYCLERUN'] = 0;
+        }
+        else 
+        {
+            if ((time() - gg('cycle_telegramRun')) < $this->config['TLG_TIMEOUT']*2 )
+                $out['CYCLERUN'] = 1;
+            else
+                $out['CYCLERUN'] = 0;
         }
         
         global $getlog;
