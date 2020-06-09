@@ -30,6 +30,11 @@
 		Данная настройка влияет на то, как будут отображаться в системном чате отправленные пользователем сообщения, и какие сообщения из чата будут отправляться пользователю. <br>
 		Остальные параметры настраиваются в соответствии с тем, какие функции разрешаются данному пользователю.
 		</p>
+		<p><b>Режим без звука</b></br>
+        При включенной опции пользователю все сообщения от бота будут приходить без уведомлений (в скрытном режиме).  <br>
+        В опции "Приоритет истории сo звуком" можно задать уровень важности сообщений истории, которые будут приходить с уведомлением.  <br>
+        При отправке сообщений из своих скриптов/методов можно принудительно задать параметр отправки с уведомлением или без (см. ниже).
+        </p>
 		</div>
 	</div>
     <div class="panel panel-info">
@@ -120,16 +125,31 @@
 		<p><b>Для отправки текстовых сообщений</b><br>
 		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
         $telegram_module = new telegram();<br>
-        $telegram_module->sendMessageToUser(139809588, "test message");<br>
+        $text = "test message";<br>
+        $telegram_module->sendMessageToUser($user, $text);<br>
         $telegram_module->sendMessageToAdmin("test message to admin");<br>
-        $telegram_module->sendMessageToAll("test message to all");</code></p>
+        $telegram_module->sendMessageToAll("test message to all");<br>
+        $telegram_module->sendMessageToUser($user, $text, null, '', true); // без звука<br>
+        $telegram_module->sendMessageToUser($user, $text, null, '', false); // со звуком<br>
+        $telegram_module->sendMessageToAdmin($text, null, '', true);// без звука<br>
+        $telegram_module->sendMessageToAdmin($text, null, '', false);// со звуком<br>
+        $telegram_module->sendMessageToAll($text, null, '', true);// без звука<br>
+        $telegram_module->sendMessageToAll($text, null, '', false);// со звуком</code></p>
 
 		<p><b>Для отправки изображений</b><br>
 		<code style="display:block">include_once(DIR_MODULES . 'telegram/telegram.class.php');<br>
         $telegram_module = new telegram();<br>
-        $telegram_module->sendImageToUser(139809588, '/var/www/images/trees.jpg', 'Description');<br>
-        $telegram_module->sendImageToAdmin('/var/www/images/htc_hero_wallpaper_01.jpg');<br>
-        $telegram_module->sendImageToAll('/var/www/images/htc_hero_wallpaper_01.jpg');</code>
+        $img = '/var/www/images/trees.jpg';<br>
+        $telegram_module->sendImageToUser(139809588, $img, 'Description');<br>
+        $telegram_module->sendImageToAdmin($img);<br>
+        $telegram_module->sendImageToAll($img);
+        $telegram_module->sendImageToUser($user, $img, 'Description',null, '', true); // без звука<br>
+        $telegram_module->sendImageToUser($user, $img, 'Description',null, '', false); // co звуком<br>
+        $telegram_module->sendImageToAdmin($img, 'Description', null, '', true); // без звука<br>
+        $telegram_module->sendImageToAdmin($img, 'Description', null, '', false); // co звуком<br>
+        $telegram_module->sendImageToAll($img, '', null, '', true); // без звука<br>
+        $telegram_module->sendImageToAll($img, '', null, '', false); // co звуком<br>
+        </code>
 		К изображению можно добавить текстовое описание</p>
 	
         <p><b>Для отправки видео</b><br>
