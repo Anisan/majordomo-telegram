@@ -20,6 +20,12 @@ if ($this->owner->name=='panel') {
 
 $table_name='tlg_cmd';
 $rec=SQLSelectOne("SELECT * FROM $table_name WHERE ID='$id'");
+
+if(defined('SETTINGS_CODEEDITOR_TURNONSETTINGS')) {
+    $out['SETTINGS_CODEEDITOR_TURNONSETTINGS'] = SETTINGS_CODEEDITOR_TURNONSETTINGS;
+    $out['SETTINGS_CODEEDITOR_UPTOLINE'] = SETTINGS_CODEEDITOR_UPTOLINE;
+    $out['SETTINGS_CODEEDITOR_SHOWERROR'] = SETTINGS_CODEEDITOR_SHOWERROR;
+}
     
 if ($this->mode=='update') { 
   $ok=1;
@@ -31,7 +37,8 @@ if ($this->mode=='update') {
     global $description;
     $rec['DESCRIPTION']=$description;
     global $code;
-    $rec['CODE']=$code;
+    $old_code=$rec['CODE'];
+    $rec['CODE'] = $code;
     global $select_access;
     $rec['ACCESS']=$select_access;
     
@@ -61,15 +68,28 @@ if ($this->mode=='update') {
     }
 
     //UPDATING RECORD
-    if ($rec['CODE']!='') {
-        $errors=php_syntax_error($rec['CODE']);
-        if ($errors) {
-            $out['ERR']=1;
-            $out['ERR_CODE']=1;
-            $out['ERRORS']=$errors;
+    if ($rec['CODE'] != '') {
+        $errors = php_syntax_error($rec['CODE']);
+		if ($errors) {
+			$out['ERR_LINE'] = preg_replace('/[^0-9]/', '', substr(stristr($errors, 'php on line '), 0, 18))-2;
+			$errorStr = explode('Parse error: ', htmlspecialchars(strip_tags(nl2br($errors))));
+			$errorStr = explode('Errors parsing', $errorStr[1]);
+			$errorStr = explode(' in ', $errorStr[0]);
+			$out['ERRORS'] = $errorStr[0];
+			$out['ERR_FULL'] = $errorStr[0].' '.$errorStr[1];
+			$out['ERR_OLD_CODE'] = $old_code;
+			$error_code=1;
+			$out['ERR']=1;
             $ok=0;
-        }
-    }
+		} else {
+			$error_code=0;
+            $ok=1;
+		}
+	} else {
+		$error_code=0;
+        $ok=1;
+	}
+    
     
     if ($ok) {
       if ($rec['ID']) {
@@ -81,7 +101,7 @@ if ($this->mode=='update') {
         updateAccess($rec['ID'],$users_id);
         $id=$rec['ID'];
       } 
-      $out['OK']=1;
+      if($error_code == 0) $out['OK']=1;
     } else {
       $out['ERR']=1;
     }

@@ -1,33 +1,65 @@
 <!-- Table 'node' edit -->
 <br/>
+<style>
+.CodeMirror {
+    border-radius: 5px;
+    border: 2px solid #f7f7f7;
+}
+</style>
 <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
+<script>
+$(window).load(function() {
+    setTimeout(
+        function () {
+            $('#alert_msg').hide('slow');
+        }, 5000);
+});
+</script>
 [#if OK#]
-<div class="alert alert-success"><#LANG_DATA_SAVED#></div>
+<div class="alert alert-success" id="alert_msg"><#LANG_DATA_SAVED#></div>
 [#endif OK#]
 [#if ERR#]
-<div class="alert alert-danger"><#LANG_FILLOUT_REQURED#></div>
+      <div class="alert alert-danger" id="alert_msg"><#LANG_FILLOUT_REQURED#></div> 
+      <script>
+        $(window).load(function() {
+            [#if SETTINGS_CODEEDITOR_SHOWERROR == '1' AND SETTINGS_CODEEDITOR_TURNONSETTINGS == '1'#]
+                error_line = Number('[#ERR_LINE#]');
+                error_line_find = error_line;
+                if(error_line == 0) error_line = 1;
+                find = $('div pre.CodeMirror-line:eq('+error_line_find+')');
+                find.attr('id', 'errorline_'+error_line);
+
+                var newElems = $("<div class='cm-error' style='border-top: 1px solid red;font-weight: bold;font-style: italic;'>Ошибка компилятора -> [#ERRORS#]</div>");
+                $('div pre.CodeMirror-line:eq('+error_line_find+')').append(newElems);
+            [#endif#]
+
+            [#if SETTINGS_CODEEDITOR_UPTOLINE == '1' AND SETTINGS_CODEEDITOR_TURNONSETTINGS == '1'#]
+                location.href='#errorline_'+error_line; 
+            [#endif#]
+        });
+        </script>
 [#endif ERR#]
 <fieldset>
 <!-- Name -->
 <div class="form-group">
  <label class="control-label"><#LANG_TITLE#></label>
- <div class="controls"><input  type="text" name="title" value="[#TITLE#]" class="form-control input"></div>
+ <div class="col-lg-8"><input  type="text" name="title" value="[#TITLE#]" class="form-control input"></div>
 </div>
 <!-- DESCRIPTION -->
 <div class="form-group">
  <label class="control-label"><#LANG_DESCRIPTION#></label>
- <div class="controls"><input  type="text" name="description" value="[#DESCRIPTION#]" class="form-control input"></div>
+ <div class="col-lg-8"><input  type="text" name="description" value="[#DESCRIPTION#]" class="form-control input"></div>
 </div>
 <!-- ENABLE -->
 <div class="form-group">
  <label class="control-label"><#LANG_TLG_ENABLE#></label>
- <div class="controls"><input type="checkbox" name="enable" value="1"[#if ENABLE="1"#] checked[#endif#]></div>
+ <div class="col-lg-8"><input type="checkbox" name="enable" value="1"[#if ENABLE="1"#] checked[#endif#]></div>
 </div> 
 
 <!-- TYPE_EVENT -->
 <div class="form-group">
         <label class="col-lg-4 control-label"><#LANG_TLG_EVENT#></label>
-        <div class="controls">
+        <div class="col-lg-8">
         <select name="type_event" id="type_event" class="form-control" onchange="OnChangeType(this);">
             <option value="1"[#if TYPE_EVENT="1"#] selected[#endif#]><#LANG_TLG_EVENT_TEXT#>
             <option value="2"[#if TYPE_EVENT="2"#] selected[#endif#]><#LANG_TLG_EVENT_IMAGE#>
@@ -57,8 +89,8 @@
 </script> 
 
 <div class="help" id="type_block_1" [#if TYPE_EVENT!="1"#] style="display:none"[#endif#]> 
-<div class="controls"> 
-<div class="panel panel-info">
+<div class="form-group"><label class="col-lg-4 control-label"></label>
+<div class="col-lg-8 panel panel-info">
     <div class="panel-body">	
 	$text - текст полученного сообщения;<br>
     $chat_id - идентификатор отправителя
@@ -67,8 +99,8 @@
 </div>
 </div>
 <div class="help" id="type_block_2" [#if TYPE_EVENT!="2"#] style="display:none"[#endif#]> 
-<div class="controls"> 
-<div class="panel panel-info">
+<div class="form-group"> <label class="col-lg-4 control-label"></label>
+<div class="col-lg-8 panel panel-info">
     <div class="panel-body">	
 	$chat_id - идентификатор отправителя;<br>
 	$file_path - путь к полученному файлу
@@ -77,8 +109,8 @@
 </div>
 </div>
 <div class="help" id="type_block_3" [#if TYPE_EVENT!="3"#] style="display:none"[#endif#]> 
-<div class="controls"> 
-<div class="panel panel-info">
+<div class="form-group"> <label class="col-lg-4 control-label"></label>
+<div class="col-lg-8 panel panel-info">
     <div class="panel-body">	
 	$chat_id - идентификатор отправителя;<br>
 	$file_path - путь к полученному файлу
@@ -87,8 +119,8 @@
 </div>
 </div>
 <div class="help" id="type_block_4" [#if TYPE_EVENT!="4"#] style="display:none"[#endif#]> 
-<div class="controls"> 
-<div class="panel panel-info">
+<div class="form-group"> <label class="col-lg-4 control-label"></label>
+<div class="col-lg-8 panel panel-info">
     <div class="panel-body">	
 	$chat_id - идентификатор отправителя;<br>
 	$file_path - путь к полученному файлу
@@ -97,8 +129,8 @@
 </div>
 </div>
 <div class="help" id="type_block_5" [#if TYPE_EVENT!="5"#] style="display:none"[#endif#]> 
-<div class="controls"> 
-<div class="panel panel-info">
+<div class="form-group"> <label class="col-lg-4 control-label"></label>
+<div class="col-lg-8 panel panel-info">
     <div class="panel-body">	
 	$chat_id - идентификатор отправителя;<br>
 	$file_path - путь к полученному файлу
@@ -107,8 +139,8 @@
 </div>
 </div>
 <div class="help" id="type_block_6" [#if TYPE_EVENT!="6"#] style="display:none"[#endif#]> 
-<div class="controls"> 
-<div class="panel panel-info">
+<div class="form-group"> <label class="col-lg-4 control-label"></label>
+<div class="col-lg-8 panel panel-info">
     <div class="panel-body">	
 	$chat_id - идентификатор отправителя;<br>
 	$file_path - путь к полученному файлу
@@ -117,8 +149,8 @@
 </div>
 </div>
 <div class="help" id="type_block_7" [#if TYPE_EVENT!="7"#] style="display:none"[#endif#]> 
-<div class="controls"> 
-<div class="panel panel-info">
+<div class="form-group"> <label class="col-lg-4 control-label"></label>
+<div class="col-lg-8 panel panel-info">
     <div class="panel-body">	
 	$chat_id - идентификатор отправителя;<br>
 	$sticker_id - идентификатор стикера
@@ -127,8 +159,8 @@
 </div>
 </div>
 <div class="help" id="type_block_8" [#if TYPE_EVENT!="8"#] style="display:none"[#endif#]> 
-<div class="controls"> 
-<div class="panel panel-info">
+<div class="form-group"> <label class="col-lg-4 control-label"></label>
+<div class="col-lg-8 panel panel-info">
     <div class="panel-body">	
 	$chat_id - идентификатор отправителя;<br>
 	$latitude - широта;<br>
@@ -138,8 +170,8 @@
 </div>
 </div>
 <div class="help" id="type_block_9" [#if TYPE_EVENT!="9"#] style="display:none"[#endif#]> 
-<div class="controls"> 
-<div class="panel panel-info">
+<div class="form-group"> <label class="col-lg-4 control-label"></label>
+<div class="col-lg-8 panel panel-info">
     <div class="panel-body">	
 	$chat_id - идентификатор отправителя;<br>
 	$callback - ответ на запрос;<br>
@@ -150,8 +182,8 @@
 </div>
 </div>
 <div class="help" id="type_block_10" [#if TYPE_EVENT!="10"#] style="display:none"[#endif#]> 
-<div class="controls"> 
-<div class="panel panel-info">
+<div class="form-group"> <label class="col-lg-4 control-label"></label>
+<div class="col-lg-8 panel panel-info">
     <div class="panel-body">	
 	$chat_id - идентификатор отправителя;<br>
 	$poll_id - идентификатор голосования;<br>
@@ -163,11 +195,26 @@
 <!-- CODE (text) -->
 <div class="form-group ">
         <label class="col-lg-4 control-label" for="inputTitle"><#LANG_CODE#>:</label>
-        <div class="col-lg-5 [#if ERR_CODE#]alert-danger[#endif#]">
-			[#if ERRORS!=""#]<br><font color='red'>[#ERRORS#]</font><br>[#endif ERRORS#]
+        <div class="col-lg-8 [#if ERR_CODE#]alert-danger[#endif#]">
             [#module name="blockly_code" system_name="tlgaction<#ID#>" code_field="code" action=""#] 
-			<div id="code_area">
-			  <textarea name="code" id="code" rows=30 cols=100 class=" form-control field span8">[#CODE#]</textarea>
+            [#if ERRORS#]
+                <div id="error_noty" style="margin-top: 10px;color: #ff574b;border: 1px solid;border-radius: 5px;padding: 5px;background: #ffffff;width: 100%;">
+                    <b><#LANG_CODEEDITOR_ERROR_IN_CODE#> -></b> [#ERR_FULL#]
+                    <div><#LANG_CODEEDITOR_ERROR_RESTORE_CODE#></div>
+                </div>
+                <textarea id="error_old_code" style="display:none;">[#ERR_OLD_CODE#]</textarea>
+            [#endif ERRORS#]
+            <div id="code_area" style="margin-top: 10px;">
+                [#if SETTINGS_CODEEDITOR_TURNONSETTINGS != 1#]
+                    <div style="border: 1px solid #dddddd;border-radius: 5px;padding: 5px;margin-top: 10px;margin-bottom: 10px;background: #fffdc7;">
+                        <#LANG_CODEEDITOR_NOTY_TURNOFF#>
+                    </div>
+                [#endif SETTINGS_CODEEDITOR_TURNONSETTINGS#]
+
+                <div id="autosave_code_in_time_div" style="color: gray;font-style: italic;font-size: 1rem;display:none;margin-left: 5px;margin-bottom: 4px;">
+                    <i class="glyphicon glyphicon-floppy-saved" style="vertical-align: top;"></i> <#LANG_CODEEDITOR_AUTOSAVE_CODE#> <span id="autosave_code_in_time"></span>. <#LANG_CODEEDITOR_AUTOSAVE_CODE_HELP#>
+                </div>
+              <textarea name="code" id="code" rows=30 cols=100 class="form-control">[#CODE#]</textarea>
 			</div>
 		</div>
 </div> 
@@ -179,6 +226,7 @@
 
 <div class="form-actions">
  <button type="submit" name="subm" value="<#LANG_SUBMIT#>" class="btn btn-defaul btn-primary"><#LANG_SUBMIT#></button>
+ <a href="javascript://" onclick="ajaxAutosave('checkcode');" id="checkCodeBtn" class="btn btn-info"><i class="glyphicon glyphicon-share" aria-hidden="true"></i> <#LANG_CODEEDITOR_CHECK_ON_ERROR_BTN#></a>
  <a href="?tab=events" class="btn btn-default"><#LANG_CANCEL#></a>
 <input type="hidden" name="id" value="<#ID#>">
 <input type="hidden" id="users_id" name="users_id" value="<#USERS_ID#>">
