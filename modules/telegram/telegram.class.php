@@ -1586,7 +1586,7 @@ class telegram extends module {
                         // команда - все что до пробела
                         $command = explode(' ',$text)[0]; 
                         // поиск команд с параметрами
-                        $sql = "SELECT * FROM tlg_cmd where LOWER(tlg_cmd.TITLE) = '" . DBSafe(strtolower($command)) . "' and (ACCESS=3  OR ((select count(*) from tlg_user_cmd where tlg_user_cmd.USER_ID=" . $user['ID'] . " and tlg_cmd.ID=tlg_user_cmd.CMD_ID)>0 and ACCESS>0))";
+                        $sql = "SELECT * FROM tlg_cmd where LOWER(tlg_cmd.TITLE) = '" . DBSafe(mb_strtolower($command, "UTF-8")) . "' and (ACCESS=3  OR ((select count(*) from tlg_user_cmd where tlg_user_cmd.USER_ID=" . $user['ID'] . " and tlg_cmd.ID=tlg_user_cmd.CMD_ID)>0 and ACCESS>0))";
                         //$this->debug($sql);
                         $cmd = SQLSelectOne($sql);
                     }
