@@ -719,7 +719,7 @@ class telegram extends module {
     }
     
     // send message
-    function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML', $inline = '', $silent = false) {
+    function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML', $inline = '', $silent = false, array $flags = NULL) {
         $splited = str_split($message, 4096);
         foreach ($splited as $mess) {
             $content = array(
@@ -728,6 +728,7 @@ class telegram extends module {
                 'parse_mode' => $parse_mode,
                 'disable_notification' => $silent
             );
+	    if (count($flags)) foreach ($flags as $flagname => $flagvalue) $content[$flagname] = $flagvalue;
             if ($keyboard != "")
                  $content['reply_markup'] = $keyboard;
             if ($inline != "")
@@ -737,7 +738,7 @@ class telegram extends module {
         }
         return $res;
     }
-    function sendMessageTo($where, $message, array $key = NULL, $inline = '', $silent = NULL) {
+    function sendMessageTo($where, $message, array $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
@@ -745,19 +746,19 @@ class telegram extends module {
             $keyboard = $this->buildKeyboard($user, $key);
             if ($silent == NULL)
                 $silent = $user['SILENT'];
-            $res = $this->sendMessage($user_id,$message, $keyboard, 'HTML', $inline, $silent);
+            $res = $this->sendMessage($user_id,$message, $keyboard, 'HTML', $inline, $silent, $flags);
             $this->debug($res);
         }
         return $res;
     }
-    function sendMessageToUser($user_id, $message, $key = NULL, $inline = '', $silent = NULL) {
-        return $this->sendMessageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key, $inline, $silent);
+    function sendMessageToUser($user_id, $message, $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
+        return $this->sendMessageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key, $inline, $silent, $flags);
     }
-    function sendMessageToAdmin($message, $key = NULL, $inline = '', $silent = NULL) {
-        return $this->sendMessageTo("ADMIN=1", $message, $key, $inline, $silent);
+    function sendMessageToAdmin($message, $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
+        return $this->sendMessageTo("ADMIN=1", $message, $key, $inline, $silent, $flags);
     }
-    function sendMessageToAll($message, $key = NULL, $inline = '', $silent = NULL) {
-        return $this->sendMessageTo("", $message, $key, $inline, $silent);
+    function sendMessageToAll($message, $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
+        return $this->sendMessageTo("", $message, $key, $inline, $silent, $flags);
     }
     ///send image
     function sendImage($user_id, $image_path, $message = '', $keyboard = '', $inline = '', $silent = false) {
