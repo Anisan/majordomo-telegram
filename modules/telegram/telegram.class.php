@@ -719,7 +719,7 @@ class telegram extends module {
     }
     
     // send message
-    function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML', $inline = '', $silent = false, array $flags = NULL) {
+    function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML', $inline = '', $silent = false, $flags=array()) {
         $splited = str_split($message, 4096);
         foreach ($splited as $mess) {
             $content = array(
@@ -738,7 +738,7 @@ class telegram extends module {
         }
         return $res;
     }
-    function sendMessageTo($where, $message, array $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
+    function sendMessageTo($where, $message, array $key = NULL, $inline = '', $silent = NULL, $flags=array()) {
         $users = $this->getUsers($where);
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
@@ -751,17 +751,17 @@ class telegram extends module {
         }
         return $res;
     }
-    function sendMessageToUser($user_id, $message, $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
+    function sendMessageToUser($user_id, $message, $key = NULL, $inline = '', $silent = NULL, $flags=array()) {
         return $this->sendMessageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $message, $key, $inline, $silent, $flags);
     }
-    function sendMessageToAdmin($message, $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
+    function sendMessageToAdmin($message, $key = NULL, $inline = '', $silent = NULL, $flags=array()) {
         return $this->sendMessageTo("ADMIN=1", $message, $key, $inline, $silent, $flags);
     }
-    function sendMessageToAll($message, $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
+    function sendMessageToAll($message, $key = NULL, $inline = '', $silent = NULL, $flags=array()) {
         return $this->sendMessageTo("", $message, $key, $inline, $silent, $flags);
     }
     ///send image
-    function sendImage($user_id, $image_path, $message = '', $keyboard = '', $inline = '', $silent = false, array $flags = NULL) {
+    function sendImage($user_id, $image_path, $message = '', $keyboard = '', $inline = '', $silent = false, $flags=array()) {
         $img = curl_file_create($image_path, 'image/png');
         $content = array(
             'chat_id' => $user_id,
@@ -777,7 +777,7 @@ class telegram extends module {
         $this->debug($res);
         return $res;
     }
-    function sendImageTo($where, $image_path, $message = '', array $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
+    function sendImageTo($where, $image_path, $message = '', array $key = NULL, $inline = '', $silent = NULL, $flags=array()) {
         $img = curl_file_create($image_path, 'image/png');
         $users = $this->getUsers($where);
         foreach($users as $user) {
@@ -801,13 +801,13 @@ class telegram extends module {
         }
         return $res;
     }
-    function sendImageToUser($user_id, $image_path, $message = '', $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
+    function sendImageToUser($user_id, $image_path, $message = '', $key = NULL, $inline = '', $silent = NULL, $flags=array()) {
         $this->sendImageTo('(USER_ID="' . DBSafe($user_id) . '" OR NAME LIKE "' . DBSafe($user_id) .  '")', $image_path, $message, $key, $inline, $silent, $flags);
     }
-    function sendImageToAdmin($image_path, $message = '', $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
+    function sendImageToAdmin($image_path, $message = '', $key = NULL, $inline = '', $silent = NULL, $flags=array()) {
         $this->sendImageTo("ADMIN=1", $image_path, $message, $key, $inline, $silent, $flags);
     }
-    function sendImageToAll($image_path, $message = '', $key = NULL, $inline = '', $silent = NULL, array $flags = NULL) {
+    function sendImageToAll($image_path, $message = '', $key = NULL, $inline = '', $silent = NULL, $flags=array()) {
         $this->sendImageTo("", $image_path, $message, $key, $inline, $silent, $flags);
     }
     ///send video
