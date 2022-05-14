@@ -1716,6 +1716,24 @@ class telegram extends module {
             }
         }
     }
+    
+    // Find data in module
+    function findData($data) {
+        
+        $res = array();
+         //Telegram cmd
+        $cmds = SQLSelect("SELECT `ID`,`TITLE`, `DESCRIPTION` FROM `tlg_cmd` where `TITLE` like '%" . DBSafe($data) . "%' OR `DESCRIPTION` like '%" . DBSafe($data) . "%' OR `CODE` like '%" . DBSafe($data) . "%'  order by TITLE");
+        foreach($cmds as $cmd){
+        $res[]= '<span class="label label-primary">Command</span>&nbsp;<a href="/panel/telegram.html?md=telegram&inst=adm&view_mode=cmd_edit&id=' . $cmd['ID'] . '.html">' . $cmd['TITLE']. ($cmd['DESCRIPTION'] ? '<small style="color: gray;padding-left: 5px;"><i class="glyphicon glyphicon-arrow-right" style="font-size: .8rem;vertical-align: text-top;color: lightgray;"></i> ' . $cmd['DESCRIPTION'] . '</small>' : '').'</a>';
+        }
+        //Telegram events
+        $events = SQLSelect("SELECT `ID`,`TITLE`, `DESCRIPTION` FROM `tlg_event` where `TITLE` like '%" . DBSafe($data) . "%' OR `DESCRIPTION` like '%" . DBSafe($data) . "%' OR `CODE` like '%" . DBSafe($data) . "%'  order by TITLE");
+        foreach($events as $event){
+            $res[]= '<span class="label label-info">Event</span>&nbsp;<a href="/panel/telegram.html?md=telegram&inst=adm&view_mode=event_edit&id=' . $event['ID'] . '.html">' . $event['TITLE'].($cmd['DESCRIPTION'] ? '<small style="color: gray;padding-left: 5px;"><i class="glyphicon glyphicon-arrow-right" style="font-size: .8rem;vertical-align: text-top;color: lightgray;"></i> ' . $cmd['DESCRIPTION'] . '</small>' : ''). '</a>';
+        }
+        return $res;
+    }
+    
     /**
      * Install
      *
