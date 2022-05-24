@@ -1159,7 +1159,7 @@ class telegram extends module {
         // create bot
         $me = $this->getMe();
         $this->debug($me);
-        if($me)
+        if($me["result"]["id"])
         {
             $this->warning("Me: @" . $me["result"]["username"] . " (" . $me["result"]["id"] . ")");
             $this->config['TLG_BOT_USERNAME'] = $me["result"]["username"];
@@ -1187,6 +1187,9 @@ class telegram extends module {
             $this->saveConfig();
         }
         else {
+            if(method_exists($this, 'sendnotification'))
+                $this->sendnotification('Error connect or invalid token', 'danger');
+
             $this->warning("Error connect or invalid token");
             return;
         }
@@ -1240,6 +1243,9 @@ class telegram extends module {
         $req = $this->telegramBot->getUpdates($this->last_update_id, 10, $this->config["TLG_TIMEOUT"], false);
         if(isset($req['error_code']))
         {
+            if(method_exists($this, 'sendnotification'))
+                $this->sendnotification('Ошибка получения данных getUpdates: '.$req['error_code'].' - '.$req['description'], 'warning');
+
             if($this->config['TLG_DEBUG'])
                 $this->debug($req);
             else
@@ -1319,8 +1325,6 @@ class telegram extends module {
             $username = $this->telegramBot->Username();
             $fullname = $this->telegramBot->FirstName() . ' ' . $this->telegramBot->LastName();
         }
-        
-        
                     
         // поиск в базе пользователя
         $user = SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '" . DBSafe($chat_id) . "';");
@@ -1359,6 +1363,9 @@ class telegram extends module {
         // пользователь не найден
         if(!$user['ID']) 
         {
+            if(method_exists($this, 'sendnotification'))
+                $this->sendnotification('Незарегистрированный пользователь: @'.$username. ' ('.$chat_id.')', 'danger');
+
             $this->warning("Unknow user: ".$chat_id."; Message: ".$text);
             return;
         }
