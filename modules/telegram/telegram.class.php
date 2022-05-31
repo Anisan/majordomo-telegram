@@ -690,6 +690,27 @@ class telegram extends module {
         $this->debug($res);
         return $res;
     }
+	
+    function editImage($user_id, $message_id, $image_path, $message = '', $keyboard = '', $parse_mode = 'HTML') {
+	$img = curl_file_create($image_path, 'image/png');
+	$photo = array(
+		'caption' => $message, 
+		'type' => 'photo', 
+		'parse_mode'=> $parse_mode, 
+		'media' => 'attach://'.basename($image_path)
+	);
+        $content = array(
+            'chat_id' => $user_id,
+            'message_id' => $message_id,
+            'media' => json_encode($photo,true),
+            'reply_markup' => $keyboard,
+        );
+		$content[basename($image_path)]=$img;
+        $this->debug($content);
+        $res = $this->telegramBot->editMessageMedia($content);
+        $this->debug($res);
+        return $res;
+    }
     
     function deleteMessage($user_id, $message_id) {
         $content = array(
