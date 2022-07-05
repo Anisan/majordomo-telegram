@@ -1,6 +1,6 @@
 <?php
 /**
- * Telegram Bot 
+ * Telegram Bot
  *
  *
  * @package project
@@ -10,7 +10,7 @@
 //
 //
 require_once("./modules/telegram/Telegram.php");
-            
+
 class telegram extends module {
     /**
      * blank
@@ -21,16 +21,22 @@ class telegram extends module {
      */
     private $telegramBot;
     private $last_update_id=0;
-     
+
     function __construct() {
         $this->name = "telegram";
         $this->title = "Telegram";
         $this->module_category = "<#LANG_SECTION_APPLICATIONS#>";
         $this->checkInstalled();
-        
+
         $this->getConfig();
+        $ip_ver = CURL_IPRESOLVE_WHATEVER;
+        if(strcmp("ipv4", $this->config['TLG_IPRESOLV']) == 0)
+            $ip_ver = CURL_IPRESOLVE_V4;
+        if(strcmp("ipv6", $this->config['TLG_IPRESOLV']) == 0)
+            $ip_ver = CURL_IPRESOLVE_V6;
+
         if (!$this->config['TLG_USEPROXY'])
-            $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN']);
+            $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN'],$ip_ver);
         else
         {
             $type_proxy = CURLPROXY_SOCKS5;
@@ -40,7 +46,7 @@ class telegram extends module {
                 $type_proxy = CURLPROXY_SOCKS5_HOSTNAME;
             if ($this->config['TLG_PROXY_TYPE']==4)
                 $type_proxy = CURLPROXY_HTTPS;
-            $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN'],$this->config['TLG_PROXY_URL'],$this->config['TLG_PROXY_LOGIN'].':'.$this->config['TLG_PROXY_PASSWORD'], $type_proxy);
+            $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN'],$ip_ver,$this->config['TLG_PROXY_URL'],$this->config['TLG_PROXY_LOGIN'].':'.$this->config['TLG_PROXY_PASSWORD'], $type_proxy);
         }
     }
     /**
@@ -129,21 +135,21 @@ class telegram extends module {
         $p = new parser(DIR_TEMPLATES . $this->name . "/" . $this->name . ".html", $this->data, $this);
         $this->result = $p->result;
     }
-    
+
     function info($content) {
         if($this->config['TLG_DEBUG'] != 2)
             $this->log($content);
     }
-    
+
     function debug($content) {
         if($this->config['TLG_DEBUG'] == 1)
             $this->log($content);
     }
-    
+
     function warning($content) {
         $this->log($content);
     }
-    
+
     function log($message) {
         //echo $message . "\n";
         // DEBUG MESSAGE LOG
@@ -163,14 +169,14 @@ class telegram extends module {
         if (!gg('cycle_telegramRun')) {
             $out['CYCLERUN'] = 0;
         }
-        else 
+        else
         {
             if ((time() - gg('cycle_telegramRun')) < $this->config['TLG_TIMEOUT']*2 )
                 $out['CYCLERUN'] = 1;
             else
                 $out['CYCLERUN'] = 0;
         }
-        
+
         global $getlog;
         global $filter;
         global $limit;
@@ -304,13 +310,14 @@ class telegram extends module {
         $out['TLG_WEBHOOK'] = $this->config['TLG_WEBHOOK'];
         $out['TLG_WEBHOOK_URL'] = $this->config['TLG_WEBHOOK_URL'];
         $out['TLG_WEBHOOK_CERT'] = $this->config['TLG_WEBHOOK_CERT'];
-        
+
         $out['TLG_USEPROXY'] = $this->config['TLG_USEPROXY'];
         $out['TLG_PROXY_TYPE'] = $this->config['TLG_PROXY_TYPE'];
         $out['TLG_PROXY_URL'] = $this->config['TLG_PROXY_URL'];
         $out['TLG_PROXY_LOGIN'] = $this->config['TLG_PROXY_LOGIN'];
         $out['TLG_PROXY_PASSWORD'] = $this->config['TLG_PROXY_PASSWORD'];
-        
+        $out['TLG_IPRESOLV'] = $this->config['TLG_IPRESOLV'];
+
         if($this->data_source == 'telegram' || $this->data_source == '') {
             if($this->view_mode == 'update_settings') {
                 global $tlg_token;
@@ -345,6 +352,12 @@ class telegram extends module {
                 $this->config['TLG_PROXY_LOGIN'] = $tlg_proxy_login;
                 global $tlg_proxy_password;
                 $this->config['TLG_PROXY_PASSWORD'] = $tlg_proxy_password;
+                global $tlg_ipresolv;
+                if(preg_match("/^(any|ipv4|ipv6)$/", $tlg_ipresolv)) {
+                    $this->config['TLG_IPRESOLV'] = $tlg_ipresolv;
+                } else {
+                    $this->config['TLG_IPRESOLV'] = "any";
+                }
                 $this->saveConfig();
                 $this->info("Save config");
                 if (!$this->config['TLG_WEBHOOK'])
@@ -407,7 +420,7 @@ class telegram extends module {
 				$this->updateInfo($user);
 			}
 			$this->redirect("?");
-		} 
+		}
     }
     /**
      * Edit/add
@@ -423,7 +436,7 @@ class telegram extends module {
     function edit_event(&$out, $id) {
         require(DIR_MODULES . $this->name . '/event_edit.inc.php');
     }
-	
+
 	/**
      * Export/import
      *
@@ -432,7 +445,7 @@ class telegram extends module {
     function removeBOM($data) {
         return preg_replace("/^\xEF\xBB\xBF/", '', $data);
     }
-    
+
     function export_file($filename,$data)
     {
         $ie = false;
@@ -441,7 +454,7 @@ class telegram extends module {
             $ie = true;
         if(!$ie)
             $mime_type = 'application/octetstream';
-        else 
+        else
             $mime_type = 'application/octet-stream';
         header('Content-Type: ' . $mime_type);
         if(!$ie)
@@ -461,9 +474,9 @@ class telegram extends module {
         }
         exit;
     }
-    
+
     function export_rec($table,$data,$overwrite)
-    {   
+    {
         $data=json_decode($this->removeBOM($data),true);
         if (is_array($data)) 
         {
@@ -485,7 +498,7 @@ class telegram extends module {
                 SQLInsert($table, $data); // adding new record
         }
     }
-    
+
     function export_command(&$out, $id) {
         $command=SQLSelectOne("SELECT * FROM tlg_cmd WHERE ID='".(int)$id."'");
         unset($command['ID']);
@@ -609,7 +622,7 @@ class telegram extends module {
         $this->debug($res);
         return $res;
     }
-    
+
     function sendPoll($user_id, $question, $options, $is_anonymous = false, $type='regular',$allows_multiple_answers = false, $correct_option_id = 0,$explanation = '',$open_period = 0,$close_date = 0)
     {
         $content = array(
@@ -632,12 +645,12 @@ class telegram extends module {
             $content["close_date"] = $close_date;
         return $this->sendContent($content,"sendPoll");
     }
-    
+
     function sendAnswerCallbackQuery($callback_id, $text, $show_alert = false ) {
         $content = array('text' => $text, 'callback_query_id'=>$callback_id, 'show_alert'=>$show_alert);
         return $this->sendContent($content,"answerCallbackQuery");
     }
-    
+
     function getUsers($where) {
         $query = "SELECT * FROM tlg_user";
         if($where != "")
@@ -645,7 +658,7 @@ class telegram extends module {
         $users = SQLSelect($query);
         return $users;
     }
-    
+
     function buildKeyboard($user, $key) {
         if($key == NULL)
             $keyboard = $this->getKeyb($user);
@@ -654,7 +667,7 @@ class telegram extends module {
         $this->debug($keyboard);
         return $keyboard;
     }
-    
+
     function getUserName($chat_id) {
         $query = "SELECT * FROM tlg_user WHERE USER_ID=" . $chat_id;
         $user = SQLSelectOne($query);
@@ -662,7 +675,7 @@ class telegram extends module {
             return $user['NAME'];
         return "Unknow";
     }
-    
+
     function editMessage($user_id, $message_id, $message, $keyboard = '', $parse_mode = 'HTML') {
         $content = array(
             'chat_id' => $user_id,
@@ -676,7 +689,7 @@ class telegram extends module {
         $this->debug($res);
         return $res;
     }
-    
+
     function editMessageCaption($user_id, $message_id, $caption, $keyboard = '', $parse_mode = 'HTML') {
         $content = array(
             'chat_id' => $user_id,
@@ -690,13 +703,13 @@ class telegram extends module {
         $this->debug($res);
         return $res;
     }
-	
+
     function editImage($user_id, $message_id, $image_path, $message = '', $keyboard = '', $parse_mode = 'HTML') {
 	$img = curl_file_create($image_path, 'image/png');
 	$photo = array(
-		'caption' => $message, 
-		'type' => 'photo', 
-		'parse_mode'=> $parse_mode, 
+		'caption' => $message,
+		'type' => 'photo',
+		'parse_mode'=> $parse_mode,
 		'media' => 'attach://'.basename($image_path)
 	);
         $content = array(
@@ -711,7 +724,7 @@ class telegram extends module {
         $this->debug($res);
         return $res;
     }
-    
+
     function deleteMessage($user_id, $message_id) {
         $content = array(
             'chat_id' => $user_id,
@@ -721,7 +734,7 @@ class telegram extends module {
         $this->debug($res);
         return $res;
     }
-    
+
     // Chat Action
     //typing for text messages
     //upload_photo for photos
@@ -738,7 +751,7 @@ class telegram extends module {
         $this->debug($res);
         return $res;
     }
-    
+
     // send message
     function sendMessage($user_id, $message, $keyboard = '', $parse_mode = 'HTML', $inline = '', $silent = false, $flags=array()) {
         $splited = str_split($message, 4096);
@@ -1100,7 +1113,7 @@ class telegram extends module {
     function sendVenueToAll($lat, $lon, $title, $address, $key = NULL, $inline='') {
         return $this->sendVenueTo("", $lat, $lon, $title, $address, $key, $inline);
     }
-    
+
     function sendVoice($user_id, $file_path, $caption='', $keyboard = '', $inline='') {
         $file = curl_file_create($file_path);
 		$content = array(
@@ -1144,7 +1157,7 @@ class telegram extends module {
     function sendVoiceToAll($file_path, $caption='', $key = NULL, $inline='') {
         return $this->sendVoiceTo("", $file_path, $caption, $key, $inline);
     }
-    
+
     function sendDice($user_id, $emoji=null) {
         $content = array(
             'chat_id' => $user_id
@@ -1154,7 +1167,7 @@ class telegram extends module {
         $res = $this->sendContent($content, "sendDice");
         return $res;
     }
-    
+
     function photoIdBigSize($data) {
         $photo_id="";
         $photos = $data["message"]["photo"];
@@ -1170,11 +1183,11 @@ class telegram extends module {
         }
         return $photo_id;
     }
-    
+
     function getMe() {
         return $this->telegramBot->getMe();
     }
-    
+
     function init() {
         $this->warning("Token bot - " . $this->config['TLG_TOKEN']);
         // create bot
@@ -1244,7 +1257,7 @@ class telegram extends module {
             $this->debug($res);
         }
     }
-    
+
     function processCycle() {
         $this->getConfig();
         if ($this->config['TLG_WEBHOOK'])
@@ -1301,17 +1314,17 @@ class telegram extends module {
         echo $data;
         $this->debug($data);
         $bot_name = $this->config['TLG_BOTNAME'];
-        
+
         $poll_answer = $data['poll_answer'];
         if($poll_answer) {
             $this->info("Pool answer - ID_poll:".$poll_answer['poll_id']."; User: ".$poll_answer['user']['username'].'('.$poll_answer['user']['id'].')');
-            
+
             $chat_id = $poll_answer['user']['id'];
             $username = $poll_answer['user']["username"];
             $fullname = $poll_answer['user']["first_name"].' '.$poll_answer['user']["last_name"];
             $poll_id = $poll_answer['poll_id'];
             $option_ids = $poll_answer['option_ids'];
-            
+
             // get events for callback
             $events = SQLSelect("SELECT * FROM tlg_event WHERE TYPE_EVENT=10 and ENABLE=1;");
             foreach($events as $event) {
@@ -1331,7 +1344,7 @@ class telegram extends module {
             }
             return;
         }
-        
+
         $text = $this->telegramBot->Text();
         $callback = $this->telegramBot->Callback_Data();
         if($callback) {
@@ -1346,7 +1359,7 @@ class telegram extends module {
             $username = $this->telegramBot->Username();
             $fullname = $this->telegramBot->FirstName() . ' ' . $this->telegramBot->LastName();
         }
-                    
+
         // поиск в базе пользователя
         $user = SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '" . DBSafe($chat_id) . "';");
         if($chat_id < 0 && substr($text, 0, strlen('@' . $bot_name)) === '@' . $bot_name) {
@@ -1362,7 +1375,7 @@ class telegram extends module {
         } else {
             $this->debug("Chatid: ".$chat_id."; Bot-name: ".$bot_name."; Message: ".$text);
         }
-        
+
         if($this->config['TLG_REG_USER'] && ($text == "/start" || $text == "/start@" . $bot_name)) {
             // если нет добавляем
             if(!$user['ID']) {
@@ -1380,9 +1393,9 @@ class telegram extends module {
             $this->updateInfo($user);
             return;
         }
-        
+
         // пользователь не найден
-        if(!$user['ID']) 
+        if(!$user['ID'])
         {
             if(method_exists($this, 'sendnotification'))
                 $this->sendnotification('Незарегистрированный пользователь: @'.$username. ' ('.$chat_id.')', 'danger');
@@ -1390,12 +1403,12 @@ class telegram extends module {
             $this->warning("Unknow user: ".$chat_id."; Message: ".$text);
             return;
         }
-        
-        if ($user['ADMIN'] != 1 && 
-            $user['HISTORY'] != 1 && 
-            $user['CMD'] != 1 && 
-            $user['PATTERNS'] != 1 && 
-            $user['DOWNLOAD'] != 1 && 
+
+        if ($user['ADMIN'] != 1 &&
+            $user['HISTORY'] != 1 &&
+            $user['CMD'] != 1 &&
+            $user['PATTERNS'] != 1 &&
+            $user['DOWNLOAD'] != 1 &&
             $user['PLAY'] != 1)
         {
             $this->warning("WARNING!!! Permission denied!! User: ".$chat_id."; Message: ".$text);
@@ -1407,8 +1420,8 @@ class telegram extends module {
             $this->sendContent($content);
             return;
         }
-        
-        
+
+
         $document = $data["message"]["document"];
         $audio = $data["message"]["audio"];
         $video = $data["message"]["video"];
@@ -1439,7 +1452,7 @@ class telegram extends module {
             }
             return;
         }
-            
+
         if($location) {
                 $latitude = $location["latitude"];
                 $longitude = $location["longitude"];
@@ -1574,7 +1587,7 @@ class telegram extends module {
                 }
                 $file_path = "";
         }
-        
+
         $this->info($chat_id . " (" . $username . ", " . $fullname . ")=" . $text);
 
         if($user['CMD'] == 1) {
@@ -1601,11 +1614,11 @@ class telegram extends module {
                 return;
             }
         }
-            
+
         if($text == "") {
             return;
         }
-        
+
         if($user['ID']) {
             //смотрим разрешения на обработку команд
             if($user['CMD'] == 1) {
@@ -1665,7 +1678,7 @@ class telegram extends module {
                     say(htmlspecialchars($text), 0, $user['MEMBER_ID'], 'telegram' . $user['ID']);
             }
     }
-	
+
 	function execCommand($chat_id, $command)
 	{
 		$user = SQLSelectOne("SELECT * FROM tlg_user WHERE USER_ID LIKE '" . DBSafe($chat_id) . "';");
@@ -1694,9 +1707,9 @@ class telegram extends module {
                     registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
                 }
 			}
-        }        
+        }
 	}
-	
+
     /**
      * FrontEnd
      *
@@ -1744,10 +1757,10 @@ class telegram extends module {
             }
         }
     }
-    
+
     // Find data in module
     function findData($data) {
-        
+
         $res = array();
          //Telegram cmd
         $cmds = SQLSelect("SELECT `ID`,`TITLE`, `DESCRIPTION` FROM `tlg_cmd` where `TITLE` like '%" . DBSafe($data) . "%' OR `DESCRIPTION` like '%" . DBSafe($data) . "%' OR `CODE` like '%" . DBSafe($data) . "%'  order by TITLE");
@@ -1761,7 +1774,7 @@ class telegram extends module {
         }
         return $res;
     }
-    
+
     /**
      * Install
      *
@@ -1787,9 +1800,9 @@ class telegram extends module {
         SQLExec('DROP TABLE IF EXISTS tlg_user');
         SQLExec('DROP TABLE IF EXISTS tlg_cmd');
         SQLExec('DROP TABLE IF EXISTS tlg_event');
-        unsubscribeFromEvent($this->name, 'SAY'); 
-        unsubscribeFromEvent($this->name, 'SAYTO'); 
-        unsubscribeFromEvent($this->name, 'SAYREPLY'); 
+        unsubscribeFromEvent($this->name, 'SAY');
+        unsubscribeFromEvent($this->name, 'SAYTO');
+        unsubscribeFromEvent($this->name, 'SAYREPLY');
         parent::uninstall();
     }
     /**
@@ -1806,16 +1819,16 @@ class telegram extends module {
  tlg_user: USER_ID varchar(25) NOT NULL DEFAULT '0'
  tlg_user: MEMBER_ID int(10) NOT NULL DEFAULT '1'
  tlg_user: CREATED datetime
- tlg_user: ADMIN int(3) unsigned NOT NULL DEFAULT '0' 
- tlg_user: SILENT int(3) unsigned NOT NULL DEFAULT '0' 
- tlg_user: HISTORY int(3) unsigned NOT NULL DEFAULT '0' 
- tlg_user: HISTORY_LEVEL int(3) unsigned NOT NULL DEFAULT '0' 
- tlg_user: HISTORY_SILENT int(3) unsigned NOT NULL DEFAULT '0' 
- tlg_user: CMD int(3) unsigned NOT NULL DEFAULT '0' 
- tlg_user: PATTERNS int(3) unsigned NOT NULL DEFAULT '0' 
- tlg_user: DOWNLOAD int(3) unsigned NOT NULL DEFAULT '0' 
- tlg_user: PLAY int(3) unsigned NOT NULL DEFAULT '0' 
- 
+ tlg_user: ADMIN int(3) unsigned NOT NULL DEFAULT '0'
+ tlg_user: SILENT int(3) unsigned NOT NULL DEFAULT '0'
+ tlg_user: HISTORY int(3) unsigned NOT NULL DEFAULT '0'
+ tlg_user: HISTORY_LEVEL int(3) unsigned NOT NULL DEFAULT '0'
+ tlg_user: HISTORY_SILENT int(3) unsigned NOT NULL DEFAULT '0'
+ tlg_user: CMD int(3) unsigned NOT NULL DEFAULT '0'
+ tlg_user: PATTERNS int(3) unsigned NOT NULL DEFAULT '0'
+ tlg_user: DOWNLOAD int(3) unsigned NOT NULL DEFAULT '0'
+ tlg_user: PLAY int(3) unsigned NOT NULL DEFAULT '0'
+
  tlg_cmd: ID int(10) unsigned NOT NULL auto_increment
  tlg_cmd: TITLE varchar(255) NOT NULL DEFAULT ''
  tlg_cmd: DESCRIPTION text
@@ -1823,22 +1836,22 @@ class telegram extends module {
  tlg_cmd: ACCESS int(10) NOT NULL DEFAULT '0'
  tlg_cmd: SHOW_MODE int(10) NOT NULL DEFAULT '1'
  tlg_cmd: LINKED_OBJECT varchar(255) NOT NULL DEFAULT ''
- tlg_cmd: LINKED_PROPERTY varchar(255) NOT NULL DEFAULT '' 
- tlg_cmd: CONDITION int(10) NOT NULL DEFAULT '1' 
- tlg_cmd: CONDITION_VALUE varchar(255) NOT NULL DEFAULT '' 
- tlg_cmd: PRIORITY int(10) NOT NULL DEFAULT '1' 
- 
+ tlg_cmd: LINKED_PROPERTY varchar(255) NOT NULL DEFAULT ''
+ tlg_cmd: CONDITION int(10) NOT NULL DEFAULT '1'
+ tlg_cmd: CONDITION_VALUE varchar(255) NOT NULL DEFAULT ''
+ tlg_cmd: PRIORITY int(10) NOT NULL DEFAULT '1'
+
  tlg_user_cmd: ID int(10) unsigned NOT NULL auto_increment
  tlg_user_cmd: USER_ID int(10) NOT NULL
  tlg_user_cmd: CMD_ID int(10) NOT NULL
- 
+
  tlg_event: ID int(10) unsigned NOT NULL auto_increment
  tlg_event: TITLE varchar(255) NOT NULL DEFAULT ''
  tlg_event: DESCRIPTION text
- tlg_event: TYPE_EVENT int(3) unsigned NOT NULL DEFAULT '1' 
- tlg_event: ENABLE int(3) unsigned NOT NULL DEFAULT '0' 
+ tlg_event: TYPE_EVENT int(3) unsigned NOT NULL DEFAULT '1'
+ tlg_event: ENABLE int(3) unsigned NOT NULL DEFAULT '0'
  tlg_event: CODE text
-  
+
 EOD;
         parent::dbInstall($data);
         $cmds = SQLSelectOne("SELECT * FROM tlg_cmd;");

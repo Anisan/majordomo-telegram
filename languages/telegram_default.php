@@ -63,6 +63,7 @@ $dictionary=array(
 'HELP_REG_USER'=>'Enable registration user (anti spam)',
 'HELP_USE_PROXY'=>'Enable https proxy (torsocks)',
 'HELP_LOG_LEVEL'=>'Debug = all, info = information level, warning = only warning level',
+'HELP_IPRESOLV'=>'The type of IP address that will be used to connect to the Telegram servers. IPv4, IPv6 or Any',
 'HELP_USERID'=>'Telegram User ID',
 'HELP_NAME'=>'Name user',
 'HELP_MEMBER'=>'Link to system user',

@@ -230,6 +230,20 @@
 	</select>
   </div>
 </div>
+
+<div class="form-group">
+ <label class="control-label">IP version
+ <span data-toggle="tooltip" data-placement="right" data-title="<#LANG_HELP_IPRESOLV#>">
+ <i class="glyphicon glyphicon-info-sign text-primary"></i>
+ </label>
+  <div class="col-lg-6">
+    <select name="tlg_ipresolv" class="form-control" id="tlg_ipresolv">
+		<option value="any"[#if TLG_IPRESOLV=="any"#] selected[#endif#]>Any</option>
+		<option value="ipv4"[#if TLG_IPRESOLV=="ipv4"#] selected[#endif#]>IPv4</option>
+		<option value="ipv6"[#if TLG_IPRESOLV=="ipv6"#] selected[#endif#]>IPv6</option>
+	</select>
+  </div>
+</div>
 <label class="control-label" style="visibility:hidden">"<#TLG_test#>"</label>
 <div class="form-actions">
 <button type="submit" name="subm" value="Submit" class="btn btn-primary"><#LANG_UPDATE#></button>
