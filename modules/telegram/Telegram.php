@@ -61,6 +61,7 @@ class TelegramBot
     const CHANNEL_POST = 'channel_post';
 
     private $bot_token = '';
+    private $ip_ver = CURL_IPRESOLVE_WHATEVER;
     private $data = [];
     private $updates = [];
     private $proxy = '';
@@ -74,13 +75,14 @@ class TelegramBot
      * \param $bot_token the bot token
      * \return an instance of the class.
      */
-    public function __construct($bot_token, $proxyUrl = '', $proxyPwd = '', $proxyType = CURLPROXY_SOCKS5)
+    public function __construct($bot_token, $ip_ver, $proxyUrl = '', $proxyPwd = '', $proxyType = CURLPROXY_SOCKS5)
     {
         $this->bot_token = $bot_token;
+        $this->ip_ver = $ip_ver;
         $this->setProxy($proxyUrl,$proxyPwd,$proxyType);
         $this->data = $this->getData();
     }
-    
+
     public function setProxy( $proxyUrl = '', $proxyPwd = '', $proxyType = CURLPROXY_SOCKS5)
     {
         $this->proxy = $proxyUrl;
@@ -648,7 +650,7 @@ class TelegramBot
     {
         return $this->endpoint('sendLocation', $content);
     }
-    
+
     /// Send Media Group
     /**
      * Use this method to send a group of photos or videos as an album. On success, an array of the sent <a href="https://core.telegram.org/bots/api#message">Messages</a> is returned.<br/>Values inside $content:<br/>
@@ -691,7 +693,7 @@ class TelegramBot
     {
         return $this->endpoint('sendMediaGroup', $content);
     }
-    
+
     /// Send Venue
 
     /**
@@ -1423,7 +1425,7 @@ class TelegramBot
     {
         return $this->endpoint('editMessageMedia', $content);
     }
-	
+
     /**
      * Use this method to edit only the reply markup of messages sent by the bot or via the bot (for <a href="https://core.telegram.org/bots/api#inline-mode">inline bots</a>).  On success, if edited message is sent by the bot, the edited <a href="https://core.telegram.org/bots/api#message">Message</a> is returned, otherwise <em>True</em> is returned.<br/>Values inside $content:<br/>
      * <table>
@@ -1476,9 +1478,9 @@ class TelegramBot
     public function downloadFile($telegram_file_path, $local_file_path)
     {
         $file_url = 'https://api.telegram.org/file/bot'.$this->bot_token.'/'.$telegram_file_path;
-        
+
         $fp = fopen ($local_file_path, 'w+');
-         
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $file_url);
         curl_setopt($ch, CURLOPT_TIMEOUT, 50);
@@ -1486,14 +1488,15 @@ class TelegramBot
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	
+        curl_setopt($ch, CURLOPT_IPRESOLVE, $this->ip_ver);
+
         if ($this->proxy!= '')
         {
             curl_setopt($ch, CURLOPT_PROXYTYPE, $this->proxytype);
             curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
             curl_setopt($ch, CURLOPT_PROXYUSERPWD, $this->proxypwd);
         }
-                
+
         curl_setopt($ch, CURLOPT_FILE, $fp);
         $result = curl_exec($ch);
         if ($result === false) {
@@ -2985,7 +2988,8 @@ class TelegramBot
         }
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        
+        curl_setopt($ch, CURLOPT_IPRESOLVE, $this->ip_ver);
+
         $result = curl_exec($ch);
         if ($result === false) {
             $result = json_encode(['ok'=>false, 'curl_error_code' => curl_errno($ch), 'curl_error' => curl_error($ch)]);
