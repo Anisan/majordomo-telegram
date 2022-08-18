@@ -274,13 +274,20 @@ class telegram extends module {
         {
             header("HTTP/1.0: 200 OK\n");
             header('Content-Type: text/html; charset=utf-8');
-            global $user;
-            global $text;
-            global $silent;
+            $user=gr('user');
+            $text=gr('text');
+            $image = gr('image');
+            $silent=gr('silent');
             if (!isset($silent)) {
                 $silent = NULL;
             }
-            $res = $this->sendMessageToUser($user, $text, null, '', $silent);
+            if ($text!='') {
+                $this->sendMessageToUser($user, $text, null, '', $silent);
+            }
+            if ($image!='' && file_exists($image)) {
+                $this->sendImageToUser($user,$image);
+            }
+
             echo "Ok";
             exit;
         }
@@ -1726,6 +1733,8 @@ class telegram extends module {
         if($event == 'SAY') { // || $event=='SAYTO' || $event=='REPLYTO'
             $level = $details['level'];
             $message = $details['message'];
+            $image = $details['image'];
+
             if($details['destination']) {
                 $destination = $details['destination'];
             } elseif($details['source']) {
@@ -1747,7 +1756,7 @@ class telegram extends module {
                             $silent = false;
                         else
                             $silent = true;
-                        $url=BASE_URL."/ajax/telegram.html?sendMessage=1&user=".$user_id."&text=".urlencode($reply)."&silent=".$silent;
+                        $url=BASE_URL."/ajax/telegram.html?sendMessage=1&user=".$user_id."&text=".urlencode($reply)."&image=".urlencode($image)."&silent=".$silent;
                         getURLBackground($url,0);
                     }
                 }
