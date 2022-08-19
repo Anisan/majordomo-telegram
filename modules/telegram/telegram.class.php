@@ -281,11 +281,11 @@ class telegram extends module {
             if (!isset($silent)) {
                 $silent = NULL;
             }
-            if ($text!='') {
-                $this->sendMessageToUser($user, $text, null, '', $silent);
-            }
             if ($image!='' && file_exists($image)) {
-                $this->sendImageToUser($user,$image);
+                $this->sendImageToUser($user,$image, $text, null, '', $silent);
+            }
+            else if ($text!='') {
+                $this->sendMessageToUser($user, $text, null, '', $silent);
             }
 
             echo "Ok";
