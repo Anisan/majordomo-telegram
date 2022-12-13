@@ -492,7 +492,7 @@ class telegram extends module {
             {
                 if ($overwrite)
                 {
-                    $data{'ID'} = $rec['ID'];
+                    $data['ID'] = $rec['ID'];
                     SQLUpdate($table, $data); // update
                 }
                 else
