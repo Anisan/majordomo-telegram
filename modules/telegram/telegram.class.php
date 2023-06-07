@@ -1864,7 +1864,7 @@ class telegram extends module {
 EOD;
         parent::dbInstall($data);
         $cmds = SQLSelectOne("SELECT * FROM tlg_cmd;");
-        if(count($cmds) == 0) {
+        if(!isset($cmds)) {
             $rec['TITLE'] = 'Ping';
             $rec['DESCRIPTION'] = 'Example command Ping-Pong';
             $rec['CODE'] = 'return "Pong!";';
