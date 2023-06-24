@@ -10,11 +10,11 @@
   
   
   // FIELDS ORDER
-  global $sortby_event;
+  $sortby_event = gr('sortby_event');
   if (!$sortby_event) {
-   $sortby_event=$session->data['telegram_sort_event'];
+   $sortby_event=isset($session->data['telegram_sort_event'])?$session->data['telegram_sort_event']:'';
   } else {
-   if ($session->data['telegram_sort_event']==$sortby_event) {
+   if (isset($session->data['telegram_sort_event']) && $session->data['telegram_sort_event']==$sortby_event) {
     if (Is_Integer(strpos($sortby_event, ' DESC'))) {
      $sortby_event=str_replace(' DESC', '', $sortby_event);
     } else {
@@ -28,7 +28,7 @@
   
   // SEARCH RESULTS  
   $res=SQLSelect("SELECT * FROM tlg_event ORDER BY ".$sortby_event);
-  if ($res[0]['ID']) {   
+  if (isset($res[0])) {
     paging($res, 20, $out); // search result paging
     colorizeArray($res);
     $total=count($res);

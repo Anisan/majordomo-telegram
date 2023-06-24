@@ -31,18 +31,12 @@ if ($this->mode=='update') {
   if ($this->tab=='') {
 
     // NAME
-    global $title;
-    $rec['TITLE']=$title;
-    global $description;
-    $rec['DESCRIPTION']=$description;
-    global $code;
-    $old_code=$rec['CODE'];
-    $rec['CODE'] = $code;
-    global $enable;
-    $rec['ENABLE']=$enable;
-    
-    global $type_event;
-    $rec['TYPE_EVENT']=$type_event;
+    $rec['TITLE']=gr('title');
+    $rec['DESCRIPTION']=gr('description');
+    $old_code=isset($rec['CODE'])?$rec['CODE']:'';
+    $rec['CODE'] = gr('code');
+    $rec['ENABLE']=gr('enable','int');
+    $rec['TYPE_EVENT']=gr('type_event');
     
     if ($rec['TITLE'] == "")
     {
@@ -73,7 +67,7 @@ if ($this->mode=='update') {
     
     //UPDATING RECORD
     if ($ok) {
-      if ($rec['ID']) {
+      if (isset($rec['ID'])) {
         SQLUpdate($table_name, $rec); // update
       } else {
         $new_rec=1; 

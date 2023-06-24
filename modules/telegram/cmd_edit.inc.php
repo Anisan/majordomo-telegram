@@ -32,34 +32,21 @@ if ($this->mode=='update') {
   if ($this->tab=='') {
 
     // NAME
-    global $title;
-    $rec['TITLE']=$title;
-    global $description;
-    $rec['DESCRIPTION']=$description;
-    global $code;
-    $old_code=$rec['CODE'];
-    $rec['CODE'] = $code;
-    global $select_access;
-    $rec['ACCESS']=$select_access;
-    
-    global $show_mode;
-    $rec['SHOW_MODE']=$show_mode;
-    
-    global $linked_object_new;
-    $rec['LINKED_OBJECT']=$linked_object_new;
-    global $linked_property_new;
-    $rec['LINKED_PROPERTY']=$linked_property_new;
-    global $condition_new;
-    $rec['CONDITION']=$condition_new;
-    global $condition_value_new;
-    $rec['CONDITION_VALUE']=$condition_value_new;
-    
-	global $priority;
-    $rec['PRIORITY']=$priority;
-    if ($rec['PRIORITY'] == "")
-        $rec['PRIORITY'] = 0;
-    
-    global $users_id;
+    $rec['TITLE']=gr('title');
+    $rec['DESCRIPTION']=gr('description');
+
+    $old_code=isset($rec['CODE'])?$rec['CODE']:'';
+
+    $rec['CODE'] = gr('code');
+    $rec['ACCESS']=gr('select_access');
+    $rec['SHOW_MODE']=gr('show_mode');
+    $rec['LINKED_OBJECT']=gr('linked_object_new');
+    $rec['LINKED_PROPERTY']=gr('linked_property_new');
+    $rec['CONDITION']=gr('condition_new');
+    $rec['CONDITION_VALUE']=gr('condition_value_new');
+    $rec['PRIORITY']=gr('priority','int');
+
+    $users_id = gr('user_id');
     
     if ($rec['TITLE'] == "")
     {
@@ -92,7 +79,7 @@ if ($this->mode=='update') {
     
     
     if ($ok) {
-      if ($rec['ID']) {
+      if (isset($rec['ID'])) {
         SQLUpdate($table_name, $rec); // update
         updateAccess($rec['ID'],$users_id);
       } else {
@@ -110,11 +97,11 @@ if ($this->mode=='update') {
 }
 
 $res = SQLSelect("select ID,NAME,ADMIN, (SELECT count(*) FROM tlg_user_cmd where CMD_ID='$id' and tlg_user_cmd.USER_ID=tlg_user.ID) as ACCESS_USER from tlg_user");
-if ($res[0]) {
+if (isset($res[0])) {
     $out['LIST_ACCESS'] = $res;
 }
 $res = SQLSelect("SELECT * from tlg_user_cmd where CMD_ID='$id'");
-if ($res[0]) {
+if (isset($res[0])) {
     $qs    = array();
     foreach ($res as $row) {
         $qs[] = $row['USER_ID'];
@@ -136,4 +123,4 @@ function updateAccess($cmd_id, $users_id) {
     }
 }
   
-?>
+
