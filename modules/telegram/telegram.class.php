@@ -29,11 +29,13 @@ class telegram extends module {
         $this->checkInstalled();
 
         $this->getConfig();
+
         $ip_ver = CURL_IPRESOLVE_WHATEVER;
         if(strcmp("ipv4", $this->config['TLG_IPRESOLV']) == 0)
             $ip_ver = CURL_IPRESOLVE_V4;
         if(strcmp("ipv6", $this->config['TLG_IPRESOLV']) == 0)
             $ip_ver = CURL_IPRESOLVE_V6;
+
 
         if (!$this->config['TLG_USEPROXY'])
             $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN'],$ip_ver);
@@ -48,7 +50,46 @@ class telegram extends module {
                 $type_proxy = CURLPROXY_HTTPS;
             $this->telegramBot = new TelegramBot($this->config['TLG_TOKEN'],$ip_ver,$this->config['TLG_PROXY_URL'],$this->config['TLG_PROXY_LOGIN'].':'.$this->config['TLG_PROXY_PASSWORD'], $type_proxy);
         }
+
+        if (!isset($this->id)) $this->id=0;
+
     }
+
+    function getConfig() {
+        parent::getConfig();
+
+        $setConfigKeys = array('TLG_IPRESOLV',
+            'TLG_USEPROXY',
+            'TLG_PROXY_TYPE',
+            'TLG_TOKEN',
+            'TLG_USEPROXY',
+            'TLG_PROXY_TYPE',
+            'TLG_PROXY_URL',
+            'TLG_PROXY_LOGIN',
+            'TLG_PROXY_PASSWORD',
+            'TLG_BOT_USERNAME',
+            'TLG_BOT_JOIN_GROUP',
+            'TLG_BOT_READ_GROUP',
+            'TLG_BOT_SUPPORT_INLINE',
+            'TLG_DEBUG',
+            'TLG_REG_USER',
+            'TLG_WEBHOOK',
+            'TLG_WEBHOOK_URL',
+            'TLG_WEBHOOK_CERT',
+            'TLG_TIMEOUT',
+            'TLG_STORAGE',
+            'TLG_COUNT_ROW',
+            'TLG_PLAYER',
+            'TLG_BOT_ID',
+            'TLG_BOT_NAME'
+        );
+
+        foreach($setConfigKeys as $k) {
+            if (!isset($this->config[$k])) $this->config[$k]='';
+        }
+    }
+
+
     /**
      * saveParams
      *
@@ -171,7 +212,7 @@ class telegram extends module {
         }
         else
         {
-            if ((time() - gg('cycle_telegramRun')) < $this->config['TLG_TIMEOUT']*2 )
+            if ((time() - gg('cycle_telegramRun')) < (int)$this->config['TLG_TIMEOUT']*2 )
                 $out['CYCLERUN'] = 1;
             else
                 $out['CYCLERUN'] = 0;
@@ -296,6 +337,8 @@ class telegram extends module {
         $out['TLG_COUNT_ROW'] = $this->config['TLG_COUNT_ROW'];
         $out['TLG_PLAYER'] = $this->config['TLG_PLAYER'];
         $out['TLG_TIMEOUT'] = $this->config['TLG_TIMEOUT'];
+        $out['TLG_PROXY_TYPE'] = $this->config['TLG_PROXY_TYPE'];
+
         $out['BOT_ID'] = $this->config['TLG_BOT_ID'];
         $out['BOT_NAME'] = $this->config['TLG_BOT_NAME'];
         $out['BOT_USERNAME'] = $this->config['TLG_BOT_USERNAME'];
