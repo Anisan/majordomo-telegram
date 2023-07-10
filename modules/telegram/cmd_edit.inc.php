@@ -46,7 +46,7 @@ if ($this->mode=='update') {
     $rec['CONDITION_VALUE']=gr('condition_value_new');
     $rec['PRIORITY']=gr('priority','int');
 
-    $users_id = gr('user_id');
+    $users_id = gr('users_id');
     
     if ($rec['TITLE'] == "")
     {
