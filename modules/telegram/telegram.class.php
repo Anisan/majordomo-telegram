@@ -1803,11 +1803,25 @@ class telegram extends module {
             //$rec["CREATED"] = date("Y-m-d H:m:s",$data['message']['date']);
             if (isset($data['message']['text']))
                 $rec["MESSAGE"] = $data['message']['text'];
-            if (isset($data['message']['photo'])){
-                $rec["TYPE"] = 2;
-                if (isset($data['message']['caption']))
+            if (isset($data['message']['caption']))
                 $rec["MESSAGE"] = $data['message']['caption'];
+            if (isset($data['message']['photo']))
+                $rec["TYPE"] = 2;
+            if (isset($data['message']['voice']))
+                $rec["TYPE"] = 3;
+            if (isset($data['message']['audio']))
+                $rec["TYPE"] = 4;
+            if (isset($data['message']['video']))
+                $rec["TYPE"] = 5;
+            if (isset($data['message']['document']))
+                $rec["TYPE"] = 6;
+            if (isset($data['message']['sticker'])){
+                $rec["TYPE"] = 7;
+                $rec["MESSAGE"] = $data['message']['sticker']['set_name'].' '. $data['message']['sticker']['emoji'];
             }
+            if (isset($data['message']['location']))
+                $rec["TYPE"] = 8;
+            
         }
         if (isset($data['callback_query']))
         {
@@ -1824,11 +1838,24 @@ class telegram extends module {
             //$rec["CREATED"] = date("Y-m-d H:m:s",$data['result']['date']);
             if (isset($data['result']['text']))
                 $rec["MESSAGE"] = $data['result']['text'];
-            if (isset($data['result']['photo'])){
-                $rec["TYPE"] = 2;
-                if (isset($data['result']['caption']))
+            if (isset($data['result']['caption']))
                 $rec["MESSAGE"] = $data['result']['caption'];
+            if (isset($data['result']['photo']))
+                $rec["TYPE"] = 2;
+            if (isset($data['result']['voice']))
+                $rec["TYPE"] = 3;
+            if (isset($data['result']['audio']))
+                $rec["TYPE"] = 4;
+            if (isset($data['result']['video']))
+                $rec["TYPE"] = 5;
+            if (isset($data['result']['document']))
+                $rec["TYPE"] = 6;
+            if (isset($data['result']['sticker'])){
+                $rec["TYPE"] = 7;
+                $rec["MESSAGE"] = $data['result']['sticker']['set_name'].' '. $data['result']['sticker']['emoji'];
             }
+            if (isset($data['result']['location']))
+                $rec["TYPE"] = 8;
         }
         $rec["RAW"] = json_encode($data,JSON_UNESCAPED_UNICODE);
         try{

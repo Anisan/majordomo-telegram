@@ -42,6 +42,7 @@
     [#if DIRECTION == 1#] Out[#endif#]
     [#if DIRECTION == 2#] Out(error)[#endif#]
     [#if DIRECTION == 3#] Out(resend)[#endif#]
+    [#if DIRECTION == 4#] Out(skip)[#endif#]
   [#else#]
    &nbsp;
   [#endif#]
@@ -49,7 +50,13 @@
  <td>
   [#if TYPE!=""#]
     [#if TYPE == 1#] Text[#endif#]
-    [#if TYPE == 2#] Photo[#endif#]
+    [#if TYPE == 2#] Image[#endif#]
+    [#if TYPE == 3#] Voice[#endif#]
+    [#if TYPE == 4#] Audio[#endif#]
+    [#if TYPE == 5#] Video[#endif#]
+    [#if TYPE == 6#] Document[#endif#]
+    [#if TYPE == 7#] Sticker[#endif#]
+    [#if TYPE == 8#] Location[#endif#]
     [#if TYPE == 10#] Callback[#endif#]
   [#else#]
    &nbsp;
