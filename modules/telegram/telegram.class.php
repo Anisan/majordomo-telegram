@@ -1794,8 +1794,7 @@ class telegram extends module {
         $rec=array();
         $rec["DIRECTION"] = $direction;
         $rec["USER_ID"] = 0;
-        $rec["CREATED"] = date("Y-m-d H:m:s",time());
-        
+        $rec["CREATED"] = date("Y-m-d H:i:s");
         if (isset($data['message']))
         {
             $rec["USER_ID"] = $data['message']['chat']['id'];
