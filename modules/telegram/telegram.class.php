@@ -670,6 +670,16 @@ class telegram extends module {
         $this->debug($content);
         $res = $this->telegramBot->endpoint($endpoint, $content);
         $this->debug($res);
+        if ($res['ok']){
+            if (is_array($res['result']))
+                $this->saveData($res,1);
+        }
+        else
+        {
+            $res["endpoint"] = $endpoint;
+            $res["content"] = $content;
+            $this->saveData($res,2);
+        }
         return $res;
     }
 
@@ -735,8 +745,7 @@ class telegram extends module {
             'parse_mode' => $parse_mode
         );
         $this->debug($content);
-        $res = $this->telegramBot->editMessageText($content);
-        $this->debug($res);
+        $res = $this->sendContent($content, "editMessageText");
         return $res;
     }
 
@@ -749,8 +758,7 @@ class telegram extends module {
             'parse_mode' => $parse_mode
         );
         $this->debug($content);
-        $res = $this->telegramBot->editMessageCaption($content);
-        $this->debug($res);
+        $res = $this->sendContent($content,"editMessageCaption");
         return $res;
     }
 
@@ -770,8 +778,7 @@ class telegram extends module {
         );
 		$content[basename($image_path)]=$img;
         $this->debug($content);
-        $res = $this->telegramBot->editMessageMedia($content);
-        $this->debug($res);
+        $res = $this->sendContent($content,"editMessageMedia");
         return $res;
     }
 
@@ -780,8 +787,7 @@ class telegram extends module {
             'chat_id' => $user_id,
             'message_id' => $message_id
         );
-        $res = $this->telegramBot->deleteMessage($content);
-        $this->debug($res);
+        $res = $this->sendContent($content,'deleteMessage');
         return $res;
     }
 
@@ -797,8 +803,7 @@ class telegram extends module {
             'chat_id' => $user_id,
             'action' => $action
         );
-        $res = $this->telegramBot->sendChatAction($content);
-        $this->debug($res);
+        $res = $this->sendContent($content,"sendChatAction");
         return $res;
     }
 
@@ -817,8 +822,7 @@ class telegram extends module {
                  $content['reply_markup'] = $keyboard;
             if ($inline != "")
                  $content['reply_markup'] = $inline;
-            $res = $this->telegramBot->sendMessage($content);
-            $this->debug($res);
+            $res = $this->sendContent($content,"sendMessage");
         }
         return $res;
     }
@@ -857,8 +861,7 @@ class telegram extends module {
         if ($inline != "")
             $content['reply_markup'] = $inline;
         foreach ($flags as $key => $value) $content[$key] = $value;
-        $res = $this->telegramBot->sendPhoto($content);
-        $this->debug($res);
+        $res = $this->sendContent($content,"sendPhoto");
         return $res;
     }
     function sendImageTo($where, $image_path, $message = '', array $key = NULL, $inline = '', $silent = NULL, $flags=array()) {
@@ -880,8 +883,7 @@ class telegram extends module {
             if ($inline != "")
                 $content['reply_markup'] = $inline;
             foreach ($flags as $key => $value) $content[$key] = $value;
-            $res = $this->telegramBot->sendPhoto($content);
-            $this->debug($res);
+            $res = $this->sendContent($content,"sendPhoto");
         }
         return $res;
     }
@@ -905,7 +907,7 @@ class telegram extends module {
         );
         if ($inline != "")
                 $content['reply_markup'] = $inline;
-        $res = $this->telegramBot->sendVideo($content);
+        $res = $this->sendContent($content,"sendVideo");
         $this->debug($res);
         return $res;
     }
@@ -924,8 +926,7 @@ class telegram extends module {
             );
             if ($inline != "")
                 $content['reply_markup'] = $inline;
-            $res = $this->telegramBot->sendVideo($content);
-            $this->debug($res);
+            $res = $this->sendContent($content,"sendVideo");
         }
         return $res;
     }
@@ -960,8 +961,7 @@ class telegram extends module {
             $content[basename($image)]=$img;
         }
         $content['media'] = json_encode($photos,true);
-        $res = $this->telegramBot->sendMediaGroup($content);
-        $this->debug($res);
+        $res = $this->sendContent($content,"sendMediaGroup");
         return $res;
     }
     function sendAlbumTo($where, $image_paths, $message = '', array $key = NULL) {
@@ -982,8 +982,7 @@ class telegram extends module {
         foreach($users as $user) {
             $user_id = $user['USER_ID'];
             $content['chat_id'] = $user_id;
-            $res = $this->telegramBot->sendMediaGroup($content);
-            $this->debug($res);
+            $res = $this->sendContent($content,"sendMediaGroup");
         }
         return $res;
     }
@@ -1005,8 +1004,7 @@ class telegram extends module {
             'caption' => $message,
             'reply_markup' => $keyboard
         );
-        $res = $this->telegramBot->sendDocument($content);
-        $this->debug($res);
+        $res = $this->sendContent($content,"sendDocument");
         return $res;
     }
     function sendFileTo($where, $file_path, $message = '', array $key = NULL, $inline='') {
@@ -1024,8 +1022,7 @@ class telegram extends module {
             );
             if ($inline != "")
                 $content['reply_markup'] = $inline;
-            $res = $this->telegramBot->sendDocument($content);
-            $this->debug($res);
+            $res = $this->sendContent($content,"sendDocument");
         }
         return $res;
     }
@@ -1046,8 +1043,7 @@ class telegram extends module {
         );
         if ($inline != "")
             $content['reply_markup'] = $inline;
-        $res = $this->telegramBot->sendSticker($content);
-        $this->debug($res);
+        $res = $this->sendContent($content,"sendSticker");
         return $res;
     }
     function sendStickerTo($where, $sticker, array $key = NULL, $inline='') {
@@ -1063,8 +1059,7 @@ class telegram extends module {
             );
             if ($inline != "")
                 $content['reply_markup'] = $inline;
-            $res = $this->telegramBot->sendSticker($content);
-            $this->debug($res);
+            $res = $this->sendContent($content,"sendSticker");
         }
         return $res;
     }
@@ -1086,8 +1081,7 @@ class telegram extends module {
         );
         if ($inline != "")
             $content['reply_markup'] = $inline;
-        $res = $this->telegramBot->sendLocation($content);
-        $this->debug($res);
+        $res = $this->sendContent($content,"sendLocation");
         return $res;
     }
     function sendLocationTo($where, $lat, $lon, array $key = NULL, $inline='') {
@@ -1104,8 +1098,7 @@ class telegram extends module {
             );
             if ($inline != "")
                 $content['reply_markup'] = $inline;
-            $res = $this->telegramBot->sendLocation($content);
-            $this->debug($res);
+            $res = $this->sendContent($content,"sendLocation");
         }
         return $res;
     }
@@ -1129,8 +1122,7 @@ class telegram extends module {
         );
         if ($inline != "")
             $content['reply_markup'] = $inline;
-        $res = $this->telegramBot->sendVenue($content);
-        $this->debug($res);
+        $res = $this->sendContent($content,"sendVenue");
         return $res;
     }
     function sendVenueTo($where, $lat, $lon, $title, $address, array $key = NULL, $inline='') {
@@ -1149,8 +1141,7 @@ class telegram extends module {
             );
             if ($inline != "")
                 $content['reply_markup'] = $inline;
-            $res = $this->telegramBot->sendVenue($content);
-            $this->debug($res);
+            $res = $this->sendContent($content,"sendVenue");
         }
         return $res;
     }
@@ -1174,8 +1165,7 @@ class telegram extends module {
 		);
         if ($inline != "")
             $content['reply_markup'] = $inline;
-		$res = $this->telegramBot->sendVoice($content);
-		$this->debug($res);
+		$res = $this->sendContent($content, "sendVoice");
 		return $res;
     }
     function sendVoiceTo($where, $file_path, $caption='', array $key = NULL, $inline='') {
@@ -1193,8 +1183,7 @@ class telegram extends module {
 			);
             if ($inline != "")
                 $content['reply_markup'] = $inline;
-			$res = $this->telegramBot->sendVoice($content);
-			$this->debug($res);
+			$res = $this->sendContent($content,"sendVoice");
 		}
         return $res;
     }
@@ -1294,7 +1283,7 @@ class telegram extends module {
             $user["NAME"] = $chat["result"]["title"];
         if ($user["NAME"] == '' && $old_user_name!='') $user['NAME'] = $old_user_name;
         SQLUpdate("tlg_user", $user);
-        if($chat["result"]["photo"]) {
+        if(isset($chat["result"]["photo"])) {
             $image = $chat["result"]["photo"]["big_file_id"];
             $this->debug($image);
             $file = $this->telegramBot->getFile($image);
@@ -1310,6 +1299,9 @@ class telegram extends module {
 
     function processCycle() {
         $this->getConfig();
+        
+        $this->resendData();
+        
         if ($this->config['TLG_WEBHOOK'])
             return;
         // Get all the new updates and set the new correct update_id
@@ -1362,6 +1354,9 @@ class telegram extends module {
         $skip = false;
         $data = $this->telegramBot->getData();
         echo $data;
+        
+        $this->saveData($data,0);
+        
         $this->debug($data);
         $bot_name = $this->config['TLG_BOTNAME'];
 
@@ -1754,11 +1749,89 @@ class telegram extends module {
                     }
                 }
                 catch(Exception $e) {
-                    registerError('telegram', sprintf('Exception in "%s" method ' . $e->getMessage(), $text));
+                    registerError('telegram', sprintf('Exception in "%s" method: %s' . $e->getMessage(), $text));
                 }
 			}
         }
 	}
+    
+    function resendData(){
+         $res = SQLSelect("SELECT * FROM tlg_history WHERE DIRECTION=2");
+         foreach($res as $data) {
+            $raw = json_decode($data['RAW'],true);
+            if (isset($raw['curl_error'])) //resend
+            {
+                $content = $raw['content'];
+                if (isset($content['text']))
+                    $content['text'] = $content['text']. " (повторная отправка от ".$data['CREATED'].")";
+                
+                $res = $this->telegramBot->endpoint($raw['endpoint'], $content);
+                $this->debug($res);
+                if ($res['ok']){
+                    $data['DIRECTION'] = 3;
+                    SQLUpdate("tlg_history", $data);
+                }
+            }
+            else
+            {
+                $data['DIRECTION'] = 3;
+                SQLUpdate("tlg_history", $data);
+            }
+         }
+         // clear history older 7 days
+         SQLExec("DELETE FROM tlg_history WHERE CREATED < NOW() - INTERVAL 7 DAY");
+    }
+    
+    function saveData($data, $direction){
+        
+        //if ($direction != 2) return; // save only send error
+        
+        $rec=array();
+        $rec["DIRECTION"] = $direction;
+        $rec["USER_ID"] = 0;
+        
+        if (isset($data['message']))
+        {
+            $rec["USER_ID"] = $data['message']['chat']['id'];
+            $rec["TYPE"] = 1;
+            $rec["CREATED"] = date("Y-m-d H:m:s",$data['message']['date']);
+            if (isset($data['message']['text']))
+                $rec["MESSAGE"] = $data['message']['text'];
+            if (isset($data['message']['photo'])){
+                $rec["TYPE"] = 2;
+                if (isset($data['message']['caption']))
+                $rec["MESSAGE"] = $data['message']['caption'];
+            }
+        }
+        if (isset($data['callback_query']))
+        {
+            $rec["USER_ID"] = $data['callback_query']['from']['id'];
+            $rec["TYPE"] = 10;
+            $rec["MESSAGE"] = $data['callback_query']['data'];
+            $rec["CREATED"] = date("Y-m-d H:m:s",time());
+            
+        }
+        if (isset($data['result']))
+        {
+            $rec["USER_ID"] = $data['result']['chat']['id'];
+            $rec["TYPE"] = 1;
+            $rec["CREATED"] = date("Y-m-d H:m:s",$data['result']['date']);
+            if (isset($data['result']['text']))
+                $rec["MESSAGE"] = $data['result']['text'];
+            if (isset($data['result']['photo'])){
+                $rec["TYPE"] = 2;
+                if (isset($data['result']['caption']))
+                $rec["MESSAGE"] = $data['result']['caption'];
+            }
+        }
+        $rec["RAW"] = json_encode($data,JSON_UNESCAPED_UNICODE);
+        try{
+            SQLInsert("tlg_history", $rec);
+        }
+        catch(Exception $e) {
+            registerError('telegram', sprintf('Exception in "%s" method: %s' . $e->getMessage(), json_encode($rec,JSON_UNESCAPED_UNICODE)));
+        }
+    }
 
     /**
      * FrontEnd
@@ -1903,7 +1976,15 @@ class telegram extends module {
  tlg_event: TYPE_EVENT int(3) unsigned NOT NULL DEFAULT '1'
  tlg_event: ENABLE int(3) unsigned NOT NULL DEFAULT '0'
  tlg_event: CODE text
-
+ 
+ tlg_history: ID int(10) unsigned NOT NULL auto_increment
+ tlg_history: USER_ID varchar(25) NOT NULL DEFAULT '0'
+ tlg_history: CREATED datetime
+ tlg_history: DIRECTION int(3) unsigned NOT NULL DEFAULT '1'
+ tlg_history: TYPE int(3) unsigned NOT NULL DEFAULT '1'
+ tlg_history: MESSAGE text COLLATE 'utf8mb4_unicode_ci'
+ tlg_history: RAW text COLLATE 'utf8mb4_unicode_ci'
+ 
 EOD;
         parent::dbInstall($data);
         $cmds = SQLSelectOne("SELECT * FROM tlg_cmd;");
