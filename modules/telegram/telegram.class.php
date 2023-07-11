@@ -455,6 +455,8 @@ class telegram extends module {
                     $this->tlg_cmd($out);
                 } else if($this->tab == 'events') {
                     $this->tlg_events($out);
+                } else if($this->tab == 'history') {
+                    $this->tlg_history($out);
                 } else if($this->tab == 'log') {
                     $this->tlg_log($out);
                 } else {
@@ -610,6 +612,9 @@ class telegram extends module {
     }
     function tlg_events(&$out) {
         require(DIR_MODULES . $this->name . '/tlg_events.inc.php');
+    }
+    function tlg_history(&$out) {
+        require(DIR_MODULES . $this->name . '/tlg_history.inc.php');
     }
     function getKeyb($user) {
         $visible = true;
@@ -1774,7 +1779,7 @@ class telegram extends module {
             }
             else
             {
-                $data['DIRECTION'] = 3;
+                $data['DIRECTION'] = 4;
                 SQLUpdate("tlg_history", $data);
             }
          }
@@ -1789,12 +1794,13 @@ class telegram extends module {
         $rec=array();
         $rec["DIRECTION"] = $direction;
         $rec["USER_ID"] = 0;
+        $rec["CREATED"] = date("Y-m-d H:m:s",time());
         
         if (isset($data['message']))
         {
             $rec["USER_ID"] = $data['message']['chat']['id'];
             $rec["TYPE"] = 1;
-            $rec["CREATED"] = date("Y-m-d H:m:s",$data['message']['date']);
+            //$rec["CREATED"] = date("Y-m-d H:m:s",$data['message']['date']);
             if (isset($data['message']['text']))
                 $rec["MESSAGE"] = $data['message']['text'];
             if (isset($data['message']['photo'])){
@@ -1808,14 +1814,14 @@ class telegram extends module {
             $rec["USER_ID"] = $data['callback_query']['from']['id'];
             $rec["TYPE"] = 10;
             $rec["MESSAGE"] = $data['callback_query']['data'];
-            $rec["CREATED"] = date("Y-m-d H:m:s",time());
+            //$rec["CREATED"] = date("Y-m-d H:m:s",time());
             
         }
         if (isset($data['result']))
         {
             $rec["USER_ID"] = $data['result']['chat']['id'];
             $rec["TYPE"] = 1;
-            $rec["CREATED"] = date("Y-m-d H:m:s",$data['result']['date']);
+            //$rec["CREATED"] = date("Y-m-d H:m:s",$data['result']['date']);
             if (isset($data['result']['text']))
                 $rec["MESSAGE"] = $data['result']['text'];
             if (isset($data['result']['photo'])){

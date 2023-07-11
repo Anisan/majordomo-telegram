@@ -1,0 +1,99 @@
+<br/>
+	<div class="panel panel-info">
+		<div class="panel-heading">
+		<a data-toggle="collapse" data-parent="#accordion" href="#reg_stat">Statistics (last 7 day)</a>
+		</div>
+		<div class="panel-body collapse" id="reg_stat">
+			Messages: [#COUNT#]<br>
+			In: [#COUNT_IN#]<br>
+			Out: [#COUNT_OUT#]<br>
+			Out(error): [#COUNT_OUT_ERROR#]<br>
+			Out(resend): [#COUNT_OUT_RESEND#]<br>
+			Out(skip): [#COUNT_OUT_SKIP#]<br>
+		</div>
+	</div>
+<!-- results -->
+[#if RESULT#]
+<!-- search results (list) -->
+<form action="?" method="post" name="frmList_telegram" style="padding:0px" class="form">
+<table   class="table table-stripped">
+<thead>
+<tr>
+ <th>Created</th>
+ <th>Direction</th>
+ <th><#LANG_TYPE#></th>
+ <th>UserID</th>
+ <th>Message</th>
+</tr>
+</thead>
+<tbody>
+[#begin RESULT#]
+<tr class="hover_btn2">
+ <td>
+  [#if CREATED!=""#]
+   [#CREATED#]
+  [#else#]
+   &nbsp;
+  [#endif#]
+ </td>
+  <td>
+  [#if DIRECTION!=""#]
+    [#if DIRECTION == 0#] In[#endif#]
+    [#if DIRECTION == 1#] Out[#endif#]
+    [#if DIRECTION == 2#] Out(error)[#endif#]
+    [#if DIRECTION == 3#] Out(resend)[#endif#]
+  [#else#]
+   &nbsp;
+  [#endif#]
+ </td>  
+ <td>
+  [#if TYPE!=""#]
+    [#if TYPE == 1#] Text[#endif#]
+    [#if TYPE == 2#] Photo[#endif#]
+    [#if TYPE == 10#] Callback[#endif#]
+  [#else#]
+   &nbsp;
+  [#endif#]
+ </td>
+ <td>
+  [#if USER_ID!=""#]
+   [#USER_ID#]
+  [#else#]
+   &nbsp;
+  [#endif#]
+ </td>  
+ <td>
+  [#if MESSAGE!=""#]
+   [#MESSAGE#]
+  [#else#]
+   &nbsp;
+  [#endif#]
+ </td>  
+</tr>
+[#end RESULT#]
+</tbody>
+</table>
+<input type="hidden" name="data_source" value="<#DATA_SOURCE#>">
+<input type="hidden" name="view_mode" value="multiple_telegram">
+</form>
+<!-- / search results (list) -->
+<!-- paging -->
+[#if PAGES#]
+<center>
+<ul class="pagination">
+  [#begin PREVPAGE#]<li><a href="?tab=<#TAB#>&view_mode=<#VIEW_MODE#>&mode=<#MODE#>&page=[#NUM#]">&laquo;</a></li>[#end PREVPAGE#]
+  [#begin PAGES#]
+  <li [#if SELECTED#]class="active"[#endif#]><a href="?tab=<#TAB#>&view_mode=<#VIEW_MODE#>&mode=<#MODE#>&page=[#NUM#]">[#NUM#]</a></li>
+ [#end PAGES#]
+  [#begin NEXTPAGE#]<li><a href="?tab=<#TAB#>&view_mode=<#VIEW_MODE#>&mode=<#MODE#>&page=[#NUM#]">&raquo;</a></li>[#end NEXTPAGE#]
+</ul>
+</center>
+[#endif PAGES#]
+<!-- / paging -->
+[#else RESULT#]
+<p>
+<div class="alert alert-danger"><#LANG_NO_RECORDS_FOUND#></div>
+</p>
+[#endif RESULT#]
+<!-- / results -->
+

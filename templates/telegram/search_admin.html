@@ -260,6 +260,7 @@
  <li [#if TAB=="" || TAB=="users"#] class="active"[#endif#]><a href="?tab=users"><span class="glyphicon glyphicon-user"></span> <#LANG_MODULE_USERS#></a> </li>
  <li [#if TAB=="cmd"#] class="active"[#endif#]><a href="?tab=cmd"><span class="glyphicon glyphicon-th"></span> <#LANG_TLG_COMMANDS#></a> </li> 
  <li [#if TAB=="events"#] class="active"[#endif#]><a href="?tab=events"><span class="glyphicon glyphicon-tasks"></span> <#LANG_TLG_EVENTS#></a> </li> 
+ <li [#if TAB=="history"#] class="active"[#endif#]><a href="?tab=history"><span class="glyphicon glyphicon-list-alt"></span> <#LANG_TLG_HISTORY#></a> </li> 
  <li [#if TAB=="log"#] class="active"[#endif#]><a href="?tab=log"><span class="glyphicon glyphicon-list-alt"></span> <#LANG_GENERAL_EVENTS_LOG#></a> </li> 
  <li [#if TAB=="help"#] class="active"[#endif#]><a href="?tab=help"><span class="glyphicon glyphicon-exclamation-sign"></span> <#LANG_TLG_HELP#></a> </li> 
 </ul> 
@@ -272,6 +273,9 @@
 [#endif#] 
 [#if TAB="events"#]
   [#inc search_events.html#] 
+[#endif#] 
+[#if TAB="history"#]
+  [#inc search_history.html#] 
 [#endif#] 
 [#if TAB="log"#]
   [#inc search_log.html#] 
