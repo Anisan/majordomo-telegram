@@ -2054,7 +2054,7 @@ class telegram extends module {
  tlg_history: DIRECTION int(3) unsigned NOT NULL DEFAULT '1'
  tlg_history: TYPE int(3) unsigned NOT NULL DEFAULT '1'
  tlg_history: MESSAGE text
- tlg_history: RAW text COLLATE
+ tlg_history: RAW text
  
 EOD;
         parent::dbInstall($data);
