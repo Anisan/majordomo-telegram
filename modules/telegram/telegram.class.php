@@ -1880,12 +1880,12 @@ class telegram extends module {
             $rec["MESSAGE"] = 'Error: '.$data['curl_error_code'].' - '.$data['curl_error'];
         }
             
-        $rec["RAW"] = json_encode($data,JSON_UNESCAPED_UNICODE);
+        $rec["RAW"] = json_encode($data);
         try{
             SQLInsert("tlg_history", $rec);
         }
         catch(Exception $e) {
-            registerError('telegram', sprintf('Exception in "%s" method: %s' . $e->getMessage(), json_encode($rec,JSON_UNESCAPED_UNICODE)));
+            registerError('telegram', sprintf('Exception in "%s" method: %s' . $e->getMessage(), json_encode($rec)));
         }
     }
 
@@ -2053,8 +2053,8 @@ class telegram extends module {
  tlg_history: CREATED datetime
  tlg_history: DIRECTION int(3) unsigned NOT NULL DEFAULT '1'
  tlg_history: TYPE int(3) unsigned NOT NULL DEFAULT '1'
- tlg_history: MESSAGE text COLLATE 'utf8mb4_unicode_ci'
- tlg_history: RAW text COLLATE 'utf8mb4_unicode_ci'
+ tlg_history: MESSAGE text
+ tlg_history: RAW text COLLATE
  
 EOD;
         parent::dbInstall($data);
