@@ -1237,7 +1237,7 @@ class telegram extends module {
         // create bot
         $me = $this->getMe();
         $this->debug($me);
-        if($me["result"]["id"])
+        if(isset($me["result"]) && $me["result"]["id"])
         {
             $this->warning("Me: @" . $me["result"]["username"] . " (" . $me["result"]["id"] . ")");
             $this->config['TLG_BOT_USERNAME'] = $me["result"]["username"];
@@ -1308,7 +1308,7 @@ class telegram extends module {
         $this->resendData();
         
         if ($this->config['TLG_WEBHOOK'])
-            return;
+            return 0;
         // Get all the new updates and set the new correct update_id
         if ($this->config['TLG_USEPROXY'])
         {
@@ -1324,6 +1324,7 @@ class telegram extends module {
         $req = $this->telegramBot->getUpdates($this->last_update_id, 10, $this->config["TLG_TIMEOUT"], false);
         if(isset($req['error_code']))
         {
+            $this->saveData($req,5);
             if(method_exists($this, 'sendnotification'))
                 $this->sendnotification('Ошибка получения данных getUpdates: '.$req['error_code'].' - '.$req['description'], 'warning');
 
@@ -1331,7 +1332,9 @@ class telegram extends module {
                 $this->debug($req);
             else
                 $this->warning($req['description']);
-            return;
+            if ($req['error_code'] == 401)
+                return -1;
+            return 0;
         }
         for($i = 0; $i < $this->telegramBot->UpdateCount(); $i++) {
             // You NEED to call serveUpdate before accessing the values of message in Telegram Class

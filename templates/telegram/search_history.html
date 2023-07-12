@@ -2,6 +2,7 @@
 	<div class="panel panel-info">
 		<div class="panel-heading">
 		<a href="?tab=history" class="btn btn-default btn-sm" title="Refresh"><i class="glyphicon glyphicon-refresh"></i></a>
+		<a href="?tab=history&filter=2,3,4,5" class="btn btn-danger btn-sm" title="Errors"><i class="glyphicon glyphicon-warning-sign"></i></a>
 		<a data-toggle="collapse" data-parent="#accordion" href="#reg_stat">Statistics (last 7 day)</a>
 		</div>
 		<div class="panel-body collapse" id="reg_stat">
@@ -71,7 +72,8 @@
 [#begin RESULT#]
 <tr [#if DIRECTION==2#] class="danger"[#endif DIRECTION#] 
     [#if DIRECTION==3#] class="warning"[#endif DIRECTION#] 
-    [#if DIRECTION==4#] class="danger"[#endif DIRECTION#]>
+    [#if DIRECTION==4#] class="danger"[#endif DIRECTION#] 
+    [#if DIRECTION==5#] class="danger"[#endif DIRECTION#]>
  <td>
   [#if CREATED!=""#]
    [#CREATED#]
@@ -86,6 +88,7 @@
     [#if DIRECTION == 2#] Out(error)[#endif#]
     [#if DIRECTION == 3#] Out(resend)[#endif#]
     [#if DIRECTION == 4#] Out(skip)[#endif#]
+    [#if DIRECTION == 5#] In(error)[#endif#]
   [#else#]
    &nbsp;
   [#endif#]

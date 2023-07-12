@@ -26,7 +26,11 @@ while (1)
        setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
    }
    
-   $telegram_module->processCycle();
+   $res = $telegram_module->processCycle();
+   if ($res == -1){
+      $db->Disconnect();
+      exit;
+   }
    
    if (file_exists('./reboot') || IsSet($_GET['onetime']))
    {
