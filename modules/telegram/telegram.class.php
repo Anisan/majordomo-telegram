@@ -81,7 +81,8 @@ class telegram extends module {
             'TLG_COUNT_ROW',
             'TLG_PLAYER',
             'TLG_BOT_ID',
-            'TLG_BOT_NAME'
+            'TLG_BOT_NAME',
+            'TLG_HISTORY_ONLY_ERRORS'
         );
 
         foreach($setConfigKeys as $k) {
@@ -345,6 +346,7 @@ class telegram extends module {
         $out['BOT_JOIN_GROUP'] = $this->config['TLG_BOT_JOIN_GROUP'];
         $out['BOT_READ_GROUP'] = $this->config['TLG_BOT_READ_GROUP'];
         $out['BOT_SUPPORT_INLINE'] = $this->config['TLG_BOT_SUPPORT_INLINE'];
+        
         if(!$out['TLG_COUNT_ROW'])
             $out['TLG_COUNT_ROW'] = 3;
         if(!$out['TLG_TIMEOUT'])
@@ -367,6 +369,7 @@ class telegram extends module {
         $out['TLG_PROXY_LOGIN'] = $this->config['TLG_PROXY_LOGIN'];
         $out['TLG_PROXY_PASSWORD'] = $this->config['TLG_PROXY_PASSWORD'];
         $out['TLG_IPRESOLV'] = $this->config['TLG_IPRESOLV'];
+        $out['HISTORY_ONLY_ERRORS'] = $this->config['TLG_HISTORY_ONLY_ERRORS'];
 
         if($this->data_source == 'telegram' || $this->data_source == '') {
             if($this->view_mode == 'update_settings') {
@@ -402,6 +405,8 @@ class telegram extends module {
                 $this->config['TLG_PROXY_LOGIN'] = $tlg_proxy_login;
                 global $tlg_proxy_password;
                 $this->config['TLG_PROXY_PASSWORD'] = $tlg_proxy_password;
+                global $tlg_history_only_errors;
+                $this->config['TLG_HISTORY_ONLY_ERRORS'] = $tlg_history_only_errors;
                 global $tlg_ipresolv;
                 if(preg_match("/^(any|ipv4|ipv6)$/", $tlg_ipresolv)) {
                     $this->config['TLG_IPRESOLV'] = $tlg_ipresolv;
@@ -1792,7 +1797,9 @@ class telegram extends module {
     
     function saveData($data, $direction){
         
-        //if ($direction != 2) return; // save only send error
+        $this->getConfig();
+        if ($this->config['TLG_HISTORY_ONLY_ERRORS'])
+            if ($direction < 2) return; // save only send error
         
         $rec=array();
         $rec["DIRECTION"] = $direction;

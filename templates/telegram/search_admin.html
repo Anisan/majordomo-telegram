@@ -107,6 +107,11 @@
  </label>
  <div class="controls"><input type="checkbox" name="tlg_reg_user" value="1"[#if TLG_REG_USER="1"#] checked[#endif#]></div>
 </div>
+<div class="form-group">
+ <label class="control-label"><#LANG_TLG_HISTORY_ONLY_ERRORS#>
+ </label>
+ <div class="controls"><input type="checkbox" name="tlg_history_only_errors" value="1"[#if HISTORY_ONLY_ERRORS="1"#] checked[#endif#]></div>
+</div>
 <script type="text/javascript">
 	function showInfo(){  
 	    var url="?webhookinfo=1";
