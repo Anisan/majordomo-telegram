@@ -1,7 +1,7 @@
 <?php
 
   // SEARCH RESULTS  
-  $res=SQLSelect("SELECT * FROM tlg_history ORDER BY CREATED DESC");
+  $res=SQLSelect("SELECT * FROM tlg_history ORDER BY CREATED DESC, ID DESC");
   if (isset($res[0])) {
     $out['COUNT']=count($res);
     $st = array_count_values(array_column($res, 'DIRECTION'));
@@ -15,6 +15,7 @@
     $total=count($res);
     for($i=0;$i<$total;$i++) {
      // some action for every record if required
+        unset($res[$i]['RAW']);
     }
     $out['RESULT']=$res;
   }  

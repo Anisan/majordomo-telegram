@@ -1795,13 +1795,16 @@ class telegram extends module {
         $rec["DIRECTION"] = $direction;
         $rec["USER_ID"] = 0;
         $rec["CREATED"] = date("Y-m-d H:i:s");
+        $rec["TYPE"] = 0;
+            
         if (isset($data['message']))
         {
             $rec["USER_ID"] = $data['message']['chat']['id'];
-            $rec["TYPE"] = 1;
             //$rec["CREATED"] = date("Y-m-d H:m:s",$data['message']['date']);
-            if (isset($data['message']['text']))
+            if (isset($data['message']['text'])){
+                $rec["TYPE"] = 1;
                 $rec["MESSAGE"] = $data['message']['text'];
+            }
             if (isset($data['message']['caption']))
                 $rec["MESSAGE"] = $data['message']['caption'];
             if (isset($data['message']['photo']))
@@ -1833,10 +1836,11 @@ class telegram extends module {
         if (isset($data['result']))
         {
             $rec["USER_ID"] = $data['result']['chat']['id'];
-            $rec["TYPE"] = 1;
             //$rec["CREATED"] = date("Y-m-d H:m:s",$data['result']['date']);
-            if (isset($data['result']['text']))
+            if (isset($data['result']['text'])){
+                $rec["TYPE"] = 1;
                 $rec["MESSAGE"] = $data['result']['text'];
+            }
             if (isset($data['result']['caption']))
                 $rec["MESSAGE"] = $data['result']['caption'];
             if (isset($data['result']['photo']))
@@ -1856,6 +1860,16 @@ class telegram extends module {
             if (isset($data['result']['location']))
                 $rec["TYPE"] = 8;
         }
+        if (isset($data['content'])){
+            $rec["USER_ID"] = $data['content']['chat_id'];
+        }
+        if (isset($data['error_code'])){
+            $rec["MESSAGE"] = 'Error: '.$data['error_code'].' - '.$data['description'];
+        }
+        if (isset($data['curl_error_code'])){
+            $rec["MESSAGE"] = 'Error: '.$data['curl_error_code'].' - '.$data['curl_error'];
+        }
+            
         $rec["RAW"] = json_encode($data,JSON_UNESCAPED_UNICODE);
         try{
             SQLInsert("tlg_history", $rec);
@@ -1873,6 +1887,21 @@ class telegram extends module {
      * @access public
      */
     function usual(&$out) {
+        if ($this->ajax) {
+            global $op;
+            if ($op == 'get_raw') {
+
+                $id = $_GET['id'];
+                
+                header("HTTP/1.0: 200 OK\n");
+                header('Content-Type: text/html; charset=utf-8');
+
+                $rec = SQLSelectOne("select * from tlg_history where ID=".$id);
+                
+                echo $rec['RAW'];
+                exit;
+            }
+        }
         $this->admin($out);
     }
     function processSubscription($event, &$details) {

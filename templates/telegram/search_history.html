@@ -1,6 +1,7 @@
 <br/>
 	<div class="panel panel-info">
 		<div class="panel-heading">
+		<a href="?tab=history" class="btn btn-default btn-sm" title="Refresh"><i class="glyphicon glyphicon-refresh"></i></a>
 		<a data-toggle="collapse" data-parent="#accordion" href="#reg_stat">Statistics (last 7 day)</a>
 		</div>
 		<div class="panel-body collapse" id="reg_stat">
@@ -19,16 +20,58 @@
 <table   class="table table-stripped">
 <thead>
 <tr>
- <th>Created</th>
+ <th style="width:150px">Created</th>
  <th>Direction</th>
  <th><#LANG_TYPE#></th>
  <th>UserID</th>
+ <th>Raw</th>
  <th>Message</th>
 </tr>
 </thead>
+<script type="text/javascript">
+	function showRaw(id){
+		var url="/ajax/telegram.html?op=get_raw&id="+id;
+		$("#raw_info").html('');
+		$.ajax({
+			url: url,
+			cache: false,
+			success: function(html){
+				//$("#raw_info").html(html);
+				document.getElementById('raw_info').textContent = html;
+			}
+		});
+	}
+	function highlight(id) {
+		var range = document.createRange();
+		range.selectNode(document.getElementById(id));
+		window.getSelection().removeAllRanges();
+		window.getSelection().addRange(range);
+	}
+	function unsecuredCopyToClipboard(id) {
+		highlight(id);
+		try {
+			document.execCommand('copy');
+		} catch (err) {
+			console.error('Unable to copy to clipboard', err);
+		}
+	}
+	function copyContent(){
+		try {
+			if (window.isSecureContext && navigator.clipboard) 
+				navigator.clipboard.writeText(document.getElementById('raw_info').textContent);
+			else
+				unsecuredCopyToClipboard('raw_info');
+			console.log('Content copied to clipboard');
+		} catch (err) {
+			console.error('Failed to copy: ', err);
+		}
+    }
+</script>
 <tbody>
 [#begin RESULT#]
-<tr class="hover_btn2">
+<tr [#if DIRECTION==2#] class="danger"[#endif DIRECTION#] 
+    [#if DIRECTION==3#] class="warning"[#endif DIRECTION#] 
+    [#if DIRECTION==4#] class="danger"[#endif DIRECTION#]>
  <td>
   [#if CREATED!=""#]
    [#CREATED#]
@@ -49,14 +92,15 @@
  </td>  
  <td>
   [#if TYPE!=""#]
-    [#if TYPE == 1#] Text[#endif#]
-    [#if TYPE == 2#] Image[#endif#]
-    [#if TYPE == 3#] Voice[#endif#]
-    [#if TYPE == 4#] Audio[#endif#]
-    [#if TYPE == 5#] Video[#endif#]
-    [#if TYPE == 6#] Document[#endif#]
-    [#if TYPE == 7#] Sticker[#endif#]
-    [#if TYPE == 8#] Location[#endif#]
+    [#if TYPE == 0#] Unknown[#endif#]
+    [#if TYPE == 1#] <#LANG_TLG_EVENT_TEXT#>[#endif#]
+    [#if TYPE == 2#] <#LANG_TLG_EVENT_IMAGE#>[#endif#]
+    [#if TYPE == 3#] <#LANG_TLG_EVENT_VOICE#>[#endif#]
+    [#if TYPE == 4#] <#LANG_TLG_EVENT_AUDIO#>[#endif#]
+    [#if TYPE == 5#] <#LANG_TLG_EVENT_VIDEO#>[#endif#]
+    [#if TYPE == 6#] <#LANG_TLG_EVENT_DOCUMENT#>[#endif#]
+    [#if TYPE == 7#] <#LANG_TLG_EVENT_STICKER#>[#endif#]
+    [#if TYPE == 8#] <#LANG_TLG_EVENT_LOCATION#>[#endif#]
     [#if TYPE == 10#] Callback[#endif#]
   [#else#]
    &nbsp;
@@ -70,13 +114,16 @@
   [#endif#]
  </td>  
  <td>
+	<button onclick="showRaw('[#ID#]');" data-toggle="modal" data-target="#raw" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-list-alt"></i></button>
+ </td>  
+<td>
   [#if MESSAGE!=""#]
    [#MESSAGE#]
   [#else#]
    &nbsp;
   [#endif#]
- </td>  
-</tr>
+ </td>
+ </tr>
 [#end RESULT#]
 </tbody>
 </table>
@@ -104,3 +151,22 @@
 [#endif RESULT#]
 <!-- / results -->
 
+<div class="modal fade" id="raw" tabindex="-1" role="dialog" aria-labelledby="raw" aria-hidden="true">
+<!-- <div id="about" class="modal hide"> -->
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title">RAW message</h4>
+			</div>
+			<div class="modal-body">
+				<div id="raw_info" style="word-wrap:break-word"></div>
+			</div>
+			
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" onclick="copyContent()">Copy to clipboard</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
