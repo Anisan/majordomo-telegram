@@ -21,6 +21,14 @@ if ($filter)
         }
     }
     $out['STAT_USERS']=$stat;
+    $st = array_count_values(array_column($res, 'TYPE'));
+    $stat = [];
+    if (is_array($st)) {
+        foreach ($st as $key => $value) {
+            $stat[] = array('KEY' => $key, 'VALUE' => $value);
+        }
+    }
+    $out['STAT_TYPES']=$stat;
     paging($res, 50, $out); // search result paging
     colorizeArray($res);
     $total=count($res);

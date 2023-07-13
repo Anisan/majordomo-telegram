@@ -16,9 +16,27 @@
 			<div style="white-space: nowrap;">Out(skip): [#COUNT_OUT_SKIP#]</div>
 		</div>
 		<div class="col-xs-2"> 
+			<div><b>Users</b></div>
 			[#begin STAT_USERS#]
 			<div style="white-space: nowrap;">[#KEY#]: [#VALUE#]</div>
 			[#end STAT_USERS#]
+		</div>
+		<div class="col-xs-2"> 
+			<div><b><#LANG_TYPE#></b></div>
+			[#begin STAT_TYPES#]
+			<div style="white-space: nowrap;">
+			    [#if KEY == 0#] Unknown[#endif#]
+				[#if KEY == 1#] <#LANG_TLG_EVENT_TEXT#>[#endif#]
+				[#if KEY == 2#] <#LANG_TLG_EVENT_IMAGE#>[#endif#]
+				[#if KEY == 3#] <#LANG_TLG_EVENT_VOICE#>[#endif#]
+				[#if KEY == 4#] <#LANG_TLG_EVENT_AUDIO#>[#endif#]
+				[#if KEY == 5#] <#LANG_TLG_EVENT_VIDEO#>[#endif#]
+				[#if KEY == 6#] <#LANG_TLG_EVENT_DOCUMENT#>[#endif#]
+				[#if KEY == 7#] <#LANG_TLG_EVENT_STICKER#>[#endif#]
+				[#if KEY == 8#] <#LANG_TLG_EVENT_LOCATION#>[#endif#]
+				[#if KEY == 10#] Callback[#endif#]: 
+				[#VALUE#]</div>
+			[#end STAT_TYPES#]
 		</div>
 		</div>
 		</div>
