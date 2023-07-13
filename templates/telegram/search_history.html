@@ -24,7 +24,7 @@
  <th style="width:150px">Created</th>
  <th>Direction</th>
  <th><#LANG_TYPE#></th>
- <th>UserID</th>
+ <th>User</th>
  <th>Raw</th>
  <th>Message</th>
 </tr>
@@ -110,10 +110,17 @@
   [#endif#]
  </td>
  <td>
-  [#if USER_ID!=""#]
-   [#USER_ID#]
+  [#if NAME!=""#]
+        <span tabindex="0" data-toggle="tooltip" data-html="true" data-placement="right" 
+            data-title="
+            <div class='float-right'>
+            <img src='<#ROOTHTML#>cms/cached/telegram/[#USER_ID#].jpg' height='150px' onerror='this.src='<#ROOTHTML#>templates/telegram/img/none.jpg''>
+            </div>
+            <p style='text-align:left'>ID:<b>[#USER_ID#]</b><br>Name:<b>[#NAME#]</b></p>">
+        <img src="<#ROOTHTML#>cms/cached/telegram/[#USER_ID#].jpg" height="30px" style="border-radius: 0 50% 50%;" onerror="this.src='<#ROOTHTML#>templates/telegram/img/none.jpg'">
+    </span>
   [#else#]
-   &nbsp;
+   <span style="color:red;"><b>[#USER_ID#]</b></span>
   [#endif#]
  </td>  
  <td>

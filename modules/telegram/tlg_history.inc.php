@@ -4,7 +4,7 @@ $filter = gr('filter');
 if ($filter)
     $where = "where DIRECTION IN (".$filter.")";
   // SEARCH RESULTS  
-  $res=SQLSelect('SELECT ID,CREATED,USER_ID,DIRECTION,TYPE,MESSAGE FROM tlg_history '.$where.' ORDER BY CREATED DESC, ID DESC');
+  $res=SQLSelect('SELECT tlg_history.ID, tlg_history.CREATED, tlg_history.USER_ID,DIRECTION,TYPE,MESSAGE,tlg_user.NAME FROM tlg_history LEFT JOIN tlg_user ON tlg_history.USER_ID = tlg_user.USER_ID'.$where.' ORDER BY CREATED DESC, ID DESC');
   if (isset($res[0])) {
     $out['COUNT']=count($res);
     $st = array_count_values(array_column($res, 'DIRECTION'));
