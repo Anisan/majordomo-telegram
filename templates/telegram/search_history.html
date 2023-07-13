@@ -6,12 +6,21 @@
 		<a data-toggle="collapse" data-parent="#accordion" href="#reg_stat">Statistics (last 7 day)</a>
 		</div>
 		<div class="panel-body collapse" id="reg_stat">
-			Messages: [#COUNT#]<br>
-			In: [#COUNT_IN#]<br>
-			Out: [#COUNT_OUT#]<br>
-			Out(error): [#COUNT_OUT_ERROR#]<br>
-			Out(resend): [#COUNT_OUT_RESEND#]<br>
-			Out(skip): [#COUNT_OUT_SKIP#]<br>
+		<div class="row-flex">
+		<div class="col-xs-2"> 
+			<div style="white-space: nowrap;">Messages: [#COUNT#]</div>
+			<div style="white-space: nowrap;">In: [#COUNT_IN#]</div>
+			<div style="white-space: nowrap;">Out: [#COUNT_OUT#]</div>
+			<div style="white-space: nowrap;">Out(error): [#COUNT_OUT_ERROR#]</div>
+			<div style="white-space: nowrap;">Out(resend): [#COUNT_OUT_RESEND#]</div>
+			<div style="white-space: nowrap;">Out(skip): [#COUNT_OUT_SKIP#]</div>
+		</div>
+		<div class="col-xs-2"> 
+			[#begin STAT_USERS#]
+			<div style="white-space: nowrap;">[#KEY#]: [#VALUE#]</div>
+			[#end STAT_USERS#]
+		</div>
+		</div>
 		</div>
 	</div>
 <!-- results -->
