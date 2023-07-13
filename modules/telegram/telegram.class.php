@@ -82,7 +82,8 @@ class telegram extends module {
             'TLG_PLAYER',
             'TLG_BOT_ID',
             'TLG_BOT_NAME',
-            'TLG_HISTORY_ONLY_ERRORS'
+            'TLG_HISTORY_ONLY_ERRORS',
+            'TLG_HISTORY_DAYS',
         );
 
         foreach($setConfigKeys as $k) {
@@ -370,6 +371,7 @@ class telegram extends module {
         $out['TLG_PROXY_PASSWORD'] = $this->config['TLG_PROXY_PASSWORD'];
         $out['TLG_IPRESOLV'] = $this->config['TLG_IPRESOLV'];
         $out['HISTORY_ONLY_ERRORS'] = $this->config['TLG_HISTORY_ONLY_ERRORS'];
+        $out['HISTORY_DAYS'] = $this->config['TLG_HISTORY_DAYS'];
 
         if($this->data_source == 'telegram' || $this->data_source == '') {
             if($this->view_mode == 'update_settings') {
@@ -407,6 +409,8 @@ class telegram extends module {
                 $this->config['TLG_PROXY_PASSWORD'] = $tlg_proxy_password;
                 global $tlg_history_only_errors;
                 $this->config['TLG_HISTORY_ONLY_ERRORS'] = $tlg_history_only_errors;
+                global $tlg_history_days;
+                $this->config['TLG_HISTORY_DAYS'] = $tlg_history_days;
                 global $tlg_ipresolv;
                 if(preg_match("/^(any|ipv4|ipv6)$/", $tlg_ipresolv)) {
                     $this->config['TLG_IPRESOLV'] = $tlg_ipresolv;
@@ -1791,8 +1795,11 @@ class telegram extends module {
                 SQLUpdate("tlg_history", $data);
             }
          }
-         // clear history older 7 days
-         SQLExec("DELETE FROM tlg_history WHERE CREATED < NOW() - INTERVAL 7 DAY");
+         // clear history (older 7 days default)
+         $day = "7";
+         if ($this->config['TLG_HISTORY_DAYS'])
+             $day = $this->config['TLG_HISTORY_DAYS'];
+         SQLExec("DELETE FROM tlg_history WHERE CREATED < NOW() - INTERVAL ".$day." DAY");
     }
     
     function saveData($data, $direction){

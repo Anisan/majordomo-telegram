@@ -28,5 +28,6 @@ if ($filter)
      // some action for every record if required
     }
     $out['RESULT']=$res;
+    $out['HISTORY_DAYS'] = $this->config['TLG_HISTORY_DAYS'] !== "" ? $this->config['TLG_HISTORY_DAYS'] : 7;
   }  
 ?>

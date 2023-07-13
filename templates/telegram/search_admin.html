@@ -82,7 +82,7 @@
  <span data-toggle="tooltip" data-placement="right" data-title="<#LANG_HELP_COUNTROW#>">
  <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </label>
- <div class="col-lg-6"><input class="form-control" type="text" name="tlg_count_row" value="<#TLG_COUNT_ROW#>" class="input"></div>
+ <div class="col-lg-6"><input class="form-control" type="number" name="tlg_count_row" value="<#TLG_COUNT_ROW#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="col-lg-4 control-label"><#LANG_TLG_PLAYER#></label>
@@ -98,7 +98,7 @@
  <span data-toggle="tooltip" data-placement="right" data-title="<#LANG_HELP_TIMEOUT#>">
  <i class="glyphicon glyphicon-info-sign text-primary"></i>
  </label>
- <div class="col-lg-6"><input class="form-control" type="text" name="tlg_timeout" value="<#TLG_TIMEOUT#>" class="input"></div>
+ <div class="col-lg-6"><input class="form-control" type="number" name="tlg_timeout" value="<#TLG_TIMEOUT#>" class="input"></div>
 </div>
 <div class="form-group">
  <label class="control-label"><#LANG_TLG_REG_USER#>
@@ -111,6 +111,11 @@
  <label class="control-label"><#LANG_TLG_HISTORY_ONLY_ERRORS#>
  </label>
  <div class="controls"><input type="checkbox" name="tlg_history_only_errors" value="1"[#if HISTORY_ONLY_ERRORS="1"#] checked[#endif#]></div>
+</div>
+<div class="form-group">
+ <label class="control-label"><#LANG_TLG_HISTORY_DAYS#>
+ </label>
+ <div class="col-lg-6"><input class="form-control" type="number" name="tlg_history_days" value="<#HISTORY_DAYS#>" class="input"></div>
 </div>
 <script type="text/javascript">
 	function showInfo(){  

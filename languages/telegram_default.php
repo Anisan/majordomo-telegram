@@ -55,6 +55,7 @@ $dictionary=array(
 'TLG_PROXY_PASSWORD'=>'Password proxy',
 'TLG_REG_USER'=>'Auto registration users',
 'TLG_HISTORY_ONLY_ERRORS'=>'Save history only errors',
+'TLG_HISTORY_DAYS'=>'History days length',
 /* about */
 
 /* help */
