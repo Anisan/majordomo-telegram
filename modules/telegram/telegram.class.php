@@ -1876,6 +1876,8 @@ class telegram extends module {
             }
             if (isset($data['result']['location']))
                 $rec["TYPE"] = 8;
+            if (isset($data['result']['venue']))
+                $rec["MESSAGE"] = $data['result']['venue']['title'].' '. $data['result']['venue']['address'];
         }
         if (isset($data['content'])){
             $rec["USER_ID"] = $data['content']['chat_id'];
