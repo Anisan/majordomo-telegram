@@ -1814,70 +1814,43 @@ class telegram extends module {
         $rec["CREATED"] = date("Y-m-d H:i:s");
         $rec["TYPE"] = 0;
             
-        if (isset($data['message']))
+        if (isset($data['message']) || isset($data['result']))
         {
-            $rec["USER_ID"] = $data['message']['chat']['id'];
-            //$rec["CREATED"] = date("Y-m-d H:m:s",$data['message']['date']);
-            if (isset($data['message']['text'])){
-                $rec["TYPE"] = 1;
-                $rec["MESSAGE"] = $data['message']['text'];
-            }
-            if (isset($data['message']['caption']))
-                $rec["MESSAGE"] = $data['message']['caption'];
-            if (isset($data['message']['photo']))
-                $rec["TYPE"] = 2;
-            if (isset($data['message']['voice']))
-                $rec["TYPE"] = 3;
-            if (isset($data['message']['audio']))
-                $rec["TYPE"] = 4;
-            if (isset($data['message']['video']))
-                $rec["TYPE"] = 5;
-            if (isset($data['message']['document']))
-                $rec["TYPE"] = 6;
-            if (isset($data['message']['sticker'])){
-                $rec["TYPE"] = 7;
-                $rec["MESSAGE"] = $data['message']['sticker']['set_name'].' '. $data['message']['sticker']['emoji'];
-            }
-            if (isset($data['message']['location']))
-                $rec["TYPE"] = 8;
+            $message=[];
+            if (isset($data['message'])) $message = $data['message'];
+            if (isset($data['result'])) $message = $data['result'];
             
+            $rec["USER_ID"] = $message['chat']['id'];
+            if (isset($message['text'])){
+                $rec["TYPE"] = 1;
+                $rec["MESSAGE"] = $message['text'];
+            }
+            if (isset($message['caption']))
+                $rec["MESSAGE"] = $message['caption'];
+            if (isset($message['photo']))
+                $rec["TYPE"] = 2;
+            if (isset($message['voice']))
+                $rec["TYPE"] = 3;
+            if (isset($message['audio']))
+                $rec["TYPE"] = 4;
+            if (isset($message['video']))
+                $rec["TYPE"] = 5;
+            if (isset($message['document']))
+                $rec["TYPE"] = 6;
+            if (isset($message['sticker'])){
+                $rec["TYPE"] = 7;
+                $rec["MESSAGE"] = $message['sticker']['set_name'].' '. $message['sticker']['emoji'];
+            }
+            if (isset($message['location']))
+                $rec["TYPE"] = 8;
+            if (isset($message['venue']))
+                $rec["MESSAGE"] = $message['venue']['title'].' '. $message['venue']['address'];
         }
         if (isset($data['callback_query']))
         {
             $rec["USER_ID"] = $data['callback_query']['from']['id'];
             $rec["TYPE"] = 10;
             $rec["MESSAGE"] = $data['callback_query']['data'];
-            //$rec["CREATED"] = date("Y-m-d H:m:s",time());
-            
-        }
-        if (isset($data['result']))
-        {
-            $rec["USER_ID"] = $data['result']['chat']['id'];
-            //$rec["CREATED"] = date("Y-m-d H:m:s",$data['result']['date']);
-            if (isset($data['result']['text'])){
-                $rec["TYPE"] = 1;
-                $rec["MESSAGE"] = $data['result']['text'];
-            }
-            if (isset($data['result']['caption']))
-                $rec["MESSAGE"] = $data['result']['caption'];
-            if (isset($data['result']['photo']))
-                $rec["TYPE"] = 2;
-            if (isset($data['result']['voice']))
-                $rec["TYPE"] = 3;
-            if (isset($data['result']['audio']))
-                $rec["TYPE"] = 4;
-            if (isset($data['result']['video']))
-                $rec["TYPE"] = 5;
-            if (isset($data['result']['document']))
-                $rec["TYPE"] = 6;
-            if (isset($data['result']['sticker'])){
-                $rec["TYPE"] = 7;
-                $rec["MESSAGE"] = $data['result']['sticker']['set_name'].' '. $data['result']['sticker']['emoji'];
-            }
-            if (isset($data['result']['location']))
-                $rec["TYPE"] = 8;
-            if (isset($data['result']['venue']))
-                $rec["MESSAGE"] = $data['result']['venue']['title'].' '. $data['result']['venue']['address'];
         }
         if (isset($data['content'])){
             $rec["USER_ID"] = $data['content']['chat_id'];
