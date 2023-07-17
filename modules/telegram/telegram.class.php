@@ -918,7 +918,6 @@ class telegram extends module {
         if ($inline != "")
                 $content['reply_markup'] = $inline;
         $res = $this->sendContent($content,"sendVideo");
-        $this->debug($res);
         return $res;
     }
     function sendVideoTo($where, $video_path, $message = '', array $key = NULL, $inline = '') {
