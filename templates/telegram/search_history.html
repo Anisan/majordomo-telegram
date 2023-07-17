@@ -18,13 +18,16 @@
 		<div class="col-xs-2"> 
 			<div><b>Users</b></div>
 			[#begin STAT_USERS#]
-			<div style="white-space: nowrap;">[#KEY#]: [#VALUE#]</div>
+			<div style="white-space: nowrap;">
+			<a href="?tab=history&user_id=[#ID#]"><img src='<#ROOTHTML#>cms/cached/telegram/[#ID#].jpg' style="margin:2px;border-radius: 0 50% 50%;" height='26px' onerror='this.src="<#ROOTHTML#>templates/telegram/img/none.jpg"'>[#KEY#]</a>: [#VALUE#]
+			</div>
 			[#end STAT_USERS#]
 		</div>
 		<div class="col-xs-2"> 
 			<div><b><#LANG_TYPE#></b></div>
 			[#begin STAT_TYPES#]
 			<div style="white-space: nowrap;">
+				<a href="?tab=history&filter_type=[#KEY#]">
 			    [#if KEY == 0#] Unknown[#endif#]
 				[#if KEY == 1#] <#LANG_TLG_EVENT_TEXT#>[#endif#]
 				[#if KEY == 2#] <#LANG_TLG_EVENT_IMAGE#>[#endif#]
@@ -34,7 +37,7 @@
 				[#if KEY == 6#] <#LANG_TLG_EVENT_DOCUMENT#>[#endif#]
 				[#if KEY == 7#] <#LANG_TLG_EVENT_STICKER#>[#endif#]
 				[#if KEY == 8#] <#LANG_TLG_EVENT_LOCATION#>[#endif#]
-				[#if KEY == 10#] Callback[#endif#]: 
+				[#if KEY == 10#] Callback[#endif#]</a>: 
 				[#VALUE#]</div>
 			[#end STAT_TYPES#]
 		</div>
@@ -54,6 +57,7 @@
  <th>User</th>
  <th>Raw</th>
  <th>Message</th>
+ <th>&nbsp;</th>
 </tr>
 </thead>
 <script type="text/javascript">
@@ -159,6 +163,9 @@
   [#else#]
    &nbsp;
   [#endif#]
+ </td>
+ <td>
+ <a href="?view_mode=history_delete&id=[#ID#]" onClick="return confirm('<#LANG_ARE_YOU_SURE#>')" class="btn btn-default btn-sm" title="<#LANG_DELETE#>"><i class="glyphicon glyphicon-remove"></i></a>
  </td>
  </tr>
 [#end RESULT#]

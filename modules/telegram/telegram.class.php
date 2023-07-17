@@ -447,6 +447,10 @@ class telegram extends module {
                 $this->delete_event($this->id);
                 $this->redirect("?tab=events");
             }
+            if($this->view_mode == 'history_delete') {
+                $this->delete_history($this->id);
+                $this->redirect("?tab=history");
+            }
 			if ($this->view_mode=='export_command') {
 				$this->export_command($out, $this->id);
 			}
@@ -609,6 +613,9 @@ class telegram extends module {
         $rec = SQLSelectOne("SELECT * FROM tlg_event WHERE ID='$id'");
         // some action for related tables
         SQLExec("DELETE FROM tlg_event WHERE ID='" . $rec['ID'] . "'");
+    }
+    function delete_history($id) {
+        SQLExec("DELETE FROM tlg_history WHERE ID='" . $id . "'");
     }
     function tlg_users(&$out) {
         require(DIR_MODULES . $this->name . '/tlg_users.inc.php');
@@ -922,7 +929,6 @@ class telegram extends module {
         if ($inline != "")
                 $content['reply_markup'] = $inline;
         $res = $this->sendContent($content,"sendVideo");
-        $this->debug($res);
         return $res;
     }
     function sendVideoTo($where, $video_path, $message = '', array $key = NULL, $inline = '') {
