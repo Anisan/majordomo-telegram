@@ -7,7 +7,7 @@ if ($filter)
     $where = "where DIRECTION IN (".$filter.")";
 if ($user_id)
     $where = "where USER_ID = '".$user_id."'";
-if ($filter_type)
+if ($filter_type!='')
     $where = "where TYPE = '".$filter_type."'";
   // SEARCH RESULTS  
   $res=SQLSelect('SELECT ID,CREATED,USER_ID,DIRECTION,TYPE,MESSAGE FROM tlg_history '.$where.' ORDER BY CREATED DESC, ID DESC');

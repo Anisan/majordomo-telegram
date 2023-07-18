@@ -117,6 +117,17 @@
  </label>
  <div class="col-lg-6"><input class="form-control" type="number" name="tlg_history_days" value="<#HISTORY_DAYS#>" class="input"></div>
 </div>
+<div class="form-group">
+ <label class="control-label">Save Unicode
+ </label>
+ <div class="col-lg-6">
+ [#if SUPPORT_UNICODE==true#]
+ <input type="checkbox" name="tlg_save_unicode" value="1"[#if SAVE_UNICODE="1"#] checked[#endif#]>
+ [#else#]
+ Not supported
+ [#endif#]
+ </div>
+</div>
 <script type="text/javascript">
 	function showInfo(){  
 	    var url="?webhookinfo=1";

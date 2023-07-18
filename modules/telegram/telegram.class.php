@@ -372,7 +372,15 @@ class telegram extends module {
         $out['TLG_IPRESOLV'] = $this->config['TLG_IPRESOLV'];
         $out['HISTORY_ONLY_ERRORS'] = $this->config['TLG_HISTORY_ONLY_ERRORS'];
         $out['HISTORY_DAYS'] = $this->config['TLG_HISTORY_DAYS'];
-
+        
+        $out['SUPPORT_UNICODE'] = false;
+        $out['SAVE_UNICODE'] = false;
+        $collation = SQLSelectOne("SHOW COLLATION WHERE COLLATION='utf8mb4_unicode_ci';");
+        if (isset($collation['Collation'])){
+            $out['SUPPORT_UNICODE'] = true;
+            $out['SAVE_UNICODE'] = $this->config['TLG_SAVE_UNICODE'];
+        }
+        
         if($this->data_source == 'telegram' || $this->data_source == '') {
             if($this->view_mode == 'update_settings') {
                 global $tlg_token;
@@ -411,6 +419,15 @@ class telegram extends module {
                 $this->config['TLG_HISTORY_ONLY_ERRORS'] = $tlg_history_only_errors;
                 global $tlg_history_days;
                 $this->config['TLG_HISTORY_DAYS'] = $tlg_history_days;
+                global $tlg_save_unicode;
+                
+                $this->config['TLG_SAVE_UNICODE'] = $tlg_save_unicode;
+                if ($tlg_save_unicode == "1")
+                {
+                    SQLExec("ALTER TABLE tlg_history CHANGE COLUMN `MESSAGE` `MESSAGE` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci'");
+                    SQLExec("ALTER TABLE tlg_history CHANGE COLUMN `RAW` `RAW` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci'");
+                }
+                
                 global $tlg_ipresolv;
                 if(preg_match("/^(any|ipv4|ipv6)$/", $tlg_ipresolv)) {
                     $this->config['TLG_IPRESOLV'] = $tlg_ipresolv;
@@ -1867,16 +1884,32 @@ class telegram extends module {
         if (isset($data['curl_error_code'])){
             $rec["MESSAGE"] = 'Error: '.$data['curl_error_code'].' - '.$data['curl_error'];
         }
-            
-        $rec["RAW"] = json_encode($data,JSON_UNESCAPED_UNICODE);
+        if (isset($data['channel_post'])){
+            $rec["USER_ID"] = $data['channel_post']['chat']['id'];
+            $rec["MESSAGE"] = $data['channel_post']['new_chat_title'];
+        }
+        if ($this->config['TLG_SAVE_UNICODE']=='1')
+            $rec["RAW"] = json_encode($data,JSON_UNESCAPED_UNICODE);
+        else
+        {
+            $rec["MESSAGE"] = $this->utf8_4byte_to_2byte($rec["MESSAGE"]);
+            $rec["RAW"] = json_encode($data);
+        }
         try{
             SQLInsert("tlg_history", $rec);
         }
         catch(Exception $e) {
-            registerError('telegram', sprintf('Exception in "%s" method: %s' . $e->getMessage(), json_encode($rec,JSON_UNESCAPED_UNICODE)));
+            registerError('telegram', sprintf('Exception in "%s" method: %s' . $e->getMessage(), json_encode($rec)));
         }
     }
 
+    function utf8_4byte_to_2byte($string) {
+        // Преобразование 4-байтных символов в 2-байтные
+        return preg_replace_callback('/[\xF0-\xF7][\x80-\xBF]{3}/', function ($matches) {
+            $bytes = unpack('C*', $matches[0]);
+            return mb_chr(((($bytes[1] & 0x07) << 18) | (($bytes[2] & 0x3F) << 12) | (($bytes[3] & 0x3F) << 6) | ($bytes[4] & 0x3F)));
+        }, $string);
+    }
     /**
      * FrontEnd
      *
@@ -2041,8 +2074,8 @@ class telegram extends module {
  tlg_history: CREATED datetime
  tlg_history: DIRECTION int(3) unsigned NOT NULL DEFAULT '1'
  tlg_history: TYPE int(3) unsigned NOT NULL DEFAULT '1'
- tlg_history: MESSAGE text COLLATE 'utf8mb4_unicode_ci'
- tlg_history: RAW text COLLATE 'utf8mb4_unicode_ci'
+ tlg_history: MESSAGE text
+ tlg_history: RAW text
  
 EOD;
         parent::dbInstall($data);
