@@ -56,6 +56,7 @@ $dictionary=array(
 'TLG_PROXY_PASSWORD'=>'Пароль прокси',
 'TLG_REG_USER'=>'Регистрация пользователей',
 'TLG_HISTORY_ONLY_ERRORS'=>'В истории только ошибки',
+'TLG_HISTORY_DAYS'=>'Хранить историю, дней',
 /* about */
 
 /* help */

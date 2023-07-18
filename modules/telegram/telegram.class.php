@@ -82,7 +82,8 @@ class telegram extends module {
             'TLG_PLAYER',
             'TLG_BOT_ID',
             'TLG_BOT_NAME',
-            'TLG_HISTORY_ONLY_ERRORS'
+            'TLG_HISTORY_ONLY_ERRORS',
+            'TLG_HISTORY_DAYS',
         );
 
         foreach($setConfigKeys as $k) {
@@ -370,7 +371,16 @@ class telegram extends module {
         $out['TLG_PROXY_PASSWORD'] = $this->config['TLG_PROXY_PASSWORD'];
         $out['TLG_IPRESOLV'] = $this->config['TLG_IPRESOLV'];
         $out['HISTORY_ONLY_ERRORS'] = $this->config['TLG_HISTORY_ONLY_ERRORS'];
-
+        $out['HISTORY_DAYS'] = $this->config['TLG_HISTORY_DAYS'];
+        
+        $out['SUPPORT_UNICODE'] = false;
+        $out['SAVE_UNICODE'] = false;
+        $collation = SQLSelectOne("SHOW COLLATION WHERE COLLATION='utf8mb4_unicode_ci';");
+        if (isset($collation['Collation'])){
+            $out['SUPPORT_UNICODE'] = true;
+            $out['SAVE_UNICODE'] = $this->config['TLG_SAVE_UNICODE'];
+        }
+        
         if($this->data_source == 'telegram' || $this->data_source == '') {
             if($this->view_mode == 'update_settings') {
                 global $tlg_token;
@@ -407,6 +417,17 @@ class telegram extends module {
                 $this->config['TLG_PROXY_PASSWORD'] = $tlg_proxy_password;
                 global $tlg_history_only_errors;
                 $this->config['TLG_HISTORY_ONLY_ERRORS'] = $tlg_history_only_errors;
+                global $tlg_history_days;
+                $this->config['TLG_HISTORY_DAYS'] = $tlg_history_days;
+                global $tlg_save_unicode;
+                
+                $this->config['TLG_SAVE_UNICODE'] = $tlg_save_unicode;
+                if ($tlg_save_unicode == "1")
+                {
+                    SQLExec("ALTER TABLE tlg_history CHANGE COLUMN `MESSAGE` `MESSAGE` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci'");
+                    SQLExec("ALTER TABLE tlg_history CHANGE COLUMN `RAW` `RAW` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci'");
+                }
+                
                 global $tlg_ipresolv;
                 if(preg_match("/^(any|ipv4|ipv6)$/", $tlg_ipresolv)) {
                     $this->config['TLG_IPRESOLV'] = $tlg_ipresolv;
@@ -442,6 +463,10 @@ class telegram extends module {
             if($this->view_mode == 'event_delete') {
                 $this->delete_event($this->id);
                 $this->redirect("?tab=events");
+            }
+            if($this->view_mode == 'history_delete') {
+                $this->delete_history($this->id);
+                $this->redirect("?tab=history");
             }
 			if ($this->view_mode=='export_command') {
 				$this->export_command($out, $this->id);
@@ -605,6 +630,9 @@ class telegram extends module {
         $rec = SQLSelectOne("SELECT * FROM tlg_event WHERE ID='$id'");
         // some action for related tables
         SQLExec("DELETE FROM tlg_event WHERE ID='" . $rec['ID'] . "'");
+    }
+    function delete_history($id) {
+        SQLExec("DELETE FROM tlg_history WHERE ID='" . $id . "'");
     }
     function tlg_users(&$out) {
         require(DIR_MODULES . $this->name . '/tlg_users.inc.php');
@@ -1790,8 +1818,11 @@ class telegram extends module {
                 SQLUpdate("tlg_history", $data);
             }
          }
-         // clear history older 7 days
-         SQLExec("DELETE FROM tlg_history WHERE CREATED < NOW() - INTERVAL 7 DAY");
+         // clear history (older 7 days default)
+         $day = "7";
+         if ($this->config['TLG_HISTORY_DAYS'])
+             $day = $this->config['TLG_HISTORY_DAYS'];
+         SQLExec("DELETE FROM tlg_history WHERE CREATED < NOW() - INTERVAL ".$day." DAY");
     }
     
     function saveData($data, $direction){
@@ -1806,68 +1837,43 @@ class telegram extends module {
         $rec["CREATED"] = date("Y-m-d H:i:s");
         $rec["TYPE"] = 0;
             
-        if (isset($data['message']))
+        if (isset($data['message']) || isset($data['result']))
         {
-            $rec["USER_ID"] = $data['message']['chat']['id'];
-            //$rec["CREATED"] = date("Y-m-d H:m:s",$data['message']['date']);
-            if (isset($data['message']['text'])){
-                $rec["TYPE"] = 1;
-                $rec["MESSAGE"] = $data['message']['text'];
-            }
-            if (isset($data['message']['caption']))
-                $rec["MESSAGE"] = $data['message']['caption'];
-            if (isset($data['message']['photo']))
-                $rec["TYPE"] = 2;
-            if (isset($data['message']['voice']))
-                $rec["TYPE"] = 3;
-            if (isset($data['message']['audio']))
-                $rec["TYPE"] = 4;
-            if (isset($data['message']['video']))
-                $rec["TYPE"] = 5;
-            if (isset($data['message']['document']))
-                $rec["TYPE"] = 6;
-            if (isset($data['message']['sticker'])){
-                $rec["TYPE"] = 7;
-                $rec["MESSAGE"] = $data['message']['sticker']['set_name'].' '. $data['message']['sticker']['emoji'];
-            }
-            if (isset($data['message']['location']))
-                $rec["TYPE"] = 8;
+            $message=[];
+            if (isset($data['message'])) $message = $data['message'];
+            if (isset($data['result'])) $message = $data['result'];
             
+            $rec["USER_ID"] = $message['chat']['id'];
+            if (isset($message['text'])){
+                $rec["TYPE"] = 1;
+                $rec["MESSAGE"] = $message['text'];
+            }
+            if (isset($message['caption']))
+                $rec["MESSAGE"] = $message['caption'];
+            if (isset($message['photo']))
+                $rec["TYPE"] = 2;
+            if (isset($message['voice']))
+                $rec["TYPE"] = 3;
+            if (isset($message['audio']))
+                $rec["TYPE"] = 4;
+            if (isset($message['video']))
+                $rec["TYPE"] = 5;
+            if (isset($message['document']))
+                $rec["TYPE"] = 6;
+            if (isset($message['sticker'])){
+                $rec["TYPE"] = 7;
+                $rec["MESSAGE"] = $message['sticker']['set_name'].' '. $message['sticker']['emoji'];
+            }
+            if (isset($message['location']))
+                $rec["TYPE"] = 8;
+            if (isset($message['venue']))
+                $rec["MESSAGE"] = $message['venue']['title'].' '. $message['venue']['address'];
         }
         if (isset($data['callback_query']))
         {
             $rec["USER_ID"] = $data['callback_query']['from']['id'];
             $rec["TYPE"] = 10;
             $rec["MESSAGE"] = $data['callback_query']['data'];
-            //$rec["CREATED"] = date("Y-m-d H:m:s",time());
-            
-        }
-        if (isset($data['result']))
-        {
-            $rec["USER_ID"] = $data['result']['chat']['id'];
-            //$rec["CREATED"] = date("Y-m-d H:m:s",$data['result']['date']);
-            if (isset($data['result']['text'])){
-                $rec["TYPE"] = 1;
-                $rec["MESSAGE"] = $data['result']['text'];
-            }
-            if (isset($data['result']['caption']))
-                $rec["MESSAGE"] = $data['result']['caption'];
-            if (isset($data['result']['photo']))
-                $rec["TYPE"] = 2;
-            if (isset($data['result']['voice']))
-                $rec["TYPE"] = 3;
-            if (isset($data['result']['audio']))
-                $rec["TYPE"] = 4;
-            if (isset($data['result']['video']))
-                $rec["TYPE"] = 5;
-            if (isset($data['result']['document']))
-                $rec["TYPE"] = 6;
-            if (isset($data['result']['sticker'])){
-                $rec["TYPE"] = 7;
-                $rec["MESSAGE"] = $data['result']['sticker']['set_name'].' '. $data['result']['sticker']['emoji'];
-            }
-            if (isset($data['result']['location']))
-                $rec["TYPE"] = 8;
         }
         if (isset($data['content'])){
             $rec["USER_ID"] = $data['content']['chat_id'];
@@ -1878,8 +1884,17 @@ class telegram extends module {
         if (isset($data['curl_error_code'])){
             $rec["MESSAGE"] = 'Error: '.$data['curl_error_code'].' - '.$data['curl_error'];
         }
-            
-        $rec["RAW"] = json_encode($data);
+        if (isset($data['channel_post'])){
+            $rec["USER_ID"] = $data['channel_post']['chat']['id'];
+            $rec["MESSAGE"] = $data['channel_post']['new_chat_title'];
+        }
+        if ($this->config['TLG_SAVE_UNICODE']=='1')
+            $rec["RAW"] = json_encode($data,JSON_UNESCAPED_UNICODE);
+        else
+        {
+            $rec["MESSAGE"] = $this->utf8_4byte_to_2byte($rec["MESSAGE"]);
+            $rec["RAW"] = json_encode($data);
+        }
         try{
             SQLInsert("tlg_history", $rec);
         }
@@ -1888,6 +1903,13 @@ class telegram extends module {
         }
     }
 
+    function utf8_4byte_to_2byte($string) {
+        // Преобразование 4-байтных символов в 2-байтные
+        return preg_replace_callback('/[\xF0-\xF7][\x80-\xBF]{3}/', function ($matches) {
+            $bytes = unpack('C*', $matches[0]);
+            return mb_chr(((($bytes[1] & 0x07) << 18) | (($bytes[2] & 0x3F) << 12) | (($bytes[3] & 0x3F) << 6) | ($bytes[4] & 0x3F)));
+        }, $string);
+    }
     /**
      * FrontEnd
      *
