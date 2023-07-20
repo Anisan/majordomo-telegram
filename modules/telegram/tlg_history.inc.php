@@ -4,7 +4,7 @@ $filter = gr('filter');
 $user_id = gr('user_id');
 $filter_type = gr('filter_type');
 if ($filter)
-    $where = "where DIRECTION IN (".$filter.")";
+    $where = "where DIRECTION IN (".$filter.") OR USER_ID NOT IN (SELECT USER_ID from tlg_user)";
 if ($user_id)
     $where = "where USER_ID = '".$user_id."'";
 if ($filter_type!='')
