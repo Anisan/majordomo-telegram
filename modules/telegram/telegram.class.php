@@ -708,14 +708,14 @@ class telegram extends module {
         $this->debug($content);
         $res = $this->telegramBot->endpoint($endpoint, $content);
         $this->debug($res);
+        $res["endpoint"] = $endpoint;
+        $res["content"] = $content;
         if ($res['ok']){
             if (is_array($res['result']))
                 $this->saveData($res,1);
         }
         else
         {
-            $res["endpoint"] = $endpoint;
-            $res["content"] = $content;
             $this->saveData($res,2);
         }
         return $res;

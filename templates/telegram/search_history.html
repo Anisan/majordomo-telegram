@@ -61,15 +61,108 @@
 </tr>
 </thead>
 <script type="text/javascript">
+	function nl2br( str ) {
+		if (typeof(str) != 'string') return str
+		return str.replace(/([^>])\n/g, '$1<br/>');
+	}
+	function linkify(text) {
+		if (typeof(text) != 'string') return text
+		var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+		return text.replace(urlRegex, function(url) {
+			return '<a href="' + url + '">' + url + '</a>';
+    });
+}
 	function showRaw(id){
 		var url="/ajax/telegram.html?op=get_raw&id="+id;
 		$("#raw_info").html('');
 		$.ajax({
 			url: url,
 			cache: false,
-			success: function(html){
-				//$("#raw_info").html(html);
-				document.getElementById('raw_info').textContent = html;
+			success: function(raw){
+				//$("#raw_info").html(raw);
+				document.getElementById('raw_info').textContent = raw
+				var data = JSON.parse(raw)
+				console.log(data)
+				var user_id = 0
+				var user_name = undefined
+				var keyb = ""
+				var text = ""
+				var prefix = "result"
+				var dt = "---"
+				var media = ""
+				if (data.message)
+					prefix = "message"
+				if (data[prefix]){
+					user_id = data[prefix].chat ? data[prefix].chat.id : "none"
+					var user_name = undefined
+					if (data[prefix].chat){
+						user_name = data[prefix].chat.username ?? data[prefix].chat.first_name
+						if (user_name === undefined) 
+							user_name = data[prefix].chat.title
+					}
+					text = data[prefix].text
+					if (data[prefix].caption)
+						text = data[prefix].caption
+					if (data[prefix].sticker)
+						text = "Stickers:"+ data[prefix].sticker.set_name+ "<br>Emoji:" +data[prefix].sticker.emoji
+					dt = new Date(data[prefix].date * 1000).toLocaleString()
+					if (data[prefix].photo)
+						media = '<i class="glyphicon glyphicon-picture"></i>'
+					if (data[prefix].video)
+						media = '<i class="glyphicon glyphicon-facetime-video"></i>'
+					if (data[prefix].audio)
+						media = '<i class="glyphicon glyphicon-volume-up"></i>'
+					if (data[prefix].voice)
+						media = '<i class="glyphicon glyphicon-volume-up"></i>'
+					if(data[prefix].reply_markup)
+					{
+						var inline = data[prefix].reply_markup['inline_keyboard']
+						inline.forEach(row => {
+							keyb += "<div>"
+							row.forEach(col => {
+								keyb = keyb + '<button type="button" class="btn btn-default" style="width: 150px;" onclick="alert(\'Callback data: '+col.callback_data+'\')">'
+								keyb = keyb + col.text
+								keyb = keyb + "</button>"
+							});
+							keyb += "</div>"
+						});
+					}
+				}
+				if (data.callback_query)
+				{
+					user_name = data.callback_query.from.username ?? data.callback_query.from.first_name
+					user_id = data.callback_query.from ? data.callback_query.from.id : "none"
+					
+					text = "Callback query: <b>"+ data.callback_query.data+"</b>"
+					dt = new Date(data.callback_query.message.date * 1000).toLocaleString()
+				}
+				if (data.error_code){
+					user_name = 'Error: ' + data.error_code
+					text = data.description
+				}
+				if(data['content'] && data['content'].reply_markup)
+				{
+					var keyboard = JSON.parse(data['content'].reply_markup)['keyboard']
+					console.log(keyboard)
+					if (keyboard)
+						keyboard.forEach(row => {
+							keyb += "<div>"
+							row.forEach(col => {
+								keyb = keyb + '<button type="button" class="btn btn-default" style="width: 150px;">'
+								keyb = keyb + col
+								keyb = keyb + "</button>"
+							});
+							keyb += "</div>"
+						});
+				}
+				document.getElementById('avatar').src = '<#ROOTHTML#>cms/cached/telegram/'+user_id+'.jpg'
+				document.getElementById('message_user').textContent = user_name
+				document.getElementById('message_time').textContent = dt
+				$("#message_media").html(media)
+				text = nl2br(text)
+				text = linkify(text)
+				$("#message_text").html(text)
+				$("#message_keyb").html(keyb)
 			}
 		});
 	}
@@ -197,18 +290,32 @@
 
 <div class="modal fade" id="raw" tabindex="-1" role="dialog" aria-labelledby="raw" aria-hidden="true">
 <!-- <div id="about" class="modal hide"> -->
-	<div class="modal-dialog modal-lg">
+	<div class="modal-dialog modal-lg" style="max-width:1200px;">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title">RAW message</h4>
+				<h4 class="modal-title">Message</h4>
 			</div>
 			<div class="modal-body">
+				<div class="float-right">
+					<img id="avatar" src='<#ROOTHTML#>cms/cached/telegram/[#USER_ID#].jpg'  width="39" height="39" style="margin:3px;border-radius: 5px;"  onerror="this.src='<#ROOTHTML#>templates/telegram/img/none.jpg'">
+				</div>
+				<div class="panel panel-primary">
+					<div class="panel-heading" id="message_user" style="font-size:16px"></div>
+					<div class="panel-body" style="position: relative;padding: 5px;">
+						<div id="message_media" style="margin: 10px;"></div>
+						<div id="message_text" style="margin: 10px;"></div>
+						<div id="message_keyb" style="margin: 10px;"></div>
+						<div id="message_time" style="position: absolute;bottom: 0; right:2px; padding:2px;"></div>
+					</div>
+				</div>
+				<hr>
+				<div><b>RAW</b></div>
 				<div id="raw_info" style="word-wrap:break-word"></div>
 			</div>
 			
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" onclick="copyContent()">Copy to clipboard</button>
+				<button type="button" class="btn btn-default" onclick="copyContent()">Copy RAW to clipboard</button>
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 		</div>
