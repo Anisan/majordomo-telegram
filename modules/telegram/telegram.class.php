@@ -1541,6 +1541,7 @@ class telegram extends module {
         if($location) {
                 $latitude = $location["latitude"];
                 $longitude = $location["longitude"];
+                $accuracy = $location['horizontal_accuracy'];
                 $this->info("Get location from " . $chat_id . " - " . $latitude . "," . $longitude);
                 if($user['MEMBER_ID']) {
                     $sqlQuery = "SELECT * FROM users WHERE ID = '" . $user['MEMBER_ID'] . "'";
@@ -1550,6 +1551,9 @@ class telegram extends module {
                         setGlobal($userObj['LINKED_OBJECT'] . '.Coordinates', $latitude . ',' . $longitude);
                         setGlobal($userObj['LINKED_OBJECT'] . '.CoordinatesUpdated', date('H:i'));
                         setGlobal($userObj['LINKED_OBJECT'] . '.CoordinatesUpdatedTimestamp', time());
+                    }
+                    if (isModuleInstalled('app_gpstrack')) {
+                        getURLBackground('http://localhost/gps.php?latitude='.urlencode($latitude).'&longitude='.urlencode($longitude).'&accuracy='.urlencode($accuracy).'&deviceid='.urlencode('telegram'.$chat_id));
                     }
                 }
                 // get events for location
@@ -1837,11 +1841,16 @@ class telegram extends module {
         $rec["CREATED"] = date("Y-m-d H:i:s");
         $rec["TYPE"] = 0;
             
-        if (isset($data['message']) || isset($data['result']))
+        if (isset($data['message']) || isset($data['edited_message']) || isset($data['result']))
         {
             $message=[];
-            if (isset($data['message'])) $message = $data['message'];
-            if (isset($data['result'])) $message = $data['result'];
+            if (isset($data['message'])) {
+                $message = $data['message'];
+            } elseif (isset($data['edited_message'])) {
+                $message = $data['edited_message'];
+            } elseif (isset($data['result'])) {
+                $message = $data['result'];
+            }
             
             $rec["USER_ID"] = $message['chat']['id'];
             if (isset($message['text'])){
