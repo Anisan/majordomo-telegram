@@ -1803,7 +1803,8 @@ class TelegramBot
     /// Get the number of updates
     public function UpdateCount()
     {
-        if (!$this->updates['result']) {
+        // if (!$this->updates['result']) {
+        if (is_null($this->updates['result'])) {
             return 0;
         } else {
             return count($this->updates['result']);
