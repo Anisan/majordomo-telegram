@@ -378,7 +378,7 @@ class telegram extends module {
         $collation = SQLSelectOne("SHOW COLLATION WHERE COLLATION='utf8mb4_unicode_ci';");
         if (isset($collation['Collation'])){
             $out['SUPPORT_UNICODE'] = true;
-            $out['SAVE_UNICODE'] = $this->config['TLG_SAVE_UNICODE'];
+            $out['SAVE_UNICODE'] = isset($this->config['TLG_SAVE_UNICODE']) ? $this->config['TLG_SAVE_UNICODE'] : '';
         }
         
         if($this->data_source == 'telegram' || $this->data_source == '') {
@@ -1897,7 +1897,7 @@ class telegram extends module {
             $rec["USER_ID"] = $data['channel_post']['chat']['id'];
             $rec["MESSAGE"] = $data['channel_post']['new_chat_title'];
         }
-        if ($this->config['TLG_SAVE_UNICODE']=='1')
+        if (isset($this->config['TLG_SAVE_UNICODE']) && $this->config['TLG_SAVE_UNICODE']=='1')
             $rec["RAW"] = json_encode($data,JSON_UNESCAPED_UNICODE);
         else
         {
@@ -1952,9 +1952,9 @@ class telegram extends module {
             $message = $details['message'];
             $image = $details['image'];
 
-            if($details['destination']) {
+            if(isset($details['destination'])) {
                 $destination = $details['destination'];
-            } elseif($details['source']) {
+            } elseif(isset($details['source'])) {
                 $destination = $details['source'];
             }
             $users = SQLSelect("SELECT * FROM tlg_user WHERE HISTORY=1;");
@@ -1966,7 +1966,7 @@ class telegram extends module {
                     if ($user_id === '0') {
                         $user_id = $users[$j]['NAME'];
                     }
-                    if($destination == 'telegram' . $users[$j]['ID'] || (!$destination && ($level >= $users[$j]['HISTORY_LEVEL']))) {
+                    if((isset($destination) && $destination == 'telegram' . $users[$j]['ID']) || (!isset($destination) && $level >= $users[$j]['HISTORY_LEVEL'])) {
                         $this->info(" Send to " . $user_id . " - " . $reply);
                         $silent = $users[$j]['SILENT'];
                         if ($level >= $users[$j]['HISTORY_SILENT'])
